@@ -28,19 +28,19 @@ Playwright specs under `tests/e2e/`.
 
 **Purpose**: Scaffold the project — there is no `package.json` yet (CLAUDE.md's greenfield note).
 
-- [ ] T001 Initialize Vite + React + TypeScript-strict project (`package.json`, `vite.config.ts`,
+- [X] T001 Initialize Vite + React + TypeScript-strict project (`package.json`, `vite.config.ts`,
       `tsconfig.json` with `strict: true`, `noImplicitAny: true`) at repo root (research.md §1)
-- [ ] T002 [P] Configure ESLint + Prettier for TS/React, forbidding `any` (constitution Technology
+- [X] T002 [P] Configure ESLint + Prettier for TS/React, forbidding `any` (constitution Technology
       Constraints) in `eslint.config.js`
-- [ ] T003 [P] Configure Vitest sharing Vite's config + RTL setup file in `vitest.config.ts` /
+- [X] T003 [P] Configure Vitest sharing Vite's config + RTL setup file in `vitest.config.ts` /
       `tests/setupTests.ts` (research.md §5)
-- [ ] T004 [P] Configure Playwright (`playwright.config.ts`, `tests/e2e/`) (research.md §6)
-- [ ] T005 [P] Install and scaffold MSW: `src/api/fixtures/browser.ts` (`setupWorker`) and
+- [X] T004 [P] Configure Playwright (`playwright.config.ts`, `tests/e2e/`) (research.md §6)
+- [X] T005 [P] Install and scaffold MSW: `src/api/fixtures/browser.ts` (`setupWorker`) and
       `src/api/fixtures/server.ts` (`setupServer`) (research.md §7)
-- [ ] T006 Create directory skeleton: `src/components/{layout,kpi,approvals,incidents,charts,
+- [X] T006 Create directory skeleton: `src/components/{layout,kpi,approvals,incidents,charts,
       shared}/`, `src/domain/`, `src/api/{dashboard,incidents,approvals}/`, `src/api/fixtures/
       handlers/`, `src/state/`, `tests/e2e/` (plan.md → Project Structure)
-- [ ] T007 [P] Add `dev`/`build`/`test`/`test:e2e`/`typecheck`/`lint` scripts to `package.json`
+- [X] T007 [P] Add `dev`/`build`/`test`/`test:e2e`/`typecheck`/`lint` scripts to `package.json`
       (quickstart.md)
 
 **Checkpoint**: `npm run dev` serves an empty app; `npm run test`/`test:e2e`/`typecheck` all run
