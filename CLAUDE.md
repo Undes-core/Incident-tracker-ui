@@ -1,6 +1,7 @@
 <!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
+Active plan: `specs/001-incident-response-dashboard/plan.md` (branch `001-incident-response-dashboard`).
+For technologies, project structure, and other implementation context, read that plan and its
+`research.md`, `data-model.md`, `component-inventory.md`, and `contracts/*.md` alongside it.
 <!-- SPECKIT END -->
 
 # Incident-tracker-ui
@@ -19,11 +20,15 @@ contains only:
 | `docs/incident_dashboard_prototype.html` | Self-contained wireframe — inline CSS + vanilla JS + hardcoded mock data, zero dependencies. Open it directly (`open docs/incident_dashboard_prototype.html`); do not add a bundler to it. It is the visual reference, not code to extend. |
 | `.specify/`, `.claude/skills/` | Spec Kit 0.8.6 scaffolding (see below). |
 
-The stack is now fixed by the constitution: **React + TypeScript (strict), functional components,
-React Hook Form, React Testing Library**, layered `src/components/` · `src/domain/` · `src/api/`.
-Library choices *below* that line (build tooling, routing, server-state cache, charting, E2E
-runner) are still open and get decided in the feature's `plan.md`. See
-`.specify/memory/constitution.md` → "Technology and Architecture Constraints".
+The stack is fixed by the constitution: **React + TypeScript (strict), functional components,
+React Hook Form, React Testing Library**, layered `src/components/` · `src/domain/` · `src/api/`
+(+ `src/state/` for URL/operator state, added in the plan below). The libraries below that line are
+now decided in `specs/001-incident-response-dashboard/plan.md` and its `research.md`: **Vite**
+(build), **no router** (single route, custom URL-state hook), **TanStack Query** (server state),
+**Recharts** + a hand-rolled funnel (charts), **Vitest** (unit/component), **Playwright** (e2e),
+**MSW** (mocked HTTP boundary for both dev-without-backend and tests). See
+`.specify/memory/constitution.md` → "Technology and Architecture Constraints" for what's fixed vs.
+what was this plan's to decide.
 
 The PRD declares `Depends on: ai_incident_response_database_schema.md`, which is **not in this
 repo**. Table/column names in the PRD (`incidents`, `recommended_actions`, `executed_actions`,
