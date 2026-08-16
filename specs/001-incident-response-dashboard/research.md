@@ -40,8 +40,9 @@ exists.
 
 **Rationale**: This is the piece three constitution principles lean on directly. Principle VIII
 (failure isolation) falls out naturally — one `useQuery` per panel means one panel's error state,
-not a shared fetch that takes others down with it. Principle XI/X-2 polling (30s Band A, 5min Band
-B) is a `refetchInterval` option, not hand-rolled `setInterval` + cleanup. Principle V's idempotent
+not a shared fetch that takes others down with it. Principle XI/X-2 polling (30s alert strip, 5min
+Performance/Knowledge) is a `refetchInterval` option, not hand-rolled `setInterval` + cleanup.
+Principle V's idempotent
 approve maps to a `useMutation` keyed by action id, so a second click while one is in-flight is a
 no-op by construction rather than a manually-tracked boolean.
 
@@ -154,7 +155,7 @@ dependency whose escape-hatch behaviors (iframes, portals) this feature doesn't 
 ## 10. Client-only state that isn't server state or URL state
 
 **Decision**: One `OperatorContext` (React Context + `localStorage`) for the self-declared operator
-name (FR-077/FR-077a/FR-077b) and the low-confidence threshold default (Assumption 10). No global
+name (FR-119/FR-120/FR-121) and the low-confidence threshold default (Assumption 10). No global
 state library.
 
 **Rationale**: Everything that looks like "app state" is actually one of three things already
@@ -164,12 +165,49 @@ piece of per-browser identity. A general-purpose store (Redux, Zustand) would ho
 **Alternatives considered**: Zustand — reasonable size for this need, but a second state mechanism
 alongside Context for exactly one piece of data isn't justified.
 
+## 11. Tabs (added for PRD v2.0)
+
+**Decision**: Hand-rolled, following the ARIA APG tabs pattern — a `TabBar` owning
+`role="tablist"`/`role="tab"`/`aria-selected` and roving-tabindex arrow-key navigation (FR-016), and
+three always-mounted `TabPanel`s whose visibility is toggled with the native `hidden` attribute, not
+conditional rendering.
+
+**Rationale**: Three tabs, one well-documented ARIA pattern, no nested routing — the same
+"well-understood, few call sites, needs to be exercised by both RTL and Playwright" reasoning that
+already justified hand-rolling `useFocusTrap` (§9) and the funnel (§4) rather than reaching for a
+dependency. It also makes FR-019/FR-108/Assumption 16 (panels stay mounted; Performance and
+Knowledge keep polling while not the visible tab) fall out of the architecture for free: nothing
+unmounts on a tab switch, so nothing re-mounts, so TanStack Query never sees a mount-triggered
+refetch to suppress — there is no special "don't refetch on tab switch" logic to write, because tab
+switching was never a mount event in the first place. The native `hidden` attribute additionally
+removes hidden panels from the accessibility tree and the tab order automatically, which a
+`display: none` class alone does the same way but a conditional-render approach cannot give you for
+free.
+
+**Alternatives considered**: React Router with nested routes per tab — would need panels to
+unmount/remount on navigation (the opposite of what TB-4 requires) unless deliberately fought with
+`Outlet` caching workarounds; more machinery than three fixed, non-nested tabs need. A UI-kit tabs
+component (Radix, Headless UI) — reasonable, but pulls in a dependency for a pattern this project
+already has a hand-rolled example of (the focus-trap hook), and this project's few interactive
+primitives are otherwise all hand-rolled by design.
+
+## 12. Alert strip polling independent of the active tab
+
+**Decision**: The `AlertStrip` component and its TanStack Query live in `DashboardHeader`, outside
+any `TabPanel` — it is never inside tab content, so it is never affected by which tab is visible.
+Its own `refetchInterval` (30s, FR-015) runs unconditionally from first mount, same as any other
+always-mounted query.
+
+**Rationale**: This is the direct consequence of decision #11 above, stated explicitly because
+FR-015/FR-108/SC-013 make it a load-bearing requirement in its own right, not an incidental
+side-effect worth leaving implicit.
+
 ## Resolved Technical Context
 
 | Field | Resolution |
 |---|---|
-| Primary Dependencies | React, React Hook Form (fixed) + TanStack Query, Recharts, `sql-formatter`, MSW (dev), Vite |
-| Storage | `localStorage` for the operator name only (FR-077b); no other client-owned persistence |
+| Primary Dependencies | React, React Hook Form (fixed) + TanStack Query, Recharts, `sql-formatter`, MSW (dev), Vite. No tabs/routing library (§11) |
+| Storage | `localStorage` for the operator name only (FR-121); no other client-owned persistence |
 | Testing | React Testing Library (fixed) + Vitest (unit/component) + Playwright (e2e/keyboard/a11y) + MSW (HTTP mocking, both contexts) |
-| Target Platform | Evergreen desktop browsers (latest two versions of Chrome, Edge, Firefox, Safari). No mobile layout in v1 — PRD §3's fixed band layout and the prototype's ~1360px max-width design assume a desk-bound operator, and no responsive breakpoint is specified anywhere in the PRD. |
-| Scale/Scope | Seeded hackathon dataset (PRD §B1's own numbers: ~142 incidents/period, dozens of pending actions, 5-6 services) across roughly a dozen independently-loading panels on one page |
+| Target Platform | Evergreen desktop browsers (latest two versions of Chrome, Edge, Firefox, Safari). No mobile layout — the PRD's fixed tab/strip layout and the prototype's ~1360px max-width design assume a desk-bound operator, and no responsive breakpoint is specified anywhere in the PRD. |
+| Scale/Scope | Seeded hackathon dataset (PRD's own numbers: ~142 incidents/period, dozens of pending actions, 5-6 services, ~1,284 knowledge chunks) across the alert strip plus three tabs' worth of independently-loading panels, all mounted simultaneously (§11) |

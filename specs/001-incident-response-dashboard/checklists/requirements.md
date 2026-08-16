@@ -93,3 +93,39 @@ internal identifier.
 One consequence worth carrying into the plan: FR-038 now depends on an incident-update operation that
 **PRD §9 does not define**. It is recorded under Dependencies as a §9 gap to close, and FR-038a
 governs behaviour until it exists — so this does not block the rest of the feature.
+
+### Validation iteration 4 — 2026-08-16 (PRD v2.0 full re-spec)
+
+The PRD was revised v1.0 → v2.0: two stacked bands became three tabs (Now/Performance/Knowledge)
+plus a persistent alert strip, with a new Knowledge tab, a feedback-impact widget, and 10 new
+acceptance criteria (§11 items 11–20). User decided (via `AskUserQuestion`) to fully re-spec in
+place under the same feature rather than patch or fork a new feature number, since nothing
+feature-specific had been implemented against v1.0 yet (only reusable project scaffolding).
+
+spec.md was rewritten in full. Two new genuine ambiguities were found and resolved via a clarify
+pass before finalizing (Session 2026-08-16, folded into the Clarifications log):
+
+- **Feedback-impact accuracy denominator** — FI-1 gives prose, not exact SQL (unlike §6.1). Resolved:
+  denominator = incidents with any `developer_feedback` row; numerator = those recording no
+  disagreement. → FR-075.
+- **Feedback-impact time window** — the widget's mock copy implies fixed windows ("this quarter")
+  inconsistent with the dashboard's own time-range control. Resolved: personal figures are all-time,
+  team total is fixed to the current quarter, neither follows the time-range control. → FR-076.
+
+One prior decision was re-examined and **confirmed unchanged**: the funnel/breakdown drop-set click
+semantics (v1.0 Q2) still hold — the v2 prototype's demo code drifted toward cohort filtering, but
+the PRD's own prose is unchanged and the constitution treats the prototype as non-authoritative.
+Recorded as Assumption 13 rather than re-litigated as a new question.
+
+**All 15 checklist items pass.** Mechanically verified: 0 clarification markers; 121 functional
+requirements (FR-001–FR-121, sequential, no gaps/dupes); all 62 PRD v2 requirement IDs cited
+(`AS-1..8`, `TB-1..5`, `XT-1..5`, `FI-1..5`, `K1..4`, `AR-1..10`, `IT-1..6`, `EO-1..4`, `TL-1..3`,
+`X-1..5`, `A11Y-1..4`, `P-1..4`); all 10 new acceptance criteria (§11.11–§11.20) cited; 15 success
+criteria (SC-001–SC-015, up from 11 — added SC-012–SC-015 for strip consistency, strip liveness,
+cross-tab legibility, and feedback-widget suppression).
+
+Renumbering note: this revision renumbers FRs from scratch (FR-001–FR-121) rather than preserving
+v1.0's FR-001–FR-086 numbering, since the majority of sections changed. `plan.md`, `data-model.md`,
+`contracts/`, `component-inventory.md`, and `tasks.md` are being regenerated against these new
+numbers in the same pass — no downstream artifact should be trusted against the old numbering once
+this iteration lands.

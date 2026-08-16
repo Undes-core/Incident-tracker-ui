@@ -1,32 +1,47 @@
 # Contracts: Incidents
 
+**Revised for PRD v2.0.** FR numbers match spec.md's post-re-spec numbering.
+
 ---
 
 ## `GET /api/incidents`
 
-**Purpose**: Paginated table rows (FR-026), server-side filtered/sorted/paginated (FR-031, P-3).
+**Purpose**: Paginated table rows (FR-048), server-side filtered/sorted/paginated (FR-053, P-3).
+Rendered exclusively on the Now tab (FR-057) — a click anywhere else that needs this list triggers
+the cross-tab jump (FR-021) rather than rendering a second table.
 
-**Consumed by**: `components/incidents/IncidentTable`.
+**Consumed by**: `components/incidents/IncidentTable`; also reused, with the `candidate` filter
+below, by the Knowledge tab's documentation-candidates panel (K4) rather than that panel defining
+its own row shape.
 
-**Query params**: `status`, `priority`, `service`, `env`, `q` (free-text, FR-029 — matches `title`,
-`description`, `external_id`), `page` (25/page, FR-031), `sort` (`priority`\|`age`\|`confidence`,
-FR-028), `includeResolved` (boolean, FR-030), plus one of the drill-down params below (FR-004a — at
-most one is ever sent).
+**Query params**: `status`, `priority`, `service`, `env`, `q` (free-text, FR-051 — matches `title`,
+`description`, `external_id`), `page` (25/page, FR-053), `sort` (`priority`\|`age`\|`confidence`,
+FR-050), `includeResolved` (boolean, FR-052), plus one of the drill-down params below (FR-025 — at
+most one is ever sent, enforced client-side before the request is built).
 
-**Drill-down params** (mutually exclusive, enforced client-side per FR-004a before the request is
-built):
+**Drill-down params** (mutually exclusive):
 
-- `kpiTile=openIncidents|p1Active|awaitingApproval|automationRate|medianResolve|knownHitRate`
+- `kpiTile=openIncidents|escalated|unassigned|oldestOpen` (Now-tab tiles, FR-028) or
+  `kpiTile=automationRate|medianResolve|knownHitRate` (Performance tiles, FR-082 — cross-tab)
 - `funnelDropAt=classified|ragMatched|recommended|approvedOrAutoRun|executedSuccessfully|validatedResolved`
-  (FR-052 — the *drop-set* into this stage) or `funnelStage=received` (FR-052c — all incidents in range)
-- `breakdown=priority:P1|category:Database|service:<serviceId>` (FR-062)
+  (FR-085 — the *drop-set* into this stage, cross-tab) or `funnelStage=received` (FR-088 — all
+  incidents in range, cross-tab)
+- `breakdown=priority:P1|category:Database|service:<serviceId>` (FR-098 — cross-tab)
+- `candidate=true` (K4 — resolved incidents with no RAG match, used by the Knowledge tab; **same-tab**,
+  not a cross-tab jump, since K4 already lives on a row-click-opens-drawer list, not a jump target)
+
+Every param above except `candidate=true` is a **cross-tab** drill-down per FR-021–FR-026: the
+request is only ever issued after the client has already switched to Now, flashed the table, shown
+the distinctly-styled chip, and emitted the toast — this contract does not distinguish a same-tab
+from a cross-tab request at the HTTP level, that distinction is entirely a client-side sequencing
+concern (component-inventory.md's `CrossTabFilterChip`/`CrossTabToast`).
 
 **Response**:
 
 ```ts
 {
   rows: Array<{
-    id: string;                 // internal id — row click addresses the drawer by this (FR-036)
+    id: string;                 // internal id — row click addresses the drawer by this (FR-059)
     externalId: string;
     priority: "P1" | "P2" | "P3" | "P4";
     status: string;
@@ -41,6 +56,8 @@ built):
     assignedTo: string | null;
     automationStatus: "fully_automated" | "human_approved" | "needs_human" | "none"; // derived server- or client-side from RecommendedAction/ExecutedAction rows; see data-model.md Cross-cutting notes
     source: "Email" | "Slack" | "PagerDuty" | "API" | "Manual";
+    candidateReason: string | null;   // only populated when candidate=true — e.g. "resolved manually in 2h 41m · no match found"; recurrence count folded into this string per K4
+    recurrenceCount: number | null;   // only populated when candidate=true and > 1 (FR-103)
   }>;
   totalCount: number;    // must equal the number the triggering tile/stage/segment displayed (SC-005)
   page: number;
@@ -52,7 +69,7 @@ built):
 
 **Empty responses**: `rows: []` with `totalCount: 0` is ambiguous between "no data" and
 "no matches" — the client disambiguates using whether any filter/drill-down/search is active
-(FR-063), never from the response shape alone.
+(FR-105), never from the response shape alone.
 
 **Errors/Side effects**: table-only failure (Principle VIII); read-only.
 
@@ -60,21 +77,21 @@ built):
 
 ## `GET /api/incidents/:id`
 
-**Purpose**: Full detail — events, agent_runs, matches, actions, feedback (FR-037–FR-049). `:id` is
-the **internal** identifier (FR-036).
+**Purpose**: Full detail — events, agent_runs, matches, actions, feedback (FR-060–FR-072). `:id` is
+the **internal** identifier (FR-059).
 
 **Consumed by**: `components/incidents/IncidentDetailDrawer` and its child sections.
 
-**Response** (top-level fields per FR-037; nested arrays per FR-040/FR-042/FR-043/FR-045/FR-049 —
-none include their lazy JSONB, see below):
+**Response** (top-level fields per FR-060; nested arrays per FR-064/FR-066/FR-067/FR-069 — none
+include their lazy JSONB, see below):
 
 ```ts
 {
   incident: { id, externalId, title, status, priority, serviceName, environment, assignedTo, createdAt, resolvedAt, source };
   aiClassification: { category: string; priority: string; confidenceScore: number | null };
-  correction: { correctedCategory: string | null; correctedPriority: string | null } | null; // FR-039 side-by-side display
+  correction: { correctedCategory: string | null; correctedPriority: string | null } | null; // FR-063 side-by-side display
   agentRuns: Array<{ id, agentName, agentVersion, status, startedAt, finishedAt, latencyMs: number | null, confidenceScore: number | null, hasError: boolean }>;
-  similarityMatches: Array<{ id, documentType, title, score, summarySnippet, sourceUrl }>; // capped at 5 server-side; "show all" (FR-042) issues a second call, see below
+  similarityMatches: Array<{ id, documentType, title, score, summarySnippet, sourceUrl }>; // capped at 5 server-side; "show all" (FR-066) issues a second call, see below
   actions: Array<{
     id, actionType, description, riskLevel, confidenceScore, status, approvedBy, approvedAt,
     execution: { id, status, startedAt, finishedAt, errorMessage } | null;
@@ -94,7 +111,7 @@ Cases: deep link to a nonexistent incident) — never propagates to blank the da
 
 ## `GET /api/incidents/:id/agent-runs/:runId/io`
 
-**Purpose**: Lazy fetch of one agent run's `input`/`output` JSONB, on expand only (P-4, FR-040).
+**Purpose**: Lazy fetch of one agent run's `input`/`output` JSONB, on expand only (P-4, FR-064).
 
 **Response**: `{ input: unknown; output: unknown }`.
 
@@ -121,7 +138,7 @@ server, only the raw statement text.
 
 ## `GET /api/incidents/:id/similarity-matches`
 
-**Purpose**: "Show all" beyond the capped 5 (FR-042).
+**Purpose**: "Show all" beyond the capped 5 (FR-066).
 
 **Response**: `{ matches: SimilarityMatch[] }` (same shape as the capped array above, uncapped).
 
@@ -138,24 +155,57 @@ everything, client filters" precisely because event volume is unbounded per inci
 
 ---
 
-## `PATCH /api/incidents/:id` — *dependency, not yet defined by PRD §9*
+## `GET /api/feedback/impact?user&from&to`
 
-**Status**: **Not implemented upstream.** This contract exists so FR-038 has a target to build
-against once PRD §9 is extended; until then, `components/incidents/IncidentHeaderActions` renders
-all four controls disabled with this reason shown, per FR-038a. Do not implement the calling code
-as "TODO enable later" — implement the disabled state as the real, tested behavior for launch.
+**Purpose**: The feedback-impact widget's three numbers (FR-074–FR-076). Documented here rather than
+in `contracts/feedback-endpoint.md` because it is a *read*, consumed alongside the rest of the
+drawer's read-only sections, while that file covers the feedback *write*.
+
+**Consumed by**: `components/incidents/FeedbackImpactWidget`.
+
+**Query params**: `user` (the operator name, for the personal figures). **No `from`/`to`** despite
+the signature above suggesting otherwise — see Assumption 15: personal figures are all-time, the
+team figure is fixed to the current calendar quarter, and neither respects the dashboard's
+time-range control. The endpoint takes no window params at all; any `from`/`to` a caller passes MUST
+be ignored server-side, not silently applied.
+
+**Response**:
+
+```ts
+{
+  personal: { accuracyPercent: number; previousAccuracyPercent: number; correctionCount: number; lastCorrectionAt: string | null };
+  team: { correctionCount: number; engineerCount: number; quarterLabel: string };
+  suppressed: boolean;   // true when team.correctionCount < 10 (FR-077); when true, the client renders nothing rather than a caveated widget
+}
+```
+
+**FR-078 note**: this response never includes an attribution for a decline — the client's copy is
+static ("attribute to the model or the period"), not server-driven, so there is no `declineReason`
+field to omit or misuse.
+
+**Errors/Side effects**: widget-only failure; read-only.
+
+---
+
+## `PATCH /api/incidents/:id` — *dependency, not yet defined by the PRD*
+
+**Status**: **Not implemented upstream.** This contract exists so FR-061 has a target to build
+against once the PRD's API surface is extended; until then, `components/incidents/
+IncidentHeaderActions` renders all four controls disabled with this reason shown, per FR-062. Do not
+implement the calling code as "TODO enable later" — implement the disabled state as the real,
+tested behavior for launch.
 
 **Purpose**: Single operation backing all four PRD §D1 controls (assign-to-me, change-priority,
-escalate, mark-resolved) — one contract instead of four, per the spec's Q1 resolution.
+escalate, mark-resolved) — one contract instead of four, per the spec's v1.0 clarification session.
 
 **Proposed request**:
 
 ```ts
 {
-  assignedTo?: string;       // "assign to me" sends the operator name (FR-077)
+  assignedTo?: string;       // "assign to me" sends the operator name (FR-119)
   priority?: "P1" | "P2" | "P3" | "P4";
   status?: "ESCALATED" | "RESOLVED";
-  actor: string;             // FR-038, FR-077 — always sent, whichever field changed
+  actor: string;             // FR-061, FR-119 — always sent, whichever field changed
 }
 ```
 

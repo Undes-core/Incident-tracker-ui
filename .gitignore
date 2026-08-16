@@ -17,9 +17,6 @@ test-results/
 playwright-report/
 blob-report/
 .playwright/
-cypress/screenshots/
-cypress/videos/
-cypress/downloads/
 
 # Environment — NEVER commit real values (constitution XIII: no secrets in source)
 .env
