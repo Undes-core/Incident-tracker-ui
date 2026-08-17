@@ -2,12 +2,46 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchActionParameters, fetchExecutionDetail } from "../../api/incidents/detail";
 import type { IncidentDetail } from "../../api/incidents/detail";
+import type { PendingApprovalCard } from "../../api/approvals/pending";
 import { ConfidenceBar } from "../shared/ConfidenceBar";
 import { RiskBadge } from "../shared/RiskBadge";
 import { OutcomeBadge } from "../shared/OutcomeBadge";
+import { ApprovalCard } from "../approvals/ApprovalCard";
 
 interface ActionsAndExecutionsProps {
   actions: IncidentDetail["actions"];
+  incident: IncidentDetail["incident"];
+  similarityMatches: IncidentDetail["similarityMatches"];
+}
+
+const TOP_MATCHES_CAP = 3;
+
+// FR-068: a still-PROPOSED action found here gets the exact same approve/reject behaviour as the
+// queue (component-inventory.md) — built from data already loaded for this drawer, no new fetch.
+function toPendingApprovalCard(
+  action: IncidentDetail["actions"][number],
+  incident: IncidentDetail["incident"],
+  similarityMatches: IncidentDetail["similarityMatches"],
+): PendingApprovalCard {
+  return {
+    id: action.id,
+    incidentId: incident.id,
+    incidentExternalId: incident.externalId,
+    priority: incident.priority,
+    serviceName: incident.serviceName,
+    environment: incident.environment,
+    incidentTitle: incident.title,
+    actionType: action.actionType,
+    description: action.description,
+    riskLevel: action.riskLevel,
+    confidenceScore: action.confidenceScore,
+    topMatches: [...similarityMatches]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, TOP_MATCHES_CAP)
+      .map((m) => ({ documentType: m.documentType, title: m.title, score: m.score, sourceUrl: m.sourceUrl })),
+    proposedAt: incident.createdAt,
+    proposedByAgent: "Remediation Planner",
+  };
 }
 
 function durationLabel(startedAt: string, finishedAt: string | null): string {
@@ -84,9 +118,10 @@ function ActionEntry({ action }: { action: IncidentDetail["actions"][number] }) 
   );
 }
 
-// FR-067: recommended actions with executions nested underneath. Approve/reject (FR-068) is wired
-// in US2 — this US1 view is read-only.
-export function ActionsAndExecutions({ actions }: ActionsAndExecutionsProps) {
+// FR-067/FR-068: recommended actions with executions nested underneath. A still-PROPOSED action
+// reuses ApprovalCard wholesale; everything else (APPROVED/REJECTED, with its execution) stays the
+// plain read-only view.
+export function ActionsAndExecutions({ actions, incident, similarityMatches }: ActionsAndExecutionsProps) {
   if (actions.length === 0) {
     return <p>No recommended actions for this incident.</p>;
   }
@@ -94,9 +129,13 @@ export function ActionsAndExecutions({ actions }: ActionsAndExecutionsProps) {
   return (
     <section aria-label="Recommended actions">
       <ul>
-        {actions.map((action) => (
-          <ActionEntry key={action.id} action={action} />
-        ))}
+        {actions.map((action) =>
+          action.status === "PROPOSED" ? (
+            <ApprovalCard key={action.id} card={toPendingApprovalCard(action, incident, similarityMatches)} />
+          ) : (
+            <ActionEntry key={action.id} action={action} />
+          ),
+        )}
       </ul>
     </section>
   );

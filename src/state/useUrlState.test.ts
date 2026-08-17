@@ -51,11 +51,39 @@ describe("useUrlState", () => {
     act(() => {
       result.current.setTab("performance");
     });
-    expect(result.current.activeFilter).toEqual({ kind: "kpiTile", key: "openIncidents", label: "Open" });
+    expect(result.current.activeFilter).toEqual({
+      kind: "kpiTile",
+      key: "openIncidents",
+      label: "Open",
+      isCrossTab: false,
+    });
     act(() => {
       result.current.setTab("now");
     });
-    expect(result.current.activeFilter).toEqual({ kind: "kpiTile", key: "openIncidents", label: "Open" });
+    expect(result.current.activeFilter).toEqual({
+      kind: "kpiTile",
+      key: "openIncidents",
+      label: "Open",
+      isCrossTab: false,
+    });
+  });
+
+  it("crossTabJump switches to now and marks the filter cross-tab, and it round-trips through the URL (FR-021,FR-022)", () => {
+    const { result } = renderHook(() => useUrlState());
+    act(() => {
+      result.current.setTab("performance");
+      result.current.crossTabJump({ kind: "funnelDropAt", key: "ragMatched", label: "Reached classified but not RAG match" });
+    });
+    expect(result.current.tab).toBe("now");
+    expect(result.current.activeFilter).toEqual({
+      kind: "funnelDropAt",
+      key: "ragMatched",
+      label: "Reached classified but not RAG match",
+      isCrossTab: true,
+    });
+
+    const { result: fresh } = renderHook(() => useUrlState());
+    expect(fresh.current.activeFilter?.isCrossTab).toBe(true);
   });
 
   it("clearFilter clears the filter without disturbing other state or the tab", () => {

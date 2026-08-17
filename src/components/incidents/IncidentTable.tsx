@@ -1,17 +1,33 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIncidentList } from "../../api/incidents/list";
 import { useUrlState } from "../../state/useUrlState";
+import { INCIDENT_TABLE_FLASH_EVENT } from "../../state/useCrossTabJump";
 import { PanelBoundary } from "../shared/PanelBoundary";
+import { CrossTabFilterChip } from "../shared/CrossTabFilterChip";
 import { IncidentRow } from "./IncidentRow";
 
 type SortKey = "priority" | "age" | "confidence";
+const FLASH_DURATION_MS = 1500;
 
 // FR-048-057, P-3: server-side filter/sort/page. Also the destination every cross-tab jump
-// flashes and scrolls into view (id="incident-table" is that target, consumed starting in US3).
+// flashes and scrolls into view (id="incident-table" is that target).
 export function IncidentTable() {
   const { environment, service, search, includeResolved, activeFilter, setSearch, setIncludeResolved, clearFilter } =
     useUrlState();
   const [sortKey, setSortKey] = useState<SortKey>("priority");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleFlash() {
+      const node = containerRef.current;
+      if (!node) return;
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+      node.setAttribute("data-flash", "true");
+      setTimeout(() => node.removeAttribute("data-flash"), FLASH_DURATION_MS);
+    }
+    window.addEventListener(INCIDENT_TABLE_FLASH_EVENT, handleFlash);
+    return () => window.removeEventListener(INCIDENT_TABLE_FLASH_EVENT, handleFlash);
+  }, []);
 
   const { data, isLoading, isError, error, refetch } = useIncidentList({
     environment,
@@ -28,7 +44,7 @@ export function IncidentTable() {
   const isFiltered = Boolean(search) || Boolean(activeFilter);
 
   return (
-    <div id="incident-table">
+    <div id="incident-table" ref={containerRef}>
       <input
         placeholder="Search title, service, or external ID…"
         value={search}
@@ -42,14 +58,7 @@ export function IncidentTable() {
         />
         Include resolved
       </label>
-      {activeFilter && (
-        <span>
-          {activeFilter.label}
-          <button onClick={clearFilter} aria-label="Clear filter">
-            ×
-          </button>
-        </span>
-      )}
+      {activeFilter && <CrossTabFilterChip filter={activeFilter} onClear={clearFilter} />}
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}

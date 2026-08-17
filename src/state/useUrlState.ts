@@ -1,11 +1,13 @@
 import { useCallback, useSyncExternalStore } from "react";
 import {
   clearFilter as clearFilterDomain,
+  crossTabJump as crossTabJumpDomain,
   setFilter as setFilterDomain,
   setTab as setTabDomain,
   type ActiveFilter,
   type DashboardViewState,
   type FilterKind,
+  type FilterSelection,
   type Tab,
   type TimeRange,
 } from "../domain/filters";
@@ -44,8 +46,11 @@ function parseState(): UrlState {
   const filterKind = params.get("filterKind") as FilterKind | null;
   const filterKey = params.get("filterKey");
   const filterLabel = params.get("filterLabel");
+  const filterCrossTab = params.get("filterCrossTab") === "true";
   const activeFilter: ActiveFilter | null =
-    filterKind && filterKey && filterLabel ? { kind: filterKind, key: filterKey, label: filterLabel } : null;
+    filterKind && filterKey && filterLabel
+      ? { kind: filterKind, key: filterKey, label: filterLabel, isCrossTab: filterCrossTab }
+      : null;
 
   cachedSearch = search;
   cachedState = {
@@ -76,6 +81,7 @@ function serialize(state: UrlState): string {
     params.set("filterKind", state.activeFilter.kind);
     params.set("filterKey", state.activeFilter.key);
     params.set("filterLabel", state.activeFilter.label);
+    if (state.activeFilter.isCrossTab) params.set("filterCrossTab", "true");
   }
   return params.toString();
 }
@@ -117,7 +123,11 @@ export function useUrlState() {
     ),
     setIncident: useCallback((incidentId: string | null) => update((prev) => ({ ...prev, incidentId })), [update]),
     setFilter: useCallback(
-      (filter: ActiveFilter) => update((prev) => setFilterDomain(prev, filter) as UrlState),
+      (filter: FilterSelection) => update((prev) => setFilterDomain(prev, filter) as UrlState),
+      [update],
+    ),
+    crossTabJump: useCallback(
+      (filter: FilterSelection) => update((prev) => crossTabJumpDomain(prev, filter) as UrlState),
       [update],
     ),
     clearFilter: useCallback(() => update((prev) => clearFilterDomain(prev) as UrlState), [update]),

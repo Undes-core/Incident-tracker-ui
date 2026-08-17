@@ -10,6 +10,19 @@ import { TabPanel } from "./components/layout/TabPanel";
 import { KpiStripNow } from "./components/kpi/KpiStrip.now";
 import { IncidentTable } from "./components/incidents/IncidentTable";
 import { IncidentDetailDrawer } from "./components/incidents/IncidentDetailDrawer";
+import { ApprovalQueue } from "./components/approvals/ApprovalQueue";
+import { CrossTabToast } from "./components/shared/CrossTabToast";
+import { KpiStripPerformance } from "./components/kpi/KpiStrip.performance";
+import { AutomationFunnelPanel } from "./components/charts/AutomationFunnelPanel";
+import { ExecutionOutcomeDonutPanel } from "./components/charts/ExecutionOutcomeDonutPanel";
+import { VolumeChartPanel } from "./components/charts/VolumeChartPanel";
+import { PriorityBreakdownPanel } from "./components/charts/PriorityBreakdownPanel";
+import { CategoryBreakdownPanel } from "./components/charts/CategoryBreakdownPanel";
+import { ServiceBreakdownPanel } from "./components/charts/ServiceBreakdownPanel";
+import { KpiStripKnowledge } from "./components/kpi/KpiStrip.knowledge";
+import { CoverageGapsChartPanel } from "./components/charts/CoverageGapsChartPanel";
+import { DocumentsDrivingResolutionsPanel } from "./components/charts/DocumentsDrivingResolutionsPanel";
+import { DocumentationCandidates } from "./components/charts/DocumentationCandidates";
 
 function Dashboard() {
   const { tab } = useUrlState();
@@ -22,11 +35,26 @@ function Dashboard() {
       <TabBar pendingApprovalCount={alertStrip?.awaitingApproval ?? 0} />
       <TabPanel tab="now" activeTab={tab}>
         <KpiStripNow />
+        <ApprovalQueue />
         <IncidentTable />
       </TabPanel>
-      <TabPanel tab="performance" activeTab={tab} />
-      <TabPanel tab="knowledge" activeTab={tab} />
+      <TabPanel tab="performance" activeTab={tab}>
+        <KpiStripPerformance />
+        <AutomationFunnelPanel />
+        <ExecutionOutcomeDonutPanel />
+        <VolumeChartPanel />
+        <PriorityBreakdownPanel />
+        <CategoryBreakdownPanel />
+        <ServiceBreakdownPanel />
+      </TabPanel>
+      <TabPanel tab="knowledge" activeTab={tab}>
+        <KpiStripKnowledge />
+        <CoverageGapsChartPanel />
+        <DocumentsDrivingResolutionsPanel />
+        <DocumentationCandidates />
+      </TabPanel>
       <IncidentDetailDrawer />
+      <CrossTabToast />
     </>
   );
 }

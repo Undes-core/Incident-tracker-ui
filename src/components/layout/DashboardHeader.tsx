@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUrlState } from "../../state/useUrlState";
+import { useOperator } from "../../state/OperatorContext";
 import { SERVICES } from "../../api/fixtures/seededDataset";
 import type { TimeRange } from "../../domain/filters";
 
@@ -32,6 +33,52 @@ function LiveIndicator() {
         }}
       >
         Refresh
+      </button>
+    </div>
+  );
+}
+
+// FR-121: the operator can see and change the name attached to every action they take.
+function OperatorNameControl() {
+  const { operatorName, setOperatorName } = useOperator();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(operatorName ?? "");
+
+  if (editing) {
+    return (
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          const trimmed = draft.trim();
+          if (trimmed) {
+            setOperatorName(trimmed);
+            setEditing(false);
+          }
+        }}
+      >
+        <label>
+          Your name
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} />
+        </label>
+        <button type="submit">Save</button>
+        <button type="button" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </form>
+    );
+  }
+
+  return (
+    <div>
+      <span>{operatorName ?? "Name not set"}</span>
+      <button
+        type="button"
+        onClick={() => {
+          setDraft(operatorName ?? "");
+          setEditing(true);
+        }}
+      >
+        {operatorName ? "Change name" : "Set name"}
       </button>
     </div>
   );
@@ -82,6 +129,7 @@ export function DashboardHeader() {
         ))}
       </select>
       <LiveIndicator />
+      <OperatorNameControl />
     </header>
   );
 }

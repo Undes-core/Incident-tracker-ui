@@ -13,13 +13,16 @@ export interface KpiTileProps {
   severity?: "urgent" | "cautionary" | "none";
   onClick?: () => void;
   isActive?: boolean;
+  // FR-081: the average MAY be exposed in the tile's tooltip, labelled as the average — the
+  // headline value itself stays the median.
+  title?: string;
 }
 
 // N1/FR-028-029/A11Y-1: every tile is clickable and filters to the rows that produced its
 // value; urgent/cautionary severity always carries a text label alongside its styling.
-export function KpiTile({ label, value, sub, delta, severity = "none", onClick, isActive = false }: KpiTileProps) {
+export function KpiTile({ label, value, sub, delta, severity = "none", onClick, isActive = false, title }: KpiTileProps) {
   return (
-    <button onClick={onClick} data-severity={severity} data-active={isActive}>
+    <button onClick={onClick} data-severity={severity} data-active={isActive} title={title}>
       <div>
         <span>{label}</span>
         {delta && <span data-good={delta.isGood}>{delta.label}</span>}

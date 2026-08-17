@@ -7,11 +7,13 @@ test("opening ?tab=now&incident=<id> directly opens the drawer, and it survives 
 
   const dialog = page.getByRole("dialog", { name: /incident detail/i });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText("Connection pool exhausted on payments-db")).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: "Connection pool exhausted on payments-db" })).toBeVisible();
 
   await page.reload();
 
   const dialogAfterReload = page.getByRole("dialog", { name: /incident detail/i });
   await expect(dialogAfterReload).toBeVisible();
-  await expect(dialogAfterReload.getByText("Connection pool exhausted on payments-db")).toBeVisible();
+  await expect(
+    dialogAfterReload.getByRole("heading", { name: "Connection pool exhausted on payments-db" }),
+  ).toBeVisible();
 });

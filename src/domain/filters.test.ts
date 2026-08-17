@@ -15,7 +15,12 @@ describe("setFilter", () => {
   it("replaces the active filter rather than accumulating", () => {
     const first = setFilter(baseState, { kind: "kpiTile", key: "openIncidents", label: "Open" });
     const second = setFilter(first, { kind: "funnelDropAt", key: "recommended", label: "Recommended" });
-    expect(second.activeFilter).toEqual({ kind: "funnelDropAt", key: "recommended", label: "Recommended" });
+    expect(second.activeFilter).toEqual({
+      kind: "funnelDropAt",
+      key: "recommended",
+      label: "Recommended",
+      isCrossTab: false,
+    });
   });
 
   it("leaves every other field untouched", () => {

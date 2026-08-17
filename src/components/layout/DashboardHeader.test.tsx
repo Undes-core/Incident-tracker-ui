@@ -2,16 +2,20 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it } from "vitest";
 import { DashboardHeader } from "./DashboardHeader";
+import { OperatorProvider } from "../../state/OperatorContext";
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
+  window.localStorage.clear();
 });
 
 function renderHeader() {
   const queryClient = new QueryClient();
   return render(
     <QueryClientProvider client={queryClient}>
-      <DashboardHeader />
+      <OperatorProvider>
+        <DashboardHeader />
+      </OperatorProvider>
     </QueryClientProvider>,
   );
 }
@@ -54,5 +58,35 @@ describe("DashboardHeader", () => {
     renderHeader();
     expect(screen.getByText(/updated/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /refresh/i })).toBeInTheDocument();
+  });
+
+  describe("operator name (FR-121)", () => {
+    it("shows that no name is set and offers to set one when none exists", () => {
+      renderHeader();
+      expect(screen.getByText(/name not set/i)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /set name/i })).toBeInTheDocument();
+    });
+
+    it("can set a name, which then displays and persists", () => {
+      renderHeader();
+      fireEvent.click(screen.getByRole("button", { name: /set name/i }));
+      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), { target: { value: "a.reyes" } });
+      fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+      expect(screen.getByText("a.reyes")).toBeInTheDocument();
+      expect(window.localStorage.getItem("incident-tracker:operator-name")).toBe("a.reyes");
+    });
+
+    it("shows the existing name and offers to change it", () => {
+      window.localStorage.setItem("incident-tracker:operator-name", "a.reyes");
+      renderHeader();
+
+      expect(screen.getByText("a.reyes")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: /change name/i }));
+      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), { target: { value: "j.chen" } });
+      fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+      expect(screen.getByText("j.chen")).toBeInTheDocument();
+    });
   });
 });

@@ -13,6 +13,7 @@ import type {
   SimilarityMatch,
   IncidentEvent,
   DeveloperFeedback,
+  Priority,
 } from "../types";
 
 export const SERVICES: Service[] = [
@@ -25,6 +26,16 @@ export const SERVICES: Service[] = [
 ];
 
 const svcId = (name: string) => SERVICES.find((s) => s.name === name)!.id;
+
+// Shared by the alert strip and the approvals queue's positive empty state (AR-9) — one number,
+// read by both handlers, so the two can never drift apart.
+export const AUTO_EXECUTED_COUNT_IN_RANGE = 14;
+
+// Demo-only simulated execution latency — real time, not domain logic (fixture plumbing standing
+// in for a backend, not a Constitution III clock-injected module). Every execution "resolves in
+// place" a few seconds after approval, shared by the approve and execution-poll handlers so they
+// agree on when a run has finished.
+export const SIMULATED_EXECUTION_MS = 4000;
 
 const now = Date.parse("2026-08-16T12:00:00Z");
 const minutesAgo = (m: number) => new Date(now - m * 60_000).toISOString();
@@ -449,6 +460,52 @@ export const FUNNEL_STAGES = [
   { key: "executedSuccessfully", label: "Executed successfully", count: 71, dropCount: 8 },
   { key: "validatedResolved", label: "Validated + resolved", count: null as number | null, dropCount: null as number | null },
 ];
+
+// FR-085/FR-086/§11.4: synthetic drop-set incidents for the automation funnel. FUNNEL_STAGES'
+// own dropCounts already represent "a wider history than the handful of incidents kept here for
+// table/drawer testing" (this file's own header comment) — so when a funnel stage is clicked, the
+// incident table needs exactly this many rows for the reconciliation the PRD's own AC #4 demands,
+// which the ~9 detail incidents above are far too few to provide on their own.
+const FUNNEL_DROPSET_SIZES: Record<string, number> = {
+  classified: 0,
+  ragMatched: 44,
+  recommended: 11,
+  approvedOrAutoRun: 8,
+  executedSuccessfully: 8,
+};
+
+const FUNNEL_DROPSET_SERVICES = ["payments-api", "checkout-web", "inventory-svc", "auth-gateway", "notify-worker", "search-index"];
+const FUNNEL_DROPSET_PRIORITIES: Priority[] = ["P2", "P3", "P3", "P4"];
+const FUNNEL_DROPSET_CATEGORIES = ["Database", "API", "Infrastructure", "Deployment"];
+
+function makeFunnelDropsetIncident(stageKey: string, index: number): Incident {
+  const service = FUNNEL_DROPSET_SERVICES[index % FUNNEL_DROPSET_SERVICES.length];
+  return {
+    id: `funnel-${stageKey}-${index}`,
+    externalId: `INC-F${stageKey.slice(0, 3).toUpperCase()}${index + 1}`,
+    title: `Incident #${index + 1} stalled after ${FUNNEL_STAGES.find((s) => s.key === stageKey)?.label.toLowerCase()}`,
+    description: "Part of the funnel's wider history, not one of the incidents kept for detail-drawer testing.",
+    status: "INVESTIGATING",
+    priority: FUNNEL_DROPSET_PRIORITIES[index % FUNNEL_DROPSET_PRIORITIES.length],
+    environment: "Production",
+    category: FUNNEL_DROPSET_CATEGORIES[index % FUNNEL_DROPSET_CATEGORIES.length],
+    serviceId: svcId(service),
+    assignedTo: null,
+    confidenceScore: null,
+    isKnownIncident: false,
+    source: "API",
+    createdAt: minutesAgo(60 * 24 * 3 + index),
+    resolvedAt: null,
+    firstResponseAt: null,
+  };
+}
+
+export const FUNNEL_DROPSET_INCIDENTS: Record<string, Incident[]> = Object.fromEntries(
+  Object.entries(FUNNEL_DROPSET_SIZES).map(([stageKey, size]) => [
+    stageKey,
+    Array.from({ length: size }, (_, i) => makeFunnelDropsetIncident(stageKey, i)),
+  ]),
+);
 
 export const BREAKDOWN_BY_PRIORITY = [
   { priority: "P1" as const, count: 11 },

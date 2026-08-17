@@ -7,6 +7,8 @@ import { ActionsAndExecutions } from "./ActionsAndExecutions";
 import { AgentRunTrace } from "./AgentRunTrace";
 import { ClassificationPanel } from "./ClassificationPanel";
 import { EventTimeline } from "./EventTimeline";
+import { FeedbackForm } from "./FeedbackForm";
+import { FeedbackImpactWidget } from "./FeedbackImpactWidget";
 import { IncidentHeaderActions } from "./IncidentHeaderActions";
 import { SimilarityMatchList } from "./SimilarityMatchList";
 
@@ -54,12 +56,18 @@ export function IncidentDetailDrawer() {
               <ClassificationPanel detail={detail} />
               <AgentRunTrace incidentId={detail.incident.id} runs={detail.agentRuns} />
               <SimilarityMatchList incidentId={detail.incident.id} matches={detail.similarityMatches} />
-              <ActionsAndExecutions actions={detail.actions} />
+              <ActionsAndExecutions
+                actions={detail.actions}
+                incident={detail.incident}
+                similarityMatches={detail.similarityMatches}
+              />
               <EventTimeline
                 incidentId={detail.incident.id}
                 incidentCreatedAt={detail.incident.createdAt}
                 events={detail.events}
               />
+              <FeedbackImpactWidget />
+              <FeedbackForm incidentId={detail.incident.id} existingFeedback={detail.feedback} />
             </>
           )}
         </PanelBoundary>

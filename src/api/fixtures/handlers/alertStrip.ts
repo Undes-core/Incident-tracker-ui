@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { RECOMMENDED_ACTIONS, INCIDENTS } from "../seededDataset";
+import { RECOMMENDED_ACTIONS, INCIDENTS, AUTO_EXECUTED_COUNT_IN_RANGE } from "../seededDataset";
 import type { AlertStripData } from "../../dashboard/alertStrip";
 
 export const alertStripHandlers = [
@@ -12,7 +12,7 @@ export const alertStripHandlers = [
       p1Active,
       awaitingApproval: pending.length,
       oldestPendingAgeMinutes: pending.length > 0 ? 34 : null,
-      autoExecutedCountInRange: 14,
+      autoExecutedCountInRange: AUTO_EXECUTED_COUNT_IN_RANGE,
     };
     return HttpResponse.json(body);
   }),

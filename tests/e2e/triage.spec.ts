@@ -11,10 +11,10 @@ test("golden-path triage: load order, KPI drill-down, row click, full drawer rea
   const openIncidentsTile = page.getByRole("button", { name: /open incidents/i });
   await expect(openIncidentsTile).toBeVisible();
 
-  // Performance/Knowledge (where charts live) aren't rendered from the Now tab, so there is no
-  // chart on screen to race against yet — this becomes a real ordering assertion once US3/US4
-  // add charts to those tabs.
-  await expect(page.locator("svg.recharts-surface")).toHaveCount(0);
+  // US3 added charts to Performance, but panels stay mounted regardless of the active tab
+  // (TB-4) — the chart exists in the DOM already, just not painted. "Tiles readable before any
+  // chart has drawn" means not visible yet, not "doesn't exist".
+  await expect(page.locator("svg.recharts-surface").first()).not.toBeVisible();
 
   await openIncidentsTile.click();
   await expect(openIncidentsTile).toHaveAttribute("data-active", "true");
