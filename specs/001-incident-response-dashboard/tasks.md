@@ -62,110 +62,110 @@ US1's concern.
 
 **⚠️ CRITICAL**: Blocks all user stories.
 
-- [ ] T008 Define shared types in `src/api/types.ts` mirroring data-model.md's ten entities
+- [X] T008 Define shared types in `src/api/types.ts` mirroring data-model.md's ten entities
       (including the new `KnowledgeEmbedding`) and the expanded `Incident.status` enum
       (`OPEN`/`ESCALATED`/`INVESTIGATING`/`MITIGATED`/`RESOLVED`/`CLOSED`); mark `[INFERRED]`/`[GAP]`
       fields with a code comment pointing back to data-model.md
-- [ ] T009 [P] Build the seeded fixture dataset in `src/api/fixtures/seededDataset.ts` from the
+- [X] T009 [P] Build the seeded fixture dataset in `src/api/fixtures/seededDataset.ts` from the
       PRD's own numbers (funnel: 142/98/87/79/71/68; breakdown counts; ~1,284 knowledge chunks
       across 4+ document types; ≥10 team-wide `developer_feedback` rows so the feedback-impact
       widget renders by default per the mock's own "12 corrections · team 61" figures — see FR-077)
       (research.md §7)
-- [ ] T010 Create the MSW handler barrel `src/api/fixtures/handlers/index.ts` (starts empty; each
+- [X] T010 Create the MSW handler barrel `src/api/fixtures/handlers/index.ts` (starts empty; each
       story phase appends its own handler module here)
-- [ ] T011 Wire MSW worker registration into `src/main.tsx`, dev-mode only (research.md §7)
-- [ ] T012 [P] Implement `src/api/client.ts`: typed `fetch` wrapper (base URL, JSON parsing, error
+- [X] T011 Wire MSW worker registration into `src/main.tsx`, dev-mode only (research.md §7)
+- [X] T012 [P] Implement `src/api/client.ts`: typed `fetch` wrapper (base URL, JSON parsing, error
       normalization) — the only place `fetch` appears (constitution Technology Constraints)
-- [ ] T013 [P] [REQ Principle III] Implement `src/domain/clock.ts`: a `Clock` interface + a
+- [X] T013 [P] [REQ Principle III] Implement `src/domain/clock.ts`: a `Clock` interface + a
       system-clock implementation, injected everywhere else in `domain/` — never `Date.now()`
       called directly outside this file
-- [ ] T014 [P] [REQ Principle III,XII] Unit test for `domain/clock.ts` (default vs. injected
+- [X] T014 [P] [REQ Principle III,XII] Unit test for `domain/clock.ts` (default vs. injected
       clock) in `src/domain/clock.test.ts`
-- [ ] T015 [P] [REQ PRD §3B,§B1,§B4 / FR-025,FR-026] Implement `src/domain/filters.ts`: pure
+- [X] T015 [P] [REQ PRD §3B,§B1,§B4 / FR-025,FR-026] Implement `src/domain/filters.ts`: pure
       functions for "at most one active filter across all tabs, selecting a new one replaces the
       old" and "clear a filter without disturbing global filters or navigating tabs" (FR-024)
-- [ ] T016 [P] [REQ FR-025,FR-026,FR-024] Unit test for `domain/filters.ts` (replace-not-accumulate;
+- [X] T016 [P] [REQ FR-025,FR-026,FR-024] Unit test for `domain/filters.ts` (replace-not-accumulate;
       clear leaves time range/env/service/search untouched and does not change the active tab) in
       `src/domain/filters.test.ts`
-- [ ] T017 [REQ PRD §4,§7,TB-2 / FR-001,FR-002,FR-003,FR-004,FR-005,FR-017,FR-059] Implement `src/state/useUrlState.ts`:
+- [X] T017 [REQ PRD §4,§7,TB-2 / FR-001,FR-002,FR-003,FR-004,FR-005,FR-017,FR-059] Implement `src/state/useUrlState.ts`:
       typed hook over `URLSearchParams` + `history.replaceState` exposing tab/time
       range/env/service/search/includeResolved/drill-down/`incident` (internal id), built on
       `domain/filters.ts`; an unrecognized `tab` value falls back to `now` (FR-017) (research.md §2)
-- [ ] T018 [REQ TB-5,§11.17 / FR-005,FR-017,FR-020,FR-059,SC-010] Test for `useUrlState`
+- [X] T018 [REQ TB-5,§11.17 / FR-005,FR-017,FR-020,FR-059,SC-010] Test for `useUrlState`
       round-trip (set → serialize → parse restores identical state, including tab; bad tab value
       falls back to `now`) **and** that changing the tab param in isolation leaves time
       range/env/service/search/includeResolved/drill-down untouched, in both switch directions
       (FR-020) — in `src/state/useUrlState.test.ts`
-- [ ] T019 [P] Implement `src/state/queryClient.ts`: TanStack `QueryClient` with shared defaults
+- [X] T019 [P] Implement `src/state/queryClient.ts`: TanStack `QueryClient` with shared defaults
       (retry, `staleTime`) (research.md §3)
-- [ ] T020 [P] [REQ AR-8,FR-119,FR-121 / Assumption 10,12] Implement `src/state/
+- [X] T020 [P] [REQ AR-8,FR-119,FR-121 / Assumption 10,12] Implement `src/state/
       OperatorContext.tsx`: React Context + `localStorage`-backed operator name, plus the
       configurable low-confidence threshold (default 0.70) — scaffold only; the
       prompt-blocks-until-supplied behavior (FR-120) is wired in US2, where attribution first
       matters
-- [ ] T021 [REQ FR-119,FR-121] Unit test for `OperatorContext` (localStorage persistence,
+- [X] T021 [REQ FR-119,FR-121] Unit test for `OperatorContext` (localStorage persistence,
       change-name) in `src/state/OperatorContext.test.tsx`
-- [ ] T022 [P] [REQ Principle VII / FR-105,FR-106] Implement `src/components/shared/
+- [X] T022 [P] [REQ Principle VII / FR-105,FR-106] Implement `src/components/shared/
       PanelBoundary.tsx`: error boundary + the four-state switch (loading skeleton /
       empty-no-data / empty-filtered / inline retryable error)
-- [ ] T023 [REQ FR-105,FR-106,Principle VIII] Component test for `PanelBoundary`'s four states and
+- [X] T023 [REQ FR-105,FR-106,Principle VIII] Component test for `PanelBoundary`'s four states and
       that its failure doesn't propagate outward, in `src/components/shared/PanelBoundary.test.tsx`
-- [ ] T024 [P] [REQ Principle VII stale rule / FR-107] Implement `src/components/shared/
+- [X] T024 [P] [REQ Principle VII stale rule / FR-107] Implement `src/components/shared/
       StaleBanner.tsx`: "Last updated Nm ago — reconnecting"
-- [ ] T025 [P] [REQ X-5 / FR-110 / Assumption 9] Implement `src/components/shared/
+- [X] T025 [P] [REQ X-5 / FR-110 / Assumption 9] Implement `src/components/shared/
       RelativeTime.tsx`: relative by default, absolute + timezone on hover
-- [ ] T026 [REQ X-5,FR-110] Unit test for `RelativeTime` formatting with an injected clock in
+- [X] T026 [REQ X-5,FR-110] Unit test for `RelativeTime` formatting with an injected clock in
       `src/components/shared/RelativeTime.test.tsx`
-- [ ] T027 [P] [REQ AR-2 / FR-034,FR-111] Implement `src/components/shared/ConfidenceBar.tsx`:
+- [X] T027 [P] [REQ AR-2 / FR-034,FR-111] Implement `src/components/shared/ConfidenceBar.tsx`:
       bar + numeric value + low-confidence qualifier, reading the threshold from `OperatorContext`
-- [ ] T028 [P] [REQ AR-1,A11Y-1 / FR-033,FR-111] Implement `src/components/shared/
+- [X] T028 [P] [REQ AR-1,A11Y-1 / FR-033,FR-111] Implement `src/components/shared/
       PriorityPill.tsx`, `StatusPill.tsx` (covering the full v2.0 status enum, including
       `INVESTIGATING`/`MITIGATED`), `RiskBadge.tsx`, `OutcomeBadge.tsx` — every one renders a text
       label alongside colour, never colour alone
-- [ ] T029 [REQ A11Y-1,A11Y-2] Component tests for all four pill/badge components (text label
+- [X] T029 [REQ A11Y-1,A11Y-2] Component tests for all four pill/badge components (text label
       present, including the two new status values; contrast-safe class applied) in
       `src/components/shared/*Pill*.test.tsx` and `*Badge*.test.tsx`
-- [ ] T030 [P] [REQ A11Y-3] Implement `src/state/useFocusTrap.ts`: cycles Tab/Shift+Tab within a
+- [X] T030 [P] [REQ A11Y-3] Implement `src/state/useFocusTrap.ts`: cycles Tab/Shift+Tab within a
       container ref, restores focus to the triggering element on close (research.md §9)
-- [ ] T031 [REQ A11Y-3] Unit test for `useFocusTrap` (cycling, restore-on-close) in
+- [X] T031 [REQ A11Y-3] Unit test for `useFocusTrap` (cycling, restore-on-close) in
       `src/state/useFocusTrap.test.ts`
-- [ ] T032 [P] [REQ A11Y-4] Implement `src/components/shared/AccessibleChartTable.tsx`: renders a
+- [X] T032 [P] [REQ A11Y-4] Implement `src/components/shared/AccessibleChartTable.tsx`: renders a
       domain-computed series as a table, visibly toggled
-- [ ] T033 [REQ A11Y-4] Component test for `AccessibleChartTable` toggle + table content in
+- [X] T033 [REQ A11Y-4] Component test for `AccessibleChartTable` toggle + table content in
       `src/components/shared/AccessibleChartTable.test.tsx`
-- [ ] T034 [P] [REQ AS-1,AS-2,AS-3,AS-4,AS-5,AS-6,AS-7,AS-8,X-2 / FR-007,FR-008,FR-009,FR-010,FR-011,FR-012,FR-013,FR-014,FR-015] Implement `src/api/dashboard/alertStrip.ts` +
+- [X] T034 [P] [REQ AS-1,AS-2,AS-3,AS-4,AS-5,AS-6,AS-7,AS-8,X-2 / FR-007,FR-008,FR-009,FR-010,FR-011,FR-012,FR-013,FR-014,FR-015] Implement `src/api/dashboard/alertStrip.ts` +
       `src/components/layout/AlertStrip.tsx`: own TanStack Query (`GET /api/dashboard/alert-strip`,
       30s `refetchInterval` unconditional on tab visibility per research.md §12), `hot`/`warm`/
       `calm` states, the calm resting message (FR-010), `role="status"`/`aria-live="polite"`
       (FR-013), both counts clickable (FR-011) via `useUrlState`
-- [ ] T035 [REQ AS-1,AS-2,AS-3,AS-4,AS-5,AS-6,AS-7,AS-8,§11.11,§11.13 / FR-007,FR-008,FR-009,FR-010,FR-011,FR-012,FR-013,FR-014,FR-015] Component test for `AlertStrip`: all three
+- [X] T035 [REQ AS-1,AS-2,AS-3,AS-4,AS-5,AS-6,AS-7,AS-8,§11.11,§11.13 / FR-007,FR-008,FR-009,FR-010,FR-011,FR-012,FR-013,FR-014,FR-015] Component test for `AlertStrip`: all three
       severity states, the calm message rendered instead of disappearing, both buttons route
       correctly without changing the strip's own counts, `aria-live="polite"` not `assertive`, in
       `src/components/layout/AlertStrip.test.tsx`
-- [ ] T036 [P] MSW handler for `GET /api/dashboard/alert-strip` in `src/api/fixtures/handlers/
+- [X] T036 [P] MSW handler for `GET /api/dashboard/alert-strip` in `src/api/fixtures/handlers/
       alertStrip.ts`
-- [ ] T037 [P] [REQ TB-1,TB-2,TB-3 / FR-016,FR-017,FR-018] Implement `src/components/layout/TabBar.tsx`:
+- [X] T037 [P] [REQ TB-1,TB-2,TB-3 / FR-016,FR-017,FR-018] Implement `src/components/layout/TabBar.tsx`:
       `role="tablist"`/`role="tab"`/`aria-selected`, roving-tabindex arrow-key navigation, tab
       state via `useUrlState`, Now's badge hidden at zero (FR-018)
-- [ ] T038 [REQ TB-1,TB-2,TB-3,A11Y-3,§11.14,§11.18 / FR-016,FR-017,FR-018] Component test for `TabBar`:
+- [X] T038 [REQ TB-1,TB-2,TB-3,A11Y-3,§11.14,§11.18 / FR-016,FR-017,FR-018] Component test for `TabBar`:
       arrow-key navigation, ARIA roles, badge hidden at zero (never "0"), URL round-trip, in
       `src/components/layout/TabBar.test.tsx`
-- [ ] T039 [P] [REQ TB-4 / FR-019] Implement `src/components/layout/TabPanel.tsx`: always mounted,
+- [X] T039 [P] [REQ TB-4 / FR-019] Implement `src/components/layout/TabPanel.tsx`: always mounted,
       visibility toggled via the native `hidden` attribute — never conditional rendering
       (research.md §11)
-- [ ] T040 [REQ TB-4 / FR-019] Test confirming a hidden `TabPanel`'s content is excluded from the
+- [X] T040 [REQ TB-4 / FR-019] Test confirming a hidden `TabPanel`'s content is excluded from the
       accessibility tree and tab order (via the `hidden` attribute) in
       `src/components/layout/TabPanel.test.tsx`
-- [ ] T041 Implement `src/App.tsx`: mounts `QueryClientProvider`, `OperatorContext.Provider`,
+- [X] T041 Implement `src/App.tsx`: mounts `QueryClientProvider`, `OperatorContext.Provider`,
       `AlertStrip` (outside any `TabPanel`), `TabBar`, and the three `TabPanel`s
-- [ ] T042 [P] [REQ PRD §4 / FR-001,FR-002,FR-003,FR-004,FR-006] Implement `src/components/layout/
+- [X] T042 [P] [REQ PRD §4 / FR-001,FR-002,FR-003,FR-004,FR-006] Implement `src/components/layout/
       DashboardHeader.tsx`: title, environment multi-select, service dropdown (all-services
       default), time-range segmented control with the FR-004 tooltip ("applies to Performance/
       Knowledge only"), live indicator + manual refresh — all wired to `useUrlState`
-- [ ] T043 [REQ FR-001,FR-002,FR-003,FR-004,FR-006] Component test for `DashboardHeader` (each
+- [X] T043 [REQ FR-001,FR-002,FR-003,FR-004,FR-006] Component test for `DashboardHeader` (each
       control, including the service dropdown, updates URL state correctly; tooltip present on the
       time-range control) in `src/components/layout/DashboardHeader.test.tsx`
-- [ ] T044 Implement `src/main.tsx`: entry point mounting `App` inside providers
+- [X] T044 Implement `src/main.tsx`: entry point mounting `App` inside providers
 
 **Checkpoint**: Foundation ready. `npm run dev` shows the alert strip and tab bar with three empty
 panels; every shared primitive and hook has a passing unit/component test. User story work can
@@ -185,121 +185,123 @@ round-trip (tab + filters + open incident) on reload (spec.md's own Independent 
 
 ### Tests for User Story 1 (MANDATORY — write first) ⚠️
 
-- [ ] T045 [P] [US1] [REQ N1 / FR-027,FR-028,FR-029,FR-030,§11.11] Contract test for `GET /api/dashboard/now` (four
+- [X] T045 [P] [US1] [REQ N1 / FR-027,FR-028,FR-029,FR-030,§11.11] Contract test for `GET /api/dashboard/now` (four
       tile shapes; confirms neither `p1Active` nor `awaitingApproval` appears here) in
       `src/api/dashboard/now.contract.test.ts`
-- [ ] T046 [P] [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,IT-6,P-3,P-4 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054,FR-055,FR-056,FR-057] Contract test for `GET /api/incidents`
+- [X] T046 [P] [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,IT-6,P-3,P-4 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054,FR-055,FR-056,FR-057] Contract test for `GET /api/incidents`
       (filter/sort/search/pagination params, `totalCount`, zero JSONB fields present) in
       `src/api/incidents/list.contract.test.ts`
-- [ ] T047 [P] [US1] [REQ PRD §D1-D6,§11.6 / FR-058,FR-059,FR-060,FR-061,FR-062,FR-063,FR-064,FR-065,FR-066,FR-067,FR-068,FR-069,FR-070,FR-071,FR-072] Contract test for
+- [X] T047 [P] [US1] [REQ PRD §D1-D6,§11.6 / FR-058,FR-059,FR-060,FR-061,FR-062,FR-063,FR-064,FR-065,FR-066,FR-067,FR-068,FR-069,FR-070,FR-071,FR-072] Contract test for
       `GET /api/incidents/:id` (top-level shape, no inline JSONB, 404 handling) in
       `src/api/incidents/detail.contract.test.ts`
-- [ ] T048 [P] [US1] [REQ N1 / FR-028,FR-029] Component test for `KpiTile` (Now variant):
+- [X] T048 [P] [US1] [REQ N1 / FR-028,FR-029] Component test for `KpiTile` (Now variant):
       urgent/cautionary styling, click sets the filter, in `src/components/kpi/KpiTile.test.tsx`
-- [ ] T049 [P] [US1] [REQ P-2 / FR-027,FR-116,§11.11] Component test for `KpiStrip` (Now variant):
+- [X] T049 [P] [US1] [REQ P-2 / FR-027,FR-116,§11.11] Component test for `KpiStrip` (Now variant):
       renders all four tiles from one query, renders before any chart, neither strip metric
       duplicated, in `src/components/kpi/KpiStrip.now.test.tsx`
-- [ ] T050 [P] [US1] [REQ IT-2,IT-3,IT-4,IT-5 / FR-050,FR-051,FR-052,FR-053,FR-055,FR-056] Component test for
+- [X] T050 [P] [US1] [REQ IT-2,IT-3,IT-4,IT-5 / FR-050,FR-051,FR-052,FR-053,FR-055,FR-056] Component test for
       `IncidentTable`: header sort, free-text search, include-resolved toggle, pagination at 25
       rows, age flagging, escalated/non-prod styling, in `src/components/incidents/
       IncidentTable.test.tsx`
-- [ ] T051 [P] [US1] [REQ IT-1,IT-6,§11.6 / FR-049,FR-054] Component test for `IncidentRow`: click
+- [X] T051 [P] [US1] [REQ IT-1,IT-6,§11.6 / FR-049,FR-054] Component test for `IncidentRow`: click
       opens the drawer via URL state with no navigation event, source-badge icon renders in the
       title cell, in `src/components/incidents/IncidentRow.test.tsx`
-- [ ] T052 [P] [US1] [REQ PRD §7,A11Y-3 / FR-058,FR-059] Component test for
+- [X] T052 [P] [US1] [REQ PRD §7,A11Y-3 / FR-058,FR-059] Component test for
       `IncidentDetailDrawer`: opens over an interactive dashboard, `Esc`/click-outside close,
       focus returns to the opening row, in `src/components/incidents/
       IncidentDetailDrawer.test.tsx`
-- [ ] T053 [P] [US1] [REQ PRD §D3,§11.6 / FR-065] Component test for `AgentRunTrace`: `FAILED`
+- [X] T053 [P] [US1] [REQ PRD §D3,§11.6 / FR-065] Component test for `AgentRunTrace`: `FAILED`
       run expanded by default with its error visible, all others collapsed, in
       `src/components/incidents/AgentRunTrace.test.tsx`
-- [ ] T054 [P] [US1] [REQ PRD §D4 / FR-066] Component test for `SimilarityMatchList`: capped at
+- [X] T054 [P] [US1] [REQ PRD §D4 / FR-066] Component test for `SimilarityMatchList`: capped at
       five, "show all" fetches the rest, in `src/components/incidents/
       SimilarityMatchList.test.tsx`
-- [ ] T055 [P] [US1] [REQ TL-1,TL-2,TL-3 / FR-069,FR-070,FR-071,FR-072] Component test for `EventTimeline`:
+- [X] T055 [P] [US1] [REQ TL-1,TL-2,TL-3 / FR-069,FR-070,FR-071,FR-072] Component test for `EventTimeline`:
       agent-only filter, failure-event flags, cumulative elapsed time per row, in
       `src/components/incidents/EventTimeline.test.tsx`
-- [ ] T056 [P] [US1] [REQ §11.7,§11.18,SC-010 / FR-017,FR-059] Playwright e2e: open
+- [X] T056 [P] [US1] [REQ §11.7,§11.18,SC-010 / FR-017,FR-059] Playwright e2e: open
       `?tab=now&incident=<internal-id>` directly, confirm the drawer is open on the Now tab on
       load; reload, confirm it's still open, in `tests/e2e/deepLink.spec.ts`
-- [ ] T057 [P] [US1] [REQ SC-002,SC-003 / FR-116] Playwright e2e: golden-path triage — load,
+- [X] T057 [P] [US1] [REQ SC-002,SC-003 / FR-116] Playwright e2e: golden-path triage — load,
       confirm the alert strip renders before any tile, confirm tiles render before any chart, click
       a KPI tile, click the resulting row, read every drawer section — in
       `tests/e2e/triage.spec.ts`
 
 ### Domain for User Story 1
 
-- [ ] T058 [P] [US1] [REQ PRD §N3 / FR-055] Implement `src/domain/age.ts`: per-priority age
+- [X] T058 [P] [US1] [REQ PRD §N3 / FR-055] Implement `src/domain/age.ts`: per-priority age
       thresholds (P1 30m / P2 2h / P3 8h / P4 24h) as a pure function of `createdAt` + injected
       clock
-- [ ] T059 [P] [US1] [REQ FR-055] Unit test for `domain/age.ts` threshold transitions in
+- [X] T059 [P] [US1] [REQ FR-055] Unit test for `domain/age.ts` threshold transitions in
       `src/domain/age.test.ts`
-- [ ] T060 [P] [US1] [REQ N1] Implement `src/domain/kpi.ts`: per-tile delta-is-good-or-bad
+- [X] T060 [P] [US1] [REQ N1] Implement `src/domain/kpi.ts`: per-tile delta-is-good-or-bad
       interpretation for the four Now tiles (US3 later extends this file with the
       median-resolve null-guard/no-value formatting needed by Performance's tiles)
-- [ ] T061 [P] [US1] [REQ N1] Unit test for `domain/kpi.ts`'s Now-tile delta logic in
+- [X] T061 [P] [US1] [REQ N1] Unit test for `domain/kpi.ts`'s Now-tile delta logic in
       `src/domain/kpi.test.ts`
-- [ ] T062 [P] [US1] [REQ PRD §N3,A11Y-1] Implement `src/domain/automationIcon.ts`: maps the
+- [X] T062 [P] [US1] [REQ PRD §N3,A11Y-1] Implement `src/domain/automationIcon.ts`: maps the
       server-computed `automationStatus` enum to an icon + text label (🤖/👤/⚠️/—)
-- [ ] T063 [P] [US1] [REQ A11Y-1] Unit test for `domain/automationIcon.ts` covering all four
+- [X] T063 [P] [US1] [REQ A11Y-1] Unit test for `domain/automationIcon.ts` covering all four
       values in `src/domain/automationIcon.test.ts`
-- [ ] T064 [P] [US1] [REQ TL-3] Implement `src/domain/timeline.ts`: `cumulativeElapsed(eventAt,
+- [X] T064 [P] [US1] [REQ TL-3] Implement `src/domain/timeline.ts`: `cumulativeElapsed(eventAt,
       incidentCreatedAt)` — a pure timestamp difference, no clock needed (both are historical)
-- [ ] T065 [P] [US1] [REQ TL-3] Unit test for `domain/timeline.ts` in
+- [X] T065 [P] [US1] [REQ TL-3] Unit test for `domain/timeline.ts` in
       `src/domain/timeline.test.ts`
 
 ### API + MSW for User Story 1
 
-- [ ] T066 [P] [US1] [REQ FR-027,FR-028,FR-029,FR-030] Implement `src/api/dashboard/now.ts`
-- [ ] T067 [P] [US1] MSW handler for `GET /api/dashboard/now` in `src/api/fixtures/handlers/
+- [X] T066 [P] [US1] [REQ FR-027,FR-028,FR-029,FR-030] Implement `src/api/dashboard/now.ts`
+- [X] T067 [P] [US1] MSW handler for `GET /api/dashboard/now` in `src/api/fixtures/handlers/
       dashboardNow.ts`, sourced from `seededDataset.ts`
-- [ ] T068 [P] [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,IT-6,P-3,P-4 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054,FR-055,FR-056,FR-057,FR-117] Implement `src/api/incidents/
+- [X] T068 [P] [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,IT-6,P-3,P-4 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054,FR-055,FR-056,FR-057,FR-117] Implement `src/api/incidents/
       list.ts` (all query params from contracts/incidents-endpoints.md, one request with no
       per-row follow-up per FR-117; the `candidate=true` param is accepted here but its meaningful
       filtering is added by US4)
-- [ ] T069 [P] [US1] MSW handler for `GET /api/incidents` in `src/api/fixtures/handlers/
+- [X] T069 [P] [US1] MSW handler for `GET /api/incidents` in `src/api/fixtures/handlers/
       incidentsList.ts` (kpiTile drill-down param supported now; funnel/breakdown/candidate
       drill-downs added by US3/US4)
-- [ ] T070 [P] [US1] [REQ PRD §D1-D6,P-4 / FR-058,FR-059,FR-060,FR-061,FR-062,FR-063,FR-064,FR-065,FR-066,FR-067,FR-068,FR-069,FR-070,FR-071,FR-072,FR-118] Implement
+- [X] T070 [P] [US1] [REQ PRD §D1-D6,P-4 / FR-058,FR-059,FR-060,FR-061,FR-062,FR-063,FR-064,FR-065,FR-066,FR-067,FR-068,FR-069,FR-070,FR-071,FR-072,FR-118] Implement
       `src/api/incidents/detail.ts`: `GET /api/incidents/:id` plus the lazy sub-fetches (agent-run
       io, similarity-matches show-all, events with `agentOnly`) — none fetched until expanded
       (FR-118)
-- [ ] T071 [P] [US1] MSW handlers for `GET /api/incidents/:id` and its lazy sub-endpoints in
+- [X] T071 [P] [US1] MSW handlers for `GET /api/incidents/:id` and its lazy sub-endpoints in
       `src/api/fixtures/handlers/incidentsDetail.ts`
-- [ ] T072 [US1] Register the US1 handlers in `src/api/fixtures/handlers/index.ts`
+- [X] T072 [US1] Register the US1 handlers in `src/api/fixtures/handlers/index.ts`
 
 ### Components for User Story 1
 
-- [ ] T073 [US1] [REQ FR-027,P-2] Implement `src/components/kpi/KpiStrip.tsx` (Now variant): one
-      TanStack Query against `dashboard/now`, `PanelBoundary`-wrapped
-- [ ] T074 [US1] [REQ FR-027,FR-028,FR-029,FR-030,A11Y-1] Implement `src/components/kpi/KpiTile.tsx`: value +
+- [X] T073 [US1] [REQ FR-027,P-2] Implement `src/components/kpi/KpiStrip.now.tsx`: one
+      TanStack Query against `dashboard/now`, `PanelBoundary`-wrapped (analyze finding F2: each
+      tab's KPI strip is its own file, not three tasks colliding on one `KpiStrip.tsx` path —
+      matches the already-distinct test file names)
+- [X] T074 [US1] [REQ FR-027,FR-028,FR-029,FR-030,A11Y-1] Implement `src/components/kpi/KpiTile.tsx`: value +
       delta via `domain/kpi.ts`, urgent/cautionary styling, click → `useUrlState` filter
-- [ ] T075 [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,P-3 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054] Implement `src/components/incidents/
+- [X] T075 [US1] [REQ IT-1,IT-2,IT-3,IT-4,IT-5,P-3 / FR-048,FR-049,FR-050,FR-051,FR-052,FR-053,FR-054] Implement `src/components/incidents/
       IncidentTable.tsx`: one TanStack Query, server-side sort/search/page/includeResolved,
       `PanelBoundary`-wrapped, disambiguates empty-no-data vs. empty-filtered
-- [ ] T076 [US1] [REQ IT-1,IT-6,A11Y-1 / FR-049,FR-054,FR-055,FR-056] Implement `src/components/incidents/
+- [X] T076 [US1] [REQ IT-1,IT-6,A11Y-1 / FR-049,FR-054,FR-055,FR-056] Implement `src/components/incidents/
       IncidentRow.tsx`: age via `domain/age.ts` + `AgePill`, source-badge icon in the title cell,
       escalated/non-prod styling, click → drawer via `useUrlState`
-- [ ] T077 [US1] [REQ PRD §7,A11Y-3 / FR-058,FR-059] Implement `src/components/incidents/
+- [X] T077 [US1] [REQ PRD §7,A11Y-3 / FR-058,FR-059] Implement `src/components/incidents/
       IncidentDetailDrawer.tsx`: slide-over + scrim, `Esc`/outside-click close, `useFocusTrap`,
       `?incident=` sync via `useUrlState`, one TanStack Query
-- [ ] T078 [US1] [REQ PRD §D1 / FR-060,FR-061,FR-062] Implement `src/components/incidents/
+- [X] T078 [US1] [REQ PRD §D1 / FR-060,FR-061,FR-062] Implement `src/components/incidents/
       IncidentHeaderActions.tsx`: header fields (FR-060) plus the four mutation controls rendered
       **disabled with the reason stated**, per contracts/incidents-endpoints.md's undefined-PATCH
       gap (FR-062) — this disabled state is the real, tested behavior, not a placeholder
-- [ ] T079 [US1] [REQ PRD §D2 / FR-063] Implement `src/components/incidents/
+- [X] T079 [US1] [REQ PRD §D2 / FR-063] Implement `src/components/incidents/
       ClassificationPanel.tsx`: "AI said X → human corrected to Y" side-by-side when a correction
       exists
-- [ ] T080 [US1] [REQ PRD §D3,§11.6 / FR-064,FR-065] Implement `src/components/incidents/
+- [X] T080 [US1] [REQ PRD §D3,§11.6 / FR-064,FR-065] Implement `src/components/incidents/
       AgentRunTrace.tsx`: ordered by `startedAt`, `FAILED` expanded by default, lazy input/output
       fetch on expand
-- [ ] T081 [US1] [REQ PRD §D4 / FR-066] Implement `src/components/incidents/
+- [X] T081 [US1] [REQ PRD §D4 / FR-066] Implement `src/components/incidents/
       SimilarityMatchList.tsx`: capped at 5 + lazy "show all"
-- [ ] T082 [US1] [REQ PRD §D5 / FR-067] Implement `src/components/incidents/
+- [X] T082 [US1] [REQ PRD §D5 / FR-067] Implement `src/components/incidents/
       ActionsAndExecutions.tsx`: read-only rendering (type, risk, confidence, status, duration,
       collapsed payload/logs); approve/reject wiring for any still-`PROPOSED` action is added in
       US2 per FR-068
-- [ ] T083 [US1] [REQ PRD §D6,TL-1,TL-2,TL-3 / FR-069,FR-070,FR-071,FR-072] Implement `src/components/incidents/
+- [X] T083 [US1] [REQ PRD §D6,TL-1,TL-2,TL-3 / FR-069,FR-070,FR-071,FR-072] Implement `src/components/incidents/
       EventTimeline.tsx`: server-side `agentOnly` re-fetch, failure-event flags, cumulative
       elapsed via `domain/timeline.ts`
 
@@ -503,8 +505,9 @@ count matches the stage's drop count; confirm clearing the chip stays on Now.
       toast, consumed by every Performance/Knowledge drill-down click
 - [ ] T137 [P] [US3] [REQ XT-3,XT-5 / FR-022,FR-024,FR-026] Implement `src/components/shared/
       CrossTabFilterChip.tsx` and `src/components/shared/CrossTabToast.tsx`
-- [ ] T138 [US3] [REQ N1b,P-2 / FR-080,FR-081,FR-082] Implement `src/components/kpi/KpiStrip.tsx`
-      (Performance variant): one TanStack Query against `dashboard/performance`'s `tiles` block,
+- [ ] T138 [US3] [REQ N1b,P-2 / FR-080,FR-081,FR-082] Implement
+      `src/components/kpi/KpiStrip.performance.tsx`: one TanStack Query against
+      `dashboard/performance`'s `tiles` block,
       clicks routed through `useCrossTabJump`
 - [ ] T139 [US3] [REQ PRD §B1,P-2 / FR-083,FR-084,FR-085,FR-086,FR-087,FR-088] Implement `src/components/charts/
       AutomationFunnel.tsx`: hand-rolled stage rows, click → `useCrossTabJump`,
@@ -543,7 +546,8 @@ threshold, and never attributes a decline to the user.
       `src/api/incidents/candidates.contract.test.ts`
 - [ ] T145 [P] [US4] [REQ FI-1 / FR-075] Contract test for `GET /api/feedback/impact` (ignores any
       `from`/`to` passed; `suppressed` flag; personal vs. team shape) in
-      `src/api/feedback/impact.contract.test.ts`
+      `src/api/feedbackImpact.contract.test.ts` (analyze finding F1: flat filename, sibling to
+      `api/feedback.ts`, not a `feedback/` directory)
 - [ ] T146 [P] [US4] [REQ K2 / FR-100,FR-101] Unit test for `domain/coverageGaps.ts`: ascending
       sort by known-rate, highest-leverage-fix caption selection, in
       `src/domain/coverageGaps.test.ts`
@@ -588,16 +592,28 @@ threshold, and never attributes a decline to the user.
 - [ ] T158 [P] [US4] [REQ FR-099,FR-100,FR-101,FR-102] Implement `src/api/dashboard/knowledge.ts`
 - [ ] T159 [P] [US4] MSW handler for `GET /api/dashboard/knowledge` in `src/api/fixtures/
       handlers/dashboardKnowledge.ts`
-- [ ] T160 [P] [US4] [REQ FR-075,FR-076] Implement `src/api/feedback/impact.ts`
+- [ ] T160 [P] [US4] [REQ FR-075,FR-076] Implement `src/api/feedbackImpact.ts` (analyze finding
+      F1: flat filename — see T195 for why this can't be `feedback/impact.ts`)
 - [ ] T161 [P] [US4] MSW handler for `GET /api/feedback/impact` in `src/api/fixtures/handlers/
       feedbackImpact.ts` — ignores any `from`/`to` query params it's passed, per the contract
+- [ ] T194 [P] [US4] [REQ PRD §D7 / FR-073] Contract test for `POST /api/incidents/:id/feedback`
+      (analyze finding E1 — this endpoint is fully specified in contracts/feedback-endpoint.md but
+      had zero covering tasks) in `src/api/feedback.contract.test.ts`. Numbered out of sequence to
+      avoid renumbering T001–T193; logically part of "API + MSW for User Story 4," write before
+      T195.
+- [ ] T195 [P] [US4] [REQ PRD §D7 / FR-073] Implement `src/api/feedback.ts`: the
+      `POST /api/incidents/:id/feedback` client `FeedbackForm` (T170) calls — a flat file, sibling
+      to `feedbackImpact.ts` (T160), not a `feedback/` directory (analyze finding F1)
+- [ ] T196 [P] [US4] MSW handler for `POST /api/incidents/:id/feedback` in
+      `src/api/fixtures/handlers/feedback.ts`
 - [ ] T162 [US4] Extend `src/api/fixtures/handlers/incidentsList.ts` to honor `candidate=true`
       (K4) with real `candidateReason`/`recurrenceCount` values from the fixture data
-- [ ] T163 [US4] Register the US4 handlers in `src/api/fixtures/handlers/index.ts`
+- [ ] T163 [US4] Register the US4 handlers in `src/api/fixtures/handlers/index.ts`, including
+      T196's feedback-write handler alongside T159/T161's
 
 ### Components for User Story 4
 
-- [ ] T164 [US4] [REQ K1,P-2] Implement `src/components/kpi/KpiStrip.tsx` (Knowledge variant): one
+- [ ] T164 [US4] [REQ K1,P-2] Implement `src/components/kpi/KpiStrip.knowledge.tsx`: one
       TanStack Query against `dashboard/knowledge`'s tiles
 - [ ] T165 [US4] [REQ K2] Implement `src/components/charts/CoverageGapsChart.tsx`: hand-rolled
       horizontal bars, ascending, red/amber/green thresholds, auto-caption via `domain/
@@ -614,7 +630,8 @@ threshold, and never attributes a decline to the user.
       when `suppressed`; static, model-attributed copy on any decline (FR-078); no per-user
       ranking anywhere (FR-079)
 - [ ] T170 [US4] [REQ PRD §D7 / FR-073] Implement `src/components/incidents/FeedbackForm.tsx`
-      with React Hook Form, listing existing feedback above the form and below
+      with React Hook Form, submitting via `api/feedback.ts` (T195), listing existing feedback
+      above the form and below
       `FeedbackImpactWidget`
 
 **Checkpoint**: US1–US4 independently functional — PRD §12 phase 4, "closes the learning loop."

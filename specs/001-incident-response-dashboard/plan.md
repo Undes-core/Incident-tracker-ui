@@ -172,8 +172,10 @@ src/
 ├── api/
 │   ├── client.ts         # typed fetch wrapper
 │   ├── types.ts          # mirrors data-model.md
-│   ├── dashboard/        # alertStrip.ts, now.ts, performance.ts, knowledge.ts
-│   ├── incidents/ | approvals/ | feedback.ts
+│   ├── dashboard/        # alertStrip.ts, now.ts, performance.ts, breakdowns.ts, knowledge.ts
+│   ├── incidents/        # list.ts, detail.ts
+│   ├── approvals/        # pending.ts, approve.ts, reject.ts, execution.ts
+│   ├── feedback.ts, feedbackImpact.ts
 │   └── fixtures/         # MSW seed data + handlers (research.md §7)
 └── state/                # useUrlState.ts, OperatorContext.tsx, queryClient.ts, useFocusTrap.ts
 
