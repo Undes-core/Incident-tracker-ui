@@ -29,7 +29,7 @@ const BOX =
 // Native <select> keeps the browser's own keyboard and form semantics (and is what the header's
 // tests drive); its own arrow is suppressed because the design's boxes carry no chevron.
 // Geometry only — the surface comes from the Button variant.
-const BUTTON_GEOMETRY = "h-9 rounded-[10px] px-3.5 text-[13px] font-medium";
+const BUTTON_GEOMETRY = "h-9 rounded-[10px] bg-card px-3.5 text-[13px] font-medium";
 
 function environmentLabel(environment: readonly string[]): string {
   if (environment.length === 0) return "All environments";
