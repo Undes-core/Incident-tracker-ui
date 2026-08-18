@@ -160,15 +160,15 @@ export function DashboardHeader() {
       <div className="flex min-w-0 items-center gap-2.5">
         <span
           aria-hidden="true"
-          className="flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-primary text-primary-foreground shadow-sm"
+          className="brand-mark flex size-8 shrink-0 items-center justify-center rounded-[9px] text-primary-foreground shadow-sm ring-1 ring-black/5"
         >
           <ShieldHalf className="size-4" />
         </span>
         <div className="flex min-w-0 items-baseline gap-2.5">
-          <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px]">
+          <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px] text-foreground">
             Incident Response Orchestrator
           </h1>
-          <span className="eyebrow shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10.5px]">
+          <span className="eyebrow shrink-0 rounded-full bg-accent px-2 py-0.5 text-[10.5px] text-accent-foreground">
             Autonomous
           </span>
         </div>
@@ -188,7 +188,7 @@ export function DashboardHeader() {
             <button
               key={range}
               aria-pressed={timeRange === range}
-              className="rounded-[7px] px-3.5 py-1 text-[13px] font-medium text-muted-foreground transition-all hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-sm"
+              className="rounded-[7px] px-3.5 py-1 text-[13px] font-medium text-muted-foreground transition-all hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-primary aria-pressed:shadow-sm"
               onClick={() => setTimeRange(range)}
             >
               {range}

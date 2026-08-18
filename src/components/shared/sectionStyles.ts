@@ -10,9 +10,9 @@
 // stronger elevation than the rest, and stacking two `shadow-*` utilities on one element has
 // undefined winner ordering in Tailwind's generated stylesheet. Everyone else appends their own
 // `shadow-xs` (or nothing) at the call site instead.
-export const SECTION = "rounded-lg border border-border bg-card p-4";
+export const SECTION = "rounded-xl border border-border bg-card p-4";
 
-export const SECTION_TITLE = "mb-3 text-[15px] font-semibold tracking-[-0.2px]";
+export const SECTION_TITLE = "mb-3 text-[15px] font-semibold tracking-[-0.2px] text-foreground";
 
 export const EYEBROW = "eyebrow";
 
@@ -22,7 +22,7 @@ export const DISCLOSURE =
   "flex w-fit items-center gap-1.5 rounded-md py-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground [&_svg]:transition-transform [&_svg]:duration-150 aria-expanded:[&_svg]:rotate-90";
 
 export const CODE_BLOCK =
-  "overflow-x-auto rounded-lg border border-border bg-muted/60 p-3 font-mono text-[12px] leading-relaxed";
+  "overflow-x-auto rounded-lg border border-border-soft bg-muted p-3 font-mono text-[12px] leading-relaxed";
 
 export const MUTED_NOTE = "text-[13px] text-muted-foreground";
 
@@ -31,10 +31,10 @@ export const ALERT_NOTE = "text-[13px] font-medium text-bad";
 export const FIELD_LABEL = "grid gap-1.5 text-[13px] font-medium text-muted-foreground";
 
 export const FIELD_CONTROL =
-  "rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-normal text-foreground shadow-2xs transition-shadow focus-visible:shadow-sm";
+  "rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-normal text-foreground shadow-2xs transition-all focus-visible:border-ring/50 focus-visible:shadow-sm";
 
 export const BUTTON_PRIMARY =
-  "w-fit rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary-hover hover:shadow-sm active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+  "w-fit rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
 
 export const BUTTON_SECONDARY =
   "w-fit rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground shadow-2xs transition-all hover:border-border hover:bg-muted hover:text-foreground active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";

@@ -17,7 +17,7 @@ export function WhyThisAction({ matches }: WhyThisActionProps) {
         type="button"
         onClick={() => setExpanded((value) => !value)}
         aria-expanded={expanded}
-        className="group flex w-fit items-center gap-1 rounded-md py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground"
+        className="group -mx-1.5 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-expanded:text-foreground"
       >
         <ChevronRight
           aria-hidden="true"

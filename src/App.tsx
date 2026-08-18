@@ -35,7 +35,7 @@ function Dashboard() {
         it and outside every TabPanel (AS-1/X-2): it must stay visible and keep its own 30s poll no
         matter which tab is active.
       */}
-      <div className="sticky top-0 z-40 bg-card shadow-sm">
+      <div className="sticky top-0 z-40 bg-card shadow-md">
         <DashboardHeader />
         <AlertStrip />
         <TabBar pendingApprovalCount={alertStrip?.awaitingApproval ?? 0} />

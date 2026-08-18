@@ -19,7 +19,7 @@ export function ConfidenceBar({ confidence }: ConfidenceBarProps) {
         <div
           role="img"
           aria-label={`AI confidence ${confidence.toFixed(2)}`}
-          className="h-[5px] w-24 overflow-hidden rounded-full bg-muted shadow-inner"
+          className="h-[6px] w-24 overflow-hidden rounded-full bg-border shadow-inner"
         >
           {/* Width is the datum, so it stays an inline style; only the hue is a class. */}
           <div

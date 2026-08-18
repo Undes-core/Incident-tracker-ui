@@ -21,24 +21,32 @@ export interface KpiTileProps {
   icon?: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 }
 
-// A cell inside KpiRow, so it owns no border or radius of its own — the row draws those. Active
-// tiles get the ring the design uses for "this is the thing currently filtering the table" rather
-// than a plain background swap, so it reads the same way IncidentTable's own active filter chip
-// does.
-const TILE_CLASS =
-  "relative px-4 py-3.5 text-left transition-colors hover:bg-muted/60 data-[active=true]:bg-muted data-[active=true]:inset-ring-2 data-[active=true]:inset-ring-ring/40";
+// An independent card rather than a cell in a shared strip (see KpiRow) — each tile owns its own
+// border, radius and hover elevation, plus a severity accent along its top edge so urgent/
+// cautionary tiles read as distinct at a glance, not just via a tinted number.
+const TILE_CLASS = [
+  "group relative w-full overflow-hidden rounded-xl border border-border bg-card px-4 py-3.5 text-left shadow-xs",
+  "transition-all hover:-translate-y-px hover:border-border hover:shadow-md",
+  "before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:content-['']",
+  "before:bg-transparent data-[severity=urgent]:before:bg-bad data-[severity=cautionary]:before:bg-warn",
+  "data-[active=true]:border-transparent data-[active=true]:bg-selected-bg data-[active=true]:shadow-sm data-[active=true]:ring-2 data-[active=true]:ring-selected-ring/50",
+].join(" ");
 
-// Severity tints the value only. The design leaves KPI values black, but dropping the signal
-// entirely would lose FR-028/FR-029's urgent/cautionary distinction, so it survives as the one
-// coloured glyph in the row. A11Y-1 still holds: the label and the number carry the meaning.
 const VALUE_CLASS = [
-  "text-[30px] font-semibold leading-none tracking-[-1px] tabular-nums",
+  "text-[28px] font-semibold leading-none tracking-[-0.5px] tabular-nums text-foreground",
   "group-data-[severity=urgent]:text-bad group-data-[severity=cautionary]:text-warn",
 ].join(" ");
 
-const ICON_CLASS = [
-  "size-3.5 shrink-0 text-subtle-foreground",
-  "group-data-[severity=urgent]:text-bad group-data-[severity=cautionary]:text-warn",
+const ICON_WRAP_CLASS = [
+  "flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted text-subtle-foreground transition-colors",
+  "group-data-[severity=urgent]:bg-chip-bad-bg group-data-[severity=urgent]:text-bad",
+  "group-data-[severity=cautionary]:bg-chip-warn-bg group-data-[severity=cautionary]:text-warn",
+  "group-data-[active=true]:bg-card group-data-[active=true]:text-primary",
+].join(" ");
+
+const DELTA_CLASS = [
+  "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[11px] font-medium",
+  "data-[good=true]:bg-chip-ok-bg data-[good=true]:text-ok data-[good=false]:bg-chip-bad-bg data-[good=false]:text-bad",
 ].join(" ");
 
 // N1/FR-028-029/A11Y-1: every tile is clickable and filters to the rows that produced its
@@ -63,20 +71,21 @@ export function KpiTile({
       className={`group ${TILE_CLASS}`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="eyebrow inline-flex items-center gap-1.5">
-          {Icon && <Icon aria-hidden className={ICON_CLASS} />}
+        <span className="eyebrow inline-flex items-center gap-2">
+          {Icon && (
+            <span aria-hidden className={ICON_WRAP_CLASS}>
+              <Icon className="size-3.5" />
+            </span>
+          )}
           {label}
         </span>
         {delta && (
-          <span
-            data-good={delta.isGood}
-            className="inline-flex items-center gap-0.5 font-mono text-[11px] data-[good=true]:text-ok data-[good=false]:text-bad"
-          >
+          <span data-good={delta.isGood} className={DELTA_CLASS}>
             {delta.label}
           </span>
         )}
       </div>
-      <div className="mt-2.5 flex items-baseline gap-1.5">
+      <div className="mt-3 flex items-baseline gap-1.5">
         <span className={VALUE_CLASS}>{value}</span>
         {sub && <span className="meta">{sub}</span>}
       </div>

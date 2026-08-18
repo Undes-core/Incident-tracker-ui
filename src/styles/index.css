@@ -9,79 +9,84 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Design tokens for the "Incident Orchestrator" canvas design (Claude Design, shared 2026-08-18),
- * which supersedes the v2.0 wireframe as the visual reference. Its rules, in the designer's own
- * words: colour lives only in the risk chip and the meter; everything structural is a hairline on
- * white; every metadatum and number is set in mono.
+ * Design tokens for the "Incident Orchestrator" operator console — a cool-slate, indigo-accented
+ * system that replaces the earlier warm-neutral/near-black canvas. The prior system kept
+ * `--background` and `--muted` at nearly the same lightness, so cards barely separated from the
+ * page; this pass widens that gap and gives the app one deliberate brand hue (indigo) carried by
+ * the primary action, the active nav state, focus rings and selection — rather than leaving every
+ * interactive surface in near-black/white.
  *
- * The PRD-bound hues (priority P1..P4, execution outcome incl. ROLLED_BACK) are unchanged — those
- * carry requirements, not taste.
+ * The PRD-bound hues (priority P1..P4, execution outcome incl. ROLLED_BACK) keep their semantic
+ * role — red/amber/blue/gray and a distinct violet for rollback — those carry requirements, not
+ * taste, only the exact values were tuned for stronger contrast.
  *
  * Light theme only: research.md pins the target to desktop browsers at a fixed ~1360px operator
  * layout. No dark mode and no breakpoints are specified anywhere in the PRD, so none are invented.
  */
 
 :root {
-  /* --- surfaces & text: warm neutral, near-white, hairline borders ---
-     `--background` sits one step below `--card` (page canvas vs. surface) so cards read as
-     raised panels instead of dissolving into the page — the layering is what a flat shadow-less
-     stack was missing. */
-  --background: #f5f4f1;
-  --foreground: #1c1b19;
+  /* --- surfaces & text: cool slate, layered so cards visibly sit above the page ---
+     `--background` is a genuine step below `--card` (not a near-identical warm grey), so the app
+     chrome, KPI cards and panels read as raised surfaces instead of dissolving into the canvas. */
+  --background: #e9edf4;
+  --foreground: #0f1424;
   --card: #ffffff;
-  --card-foreground: #1c1b19;
-  /* Popovers and menus are light surfaces like every other panel. The one inverted surface in
-     the app is the cross-tab toast, which asks for it explicitly rather than borrowing these. */
+  --card-foreground: #0f1424;
   --popover: #ffffff;
-  --popover-foreground: #1c1b19;
-  --muted: #f4f3f1;
-  --muted-foreground: #6b6963;
-  --subtle-foreground: #9b9892;
-  --border: #e6e4e0;
-  --border-soft: #f0eeea;
-  --input: #e6e4e0;
+  --popover-foreground: #0f1424;
+  /* A secondary surface *inside* white cards (table header stripe, code blocks, the approval
+     card's footer) — lighter than `--background`, still a hair off pure white. */
+  --muted: #f2f4f9;
+  --muted-foreground: #565f70;
+  --subtle-foreground: #8991a3;
+  --border: #dde2eb;
+  --border-soft: #e7eaf1;
+  --input: #d7dce7;
 
-  /* --- brand / interaction: the near-black used by Approve, the active tab rule, the badge --- */
-  --primary: #1c1b19;
-  --primary-hover: #333129;
+  /* --- brand / interaction: one indigo carried by Approve, the active tab, selection and focus --- */
+  --primary: #4338ca;
+  --primary-hover: #372aa8;
   --primary-foreground: #ffffff;
-  --secondary: #f4f3f1;
-  --secondary-foreground: #6b6963;
-  --accent: #f0eeea;
-  --accent-foreground: #1c1b19;
-  --ring: #2563eb;
+  --secondary: #eef1f6;
+  --secondary-foreground: #3d4457;
+  --accent: #eceeff;
+  --accent-foreground: #312e81;
+  --ring: #6366f1;
+
+  /* Selection tint used by anything marking "this is the thing currently filtering the view"
+     (active KPI tile, selected header control) — the brand hue at low opacity, not a grey swap. */
+  --selected-bg: #eceeff;
+  --selected-ring: var(--ring);
 
   /* --- incident priority (PRD-bound) --- */
-  --p1: #c8322b;
+  --p1: #dc2626;
   --p2: #d97706;
   --p3: #2563eb;
-  --p4: #6b7280;
+  --p4: #64748b;
 
   /*
    * Execution outcome. `--roll` is deliberately its own hue: EO-1 requires ROLLED_BACK to read as
    * its own bucket everywhere — never folded into success (--ok) or failure (--bad).
    */
-  --ok: #15803d;
+  --ok: #16a34a;
   --warn: #b45309;
-  --bad: #c8322b;
+  --bad: #dc2626;
   --roll: #7c3aed;
-  --destructive: #c8322b;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  /*
-   * Chip fills. The design puts risk/severity colour *only* here and on the meter, so these are
-   * the one place a tint is allowed to fill an area rather than just a glyph.
-   */
-  --chip-bad-bg: #fdecec;
-  --chip-warn-bg: #fdf4e3;
-  --chip-ok-bg: #ecf6ef;
-  --chip-info-bg: #eef3fd;
+  /* Chip fills — tinted surfaces for pills/badges and the alert strip's severity states. Kept
+     saturated enough to read as a real status colour, not a hint of one. */
+  --chip-bad-bg: #fde3e3;
+  --chip-warn-bg: #fdf0d5;
+  --chip-ok-bg: #ddf5e4;
+  --chip-info-bg: #dfe9fd;
 
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  /* Base tint for the elevation scale below — kept as a plain RGB triplet (not a shadow itself)
-     so it can be referenced without a self-referencing custom property. */
-  --shadow-color: 28 27 25;
+  /* Base tint for the elevation scale below, as a plain RGB triplet (cool navy, not warm) so it
+     can be referenced without a self-referencing custom property. */
+  --shadow-color: 15 20 36;
 }
 
 @theme inline {
@@ -106,6 +111,8 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-ring: var(--ring);
+  --color-selected-bg: var(--selected-bg);
+  --color-selected-ring: var(--selected-ring);
 
   --color-p1: var(--p1);
   --color-p2: var(--p2);
@@ -130,14 +137,14 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* Elevation scale under Tailwind's theme namespace, so plain `shadow-xs`/`shadow-sm`/etc.
-     utilities resolve to this soft warm-tinted ramp everywhere, instead of Tailwind's stock
-     (near-invisible on white) shadows. This is the one shadow language in the app. */
-  --shadow-2xs: 0 1px 1px 0 rgb(var(--shadow-color) / 0.03);
-  --shadow-xs: 0 1px 2px 0 rgb(var(--shadow-color) / 0.05);
-  --shadow-sm: 0 1px 2px -1px rgb(var(--shadow-color) / 0.06), 0 1px 3px 0 rgb(var(--shadow-color) / 0.05);
-  --shadow-md: 0 2px 4px -2px rgb(var(--shadow-color) / 0.06), 0 4px 8px -2px rgb(var(--shadow-color) / 0.08);
-  --shadow-lg: 0 4px 8px -4px rgb(var(--shadow-color) / 0.06), 0 12px 24px -6px rgb(var(--shadow-color) / 0.12);
-  --shadow-xl: 0 8px 16px -8px rgb(var(--shadow-color) / 0.08), 0 20px 40px -10px rgb(var(--shadow-color) / 0.16);
+     utilities resolve to this cool-tinted ramp everywhere. Slightly more present than a barely-
+     there shadow — this is the one shadow language in the app, carrying the surface hierarchy. */
+  --shadow-2xs: 0 1px 1px 0 rgb(var(--shadow-color) / 0.04);
+  --shadow-xs: 0 1px 2px 0 rgb(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 1px 3px -1px rgb(var(--shadow-color) / 0.08), 0 2px 4px 0 rgb(var(--shadow-color) / 0.06);
+  --shadow-md: 0 4px 6px -2px rgb(var(--shadow-color) / 0.07), 0 8px 14px -2px rgb(var(--shadow-color) / 0.10);
+  --shadow-lg: 0 8px 12px -4px rgb(var(--shadow-color) / 0.08), 0 18px 30px -8px rgb(var(--shadow-color) / 0.14);
+  --shadow-xl: 0 12px 20px -8px rgb(var(--shadow-color) / 0.10), 0 26px 50px -12px rgb(var(--shadow-color) / 0.18);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -214,8 +221,8 @@
 @utility eyebrow {
   /* The design's small uppercase label: KPI names, "CONFIDENCE", section eyebrows. */
   font-size: 0.786rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--subtle-foreground);
 }
@@ -225,4 +232,10 @@
   font-family: var(--font-mono);
   font-size: 0.857rem;
   color: var(--subtle-foreground);
+}
+
+@utility brand-mark {
+  /* The one deliberate gradient in the app — confined to the header's product glyph, never
+     reused elsewhere, so it reads as a mark rather than a texture applied throughout the UI. */
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
 }

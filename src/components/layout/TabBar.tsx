@@ -41,7 +41,7 @@ export function TabBar({ pendingApprovalCount }: TabBarProps) {
       <div
         role="tablist"
         aria-label="Dashboard sections"
-        className="mx-auto flex w-full max-w-[1360px] gap-1 px-6"
+        className="mx-auto flex w-full max-w-[1360px] gap-1 px-6 py-2"
       >
         {TABS.map((entry, index) => {
           const isSelected = tab === entry.key;
@@ -55,9 +55,10 @@ export function TabBar({ pendingApprovalCount }: TabBarProps) {
               role="tab"
               aria-selected={isSelected}
               tabIndex={isSelected ? 0 : -1}
-              // The selected underline hangs off aria-selected, so the visual state can never
-              // drift from the state assistive tech is told about.
-              className="group -mb-px flex items-center gap-2 rounded-t-md border-b-2 border-transparent px-3 py-3 text-[14px] text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground aria-selected:border-primary aria-selected:font-semibold aria-selected:text-foreground aria-selected:hover:bg-transparent"
+              // The selected state hangs off aria-selected, so the visual state can never drift
+              // from the state assistive tech is told about. A filled tint reads more clearly at
+              // this density than a thin underline, without adding visual weight to the chrome.
+              className="group flex items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground aria-selected:bg-selected-bg aria-selected:font-semibold aria-selected:text-primary aria-selected:hover:bg-selected-bg"
               onClick={() => setTab(entry.key)}
               onKeyDown={(event) => handleKeyDown(event, index)}
             >

@@ -104,14 +104,16 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
 
   return (
     // §11.19: keyed by this card's own action id upstream, and every phase below is local state.
-    // The design forbids a risk-coloured left rail — colour lives only in the chip and the meter —
-    // so the executing/rejected phases are signalled by the border and opacity instead.
+    // A hairline top accent (in the risk hue) reinforces the RiskBadge without tinting the whole
+    // card — colour still concentrates in the chip and the meter, this just echoes it once more so
+    // a HIGH-risk card reads as higher priority at a glance, before the eye reaches the badge.
     <li
       data-phase={phase}
+      data-risk={card.riskLevel}
       data-action-id={card.id}
-      className="overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md data-[phase=executing]:border-p3 data-[phase=executing]:shadow-[0_0_0_1px_rgb(37_99_235/0.15),var(--shadow-sm)] data-[phase=rejected]:opacity-60 data-[phase=rejected]:shadow-none data-[phase=rejected]:hover:shadow-none"
+      className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:content-[''] before:bg-transparent hover:shadow-lg data-[risk=HIGH]:before:bg-bad data-[risk=MEDIUM]:before:bg-warn data-[risk=LOW]:before:bg-ok data-[phase=executing]:border-p3/40 data-[phase=executing]:shadow-[0_0_0_1px_rgb(37_99_235/0.15),var(--shadow-md)] data-[phase=rejected]:opacity-60 data-[phase=rejected]:shadow-none data-[phase=rejected]:before:bg-transparent data-[phase=rejected]:hover:shadow-none"
     >
-      <div className="flex items-start justify-between gap-6 p-4">
+      <div className="flex items-start justify-between gap-5 p-4 pt-[18px]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
             <RiskBadge risk={card.riskLevel} />
@@ -120,25 +122,27 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
               {formatAge(ageMinutes(card.proposedAt, systemClock))}
             </span>
           </div>
-          <h3 className="mt-2.5 text-[16px] font-semibold leading-snug tracking-[-0.2px] text-balance">
+          <h3 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-[-0.2px] text-balance text-foreground">
             {card.description}
           </h3>
           <p className="mt-1 truncate text-[13px] text-muted-foreground">{card.incidentTitle}</p>
         </div>
-        <div className="shrink-0 border-l border-border-soft pl-5">
+        <div className="shrink-0 rounded-lg bg-muted/70 px-3.5 py-2.5">
           <ConfidenceBar confidence={card.confidenceScore} />
         </div>
       </div>
 
-      <div className="border-t border-border-soft px-4 py-2.5">
-        <ParametersViewer actionId={card.id} actionType={card.actionType} />
-      </div>
-      <div className="border-t border-border-soft px-4 py-2.5">
-        <WhyThisAction matches={card.topMatches} />
+      <div className="grid gap-px border-t border-border-soft bg-border-soft sm:grid-cols-2">
+        <div className="bg-card px-4 py-2.5">
+          <ParametersViewer actionId={card.id} actionType={card.actionType} />
+        </div>
+        <div className="bg-card px-4 py-2.5">
+          <WhyThisAction matches={card.topMatches} />
+        </div>
       </div>
 
       {phase === "proposed" && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft bg-muted/25 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft bg-muted/40 px-4 py-3">
           <span className="meta">proposed by {card.proposedByAgent}</span>
           <div className="flex items-center gap-2">
             {approveError && (
@@ -158,7 +162,7 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
             </button>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary-hover hover:shadow-sm active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98]"
               onClick={handleApproveClick}
             >
               <Check aria-hidden="true" className="size-3.5" />

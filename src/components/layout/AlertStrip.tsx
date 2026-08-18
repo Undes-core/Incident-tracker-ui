@@ -8,7 +8,8 @@ export const APPROVAL_QUEUE_FLASH_EVENT = "incident-tracker:flash-approval-queue
 // AS-4/§11.13, the strip is never blank and never absent, only re-populated.
 const STRIP_CLASS =
   "mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3 text-[14px]";
-const ITEM_CLASS = "inline-flex items-center gap-2 rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-muted";
+const ITEM_CLASS =
+  "inline-flex items-center gap-2 rounded-md px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-black/[0.04]";
 
 function Dot({ className }: { className: string }) {
   return <span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full ${className}`} />;
@@ -80,7 +81,7 @@ export function AlertStrip() {
       role="status"
       aria-live="polite"
       data-severity={severity}
-      className="border-b border-border bg-card data-[severity=hot]:bg-chip-bad-bg/50 data-[severity=warm]:bg-chip-warn-bg/40"
+      className="border-b border-border bg-card data-[severity=hot]:border-bad/25 data-[severity=hot]:bg-chip-bad-bg data-[severity=warm]:border-warn/25 data-[severity=warm]:bg-chip-warn-bg"
     >
       <div className={STRIP_CLASS}>
         {data.p1Active > 0 && (

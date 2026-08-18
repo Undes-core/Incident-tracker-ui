@@ -33,7 +33,7 @@ export function IncidentRow({ incident }: IncidentRowProps) {
       tabIndex={0}
       // IT-1: the whole row is the hit target and it opens the drawer — never a navigation — so
       // it gets pointer affordance without ever becoming a link.
-      className="cursor-pointer border-b border-border-soft transition-colors last:border-b-0 hover:bg-muted/50 focus-visible:bg-muted/50 [&>td]:px-3 [&>td]:py-2.5 [&>td]:align-middle"
+      className="cursor-pointer border-b border-border-soft transition-colors last:border-b-0 hover:bg-accent/40 focus-visible:bg-accent/40 [&>td]:px-3 [&>td]:py-2.5 [&>td]:align-middle"
       onClick={open}
       onKeyDown={(event) => {
         if (event.key === "Enter") open();

@@ -58,8 +58,8 @@ export function IncidentTable() {
     // below is the whole visual payload of that flash.
     <div id="incident-table" ref={containerRef} className="group mt-8 scroll-mt-[180px]">
       <SectionHeader title="Incidents" meta={data ? `${data.totalCount} in scope` : undefined} />
-      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow group-data-[flash=true]:ring-2 group-data-[flash=true]:ring-ring">
-        <div className="flex flex-wrap items-center gap-4 border-b border-border bg-muted/20 px-4 py-3">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow group-data-[flash=true]:ring-2 group-data-[flash=true]:ring-ring">
+        <div className="flex flex-wrap items-center gap-4 border-b border-border bg-muted px-4 py-3">
           <div className="relative">
             <Search
               aria-hidden="true"
@@ -67,7 +67,7 @@ export function IncidentTable() {
             />
             <input
               placeholder="Search title, service, or external ID…"
-              className="w-72 rounded-lg border border-border bg-card py-1.5 pl-8 pr-3 text-[13px] shadow-2xs transition-shadow placeholder:text-subtle-foreground focus-visible:shadow-sm"
+              className="w-72 rounded-lg border border-border bg-card py-1.5 pl-8 pr-3 text-[13px] shadow-2xs transition-all placeholder:text-subtle-foreground focus-visible:border-ring/50 focus-visible:shadow-sm"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
@@ -112,7 +112,7 @@ export function IncidentTable() {
               <>
                 <table className="w-full border-collapse text-[13px]">
                   <thead>
-                    <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/30 [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:text-[11px] [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-subtle-foreground">
+                    <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:text-[11px] [&>th]:font-semibold [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-subtle-foreground">
                       <th
                         aria-sort={sortKey === "priority" ? "ascending" : "none"}
                         onClick={() => setSortKey("priority")}

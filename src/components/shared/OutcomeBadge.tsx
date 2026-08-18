@@ -8,13 +8,13 @@ import type { ExecutedActionStatus } from "../../api/types";
 // and escaping it breaks differently because the scanner sees the raw source, not the runtime
 // string. Literal class strings in a map are scanned correctly and can't drift.
 const BASE =
-  "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em]";
+  "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em] ring-1 ring-inset";
 
 const BY_STATUS: Record<ExecutedActionStatus, string> = {
-  RUNNING: "bg-chip-info-bg text-p3",
-  SUCCESS: "bg-chip-ok-bg text-ok",
-  FAILED: "bg-chip-bad-bg text-bad",
-  ROLLED_BACK: "bg-[#f3edfd] text-roll",
+  RUNNING: "bg-chip-info-bg text-p3 ring-p3/15",
+  SUCCESS: "bg-chip-ok-bg text-ok ring-ok/15",
+  FAILED: "bg-chip-bad-bg text-bad ring-bad/15",
+  ROLLED_BACK: "bg-[#efe7fc] text-roll ring-roll/15",
 };
 
 export function OutcomeBadge({ status }: { status: ExecutedActionStatus }) {
