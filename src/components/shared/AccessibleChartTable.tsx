@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 interface Column<T> {
   key: keyof T;
@@ -25,8 +26,12 @@ export function AccessibleChartTable<T extends Record<string, unknown>>({
       <button
         aria-expanded={visible}
         onClick={() => setVisible((v) => !v)}
-        className="text-[12px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        className="group -mx-1.5 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-expanded:text-foreground"
       >
+        <ChevronRight
+          aria-hidden="true"
+          className="size-3 shrink-0 text-subtle-foreground transition-transform duration-150 group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
+        />
         {visible ? "Hide table view" : "View as table"}
       </button>
       {visible && (

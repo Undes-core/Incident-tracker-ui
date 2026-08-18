@@ -62,10 +62,15 @@ export function VolumeChart({ buckets, timeRange }: VolumeChartProps) {
             contentStyle={{
               borderRadius: 8,
               border: "1px solid var(--border)",
+              background: "var(--popover)",
+              color: "var(--popover-foreground)",
+              boxShadow: "var(--shadow-md)",
               fontSize: 12,
             }}
+            labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: 2 }}
+            itemStyle={{ padding: 0 }}
           />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Legend wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
           <Bar yAxisId="volume" dataKey="known" stackId="volume" name="Known" fill="var(--ok)" />
           <Bar
             yAxisId="volume"

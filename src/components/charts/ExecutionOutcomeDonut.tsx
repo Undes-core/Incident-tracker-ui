@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { ChevronRight } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import type { PerformanceOutcomes } from "../../api/dashboard/performance";
 import type { ExecutedActionStatus } from "../../api/types";
 import { useUrlState } from "../../state/useUrlState";
@@ -11,11 +12,14 @@ interface ExecutionOutcomeDonutProps {
   outcomes: PerformanceOutcomes;
 }
 
+// Same hues as OutcomeBadge (--ok/--bad/--roll/--p3) — the donut and the legend/badges below it
+// must agree, and ROLLED_BACK in particular must stay its own violet, never read as a shade of
+// warning-amber or failure-red (EO-1).
 const OUTCOME_COLORS: Record<ExecutedActionStatus, string> = {
-  SUCCESS: "#2e7d32",
-  FAILED: "#c62828",
-  ROLLED_BACK: "#ef6c00",
-  RUNNING: "#1565c0",
+  SUCCESS: "var(--ok)",
+  FAILED: "var(--bad)",
+  ROLLED_BACK: "var(--roll)",
+  RUNNING: "var(--p3)",
 };
 
 // FR-090-094/EO-1..EO-4: distribution over success/failed/rolled-back/running with the success
@@ -40,11 +44,31 @@ export function ExecutionOutcomeDonut({ outcomes }: ExecutionOutcomeDonutProps) 
         <div className="size-[200px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={rows} dataKey="value" nameKey="status" innerRadius={50} outerRadius={80}>
+              <Pie
+                data={rows}
+                dataKey="value"
+                nameKey="status"
+                innerRadius={50}
+                outerRadius={80}
+                paddingAngle={rows.filter((row) => row.value > 0).length > 1 ? 2 : 0}
+              >
                 {rows.map((row) => (
                   <Cell key={row.status} fill={OUTCOME_COLORS[row.status]} />
                 ))}
               </Pie>
+              <Tooltip
+                formatter={(value, status) => [value, String(status).replace("_", " ")]}
+                contentStyle={{
+                  borderRadius: 8,
+                  border: "1px solid var(--border)",
+                  background: "var(--popover)",
+                  color: "var(--popover-foreground)",
+                  boxShadow: "var(--shadow-md)",
+                  fontSize: 12,
+                }}
+                labelStyle={{ display: "none" }}
+                itemStyle={{ padding: 0, textTransform: "capitalize" }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -76,8 +100,12 @@ export function ExecutionOutcomeDonut({ outcomes }: ExecutionOutcomeDonutProps) 
         type="button"
         onClick={() => setShowByActionType((value) => !value)}
         aria-expanded={showByActionType}
-        className="mt-3 text-[12px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        className="group -mx-1.5 mt-3 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-expanded:text-foreground"
       >
+        <ChevronRight
+          aria-hidden="true"
+          className="size-3 shrink-0 text-subtle-foreground transition-transform duration-150 group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
+        />
         Breakdown by action type
       </button>
       {showByActionType && (
