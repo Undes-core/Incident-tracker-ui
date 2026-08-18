@@ -695,31 +695,31 @@ clicking any segment produces the same cross-tab jump behaviour as a funnel stag
 scope (Knowledge and breakdowns/volume having already absorbed the content PRD v2 explicitly moved
 ahead of pure polish).
 
-- [ ] T184 [P] [REQ P-1 / FR-115] Measure first-meaningful-paint against the seeded dataset
+- [X] T184 [P] [REQ P-1 / FR-115] Measure first-meaningful-paint against the seeded dataset
       (Lighthouse or equivalent); confirm < 2s
-- [ ] T185 [P] [REQ X-2,X-3 / FR-108,FR-109] Verify the alert strip's 30s cadence and Performance/
+- [X] T185 [P] [REQ X-2,X-3 / FR-108,FR-109] Verify the alert strip's 30s cadence and Performance/
       Knowledge's 5-minute cadence via each query's `refetchInterval`; confirm animated,
       non-jumping value transitions across every tile/chart
-- [ ] T186 [P] [REQ TB-4 / FR-019] Playwright e2e: switching between all three tabs after initial
+- [X] T186 [P] [REQ TB-4 / FR-019] Playwright e2e: switching between all three tabs after initial
       load triggers no additional network request for already-loaded panels and no loading
       skeleton, in `tests/e2e/tabSwitchNoRefetch.spec.ts`
-- [ ] T187 [P] [REQ §11.12,SC-012,SC-013 / FR-015] Playwright e2e: record the alert strip's counts,
+- [X] T187 [P] [REQ §11.12,SC-012,SC-013 / FR-015] Playwright e2e: record the alert strip's counts,
       switch to Performance, seed a new P1, confirm the strip updates within one polling interval
       with no tab switch or manual refresh (SC-013), and confirm the counts read identically
       whichever tab is active except for that update itself (SC-012), in
       `tests/e2e/stripLiveness.spec.ts`
-- [ ] T188 [P] [REQ A11Y-2 / FR-112] Run an automated contrast check (e.g. `axe`) across every
+- [X] T188 [P] [REQ A11Y-2 / FR-112] Run an automated contrast check (e.g. `axe`) across every
       pill/badge and chart series; fix any WCAG AA failure found
-- [ ] T189 [P] [REQ A11Y-3,SC-009 / FR-113] Playwright e2e: full keyboard traversal of the tab
+- [X] T189 [P] [REQ A11Y-3,SC-009 / FR-113] Playwright e2e: full keyboard traversal of the tab
       bar, the open drawer (agent trace, similarity matches, actions, timeline, feedback), in
       `tests/e2e/drawerKeyboard.spec.ts`
-- [ ] T190 [P] [REQ Principle VIII,SC-011 / FR-106] Playwright e2e: force one panel's MSW handler
+- [X] T190 [P] [REQ Principle VIII,SC-011 / FR-106] Playwright e2e: force one panel's MSW handler
       to error (including the alert strip itself) and confirm every other panel stays interactive,
       in `tests/e2e/failureIsolation.spec.ts`
-- [ ] T191 [REQ quickstart.md] Walk quickstart.md's 11-step manual golden-path check end-to-end;
+- [X] T191 [REQ quickstart.md] Walk quickstart.md's 11-step manual golden-path check end-to-end;
       record the result
-- [ ] T192 [P] Document `npm run dev`/`test`/`test:e2e` in `README.md` per quickstart.md
-- [ ] T193 Run `npm run typecheck` and `npm run lint` clean across `src/`; fix any strict-mode or
+- [X] T192 [P] Document `npm run dev`/`test`/`test:e2e` in `README.md` per quickstart.md
+- [X] T193 Run `npm run typecheck` and `npm run lint` clean across `src/`; fix any strict-mode or
       lint violation
 
 ---

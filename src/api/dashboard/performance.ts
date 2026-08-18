@@ -61,9 +61,12 @@ export function fetchPerformance(params: PerformanceParams = {}): Promise<Perfor
   return apiRequest<PerformanceData>(`/api/dashboard/performance${query}`);
 }
 
+// FR-108: refreshes on filter change (via queryKey) and every 5 minutes regardless — Performance
+// is one of the two tabs polled on a slower cadence than the alert strip's 30s (X-2).
 export function usePerformance(params: PerformanceParams = {}) {
   return useQuery({
     queryKey: ["dashboard", "performance", params],
     queryFn: () => fetchPerformance(params),
+    refetchInterval: 300_000,
   });
 }

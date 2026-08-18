@@ -21,9 +21,10 @@ visible, polling independently of whatever else is on screen) above three tabs:
 There is no real backend yet: every API call is intercepted in the browser by **MSW** against a
 seeded fixture dataset, so the app is fully interactive with `npm run dev` and zero setup.
 
-**Current status**: Setup, Foundational, and User Story 1 (the Now tab end-to-end) are built and
-tested. Approve/reject, Performance, and Knowledge are not yet implemented — see
-`specs/001-incident-response-dashboard/tasks.md` for the full build order.
+**Current status**: All five user stories (Now tab, approve/reject, Performance, Knowledge, and
+volume/breakdowns) are built and tested, plus the Phase 8 polish pass (accessibility audit,
+failure-isolation, keyboard-traversal, and polling-cadence coverage) — see
+`specs/001-incident-response-dashboard/tasks.md` for the full build order and status.
 
 ## Running it
 

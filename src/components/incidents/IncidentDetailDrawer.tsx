@@ -20,7 +20,10 @@ export function IncidentDetailDrawer() {
   const isOpen = incidentId !== null;
   const { data, isLoading, isError, error, refetch } = useIncidentDetail(incidentId);
   const containerRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(containerRef, isOpen);
+  // "container": the first focusable child is "Close" — focusing it initially would let a
+  // keyboard-triggered open (Enter on the incident row) immediately self-dismiss the drawer
+  // (see useFocusTrap.ts's UseFocusTrapOptions doc).
+  useFocusTrap(containerRef, isOpen, { initialFocus: "container" });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -36,7 +39,7 @@ export function IncidentDetailDrawer() {
   return (
     <>
       <div data-testid="scrim" onClick={() => setIncident(null)} />
-      <div role="dialog" aria-modal="true" aria-label="Incident detail" ref={containerRef}>
+      <div role="dialog" aria-modal="true" aria-label="Incident detail" ref={containerRef} tabIndex={-1}>
         <button type="button" onClick={() => setIncident(null)} aria-label="Close incident detail">
           Close
         </button>

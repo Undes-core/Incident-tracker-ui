@@ -30,9 +30,12 @@ export function fetchBreakdowns(params: BreakdownsParams = {}): Promise<Breakdow
   return apiRequest<BreakdownsData>(`/api/dashboard/breakdowns${query}`);
 }
 
+// FR-108: volume/breakdowns live on the Performance tab, so they follow the same 5-minute cadence
+// as usePerformance rather than the alert strip's 30s.
 export function useBreakdowns(params: BreakdownsParams = {}) {
   return useQuery({
     queryKey: ["dashboard", "breakdowns", params],
     queryFn: () => fetchBreakdowns(params),
+    refetchInterval: 300_000,
   });
 }

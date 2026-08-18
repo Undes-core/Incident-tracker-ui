@@ -37,9 +37,12 @@ export function fetchKnowledge(params: KnowledgeParams = {}): Promise<KnowledgeD
   return apiRequest<KnowledgeData>(`/api/dashboard/knowledge${query}`);
 }
 
+// FR-108: refreshes on filter change (via queryKey) and every 5 minutes regardless — Knowledge is
+// the other tab polled on this slower cadence than the alert strip's 30s (X-2).
 export function useKnowledge(params: KnowledgeParams = {}) {
   return useQuery({
     queryKey: ["dashboard", "knowledge", params],
     queryFn: () => fetchKnowledge(params),
+    refetchInterval: 300_000,
   });
 }
