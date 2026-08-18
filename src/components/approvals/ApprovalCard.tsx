@@ -104,14 +104,13 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
 
   return (
     // §11.19: keyed by this card's own action id upstream, and every phase below is local state.
-    // A hairline top accent (in the risk hue) reinforces the RiskBadge without tinting the whole
-    // card — colour still concentrates in the chip and the meter, this just echoes it once more so
-    // a HIGH-risk card reads as higher priority at a glance, before the eye reaches the badge.
+    // Risk colour concentrates in the RiskBadge and the confidence meter — the card shell stays a
+    // neutral border so the chip, not a decorative stripe, is what reads as risk.
     <li
       data-phase={phase}
       data-risk={card.riskLevel}
       data-action-id={card.id}
-      className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:content-[''] before:bg-transparent hover:shadow-lg data-[risk=HIGH]:before:bg-bad data-[risk=MEDIUM]:before:bg-warn data-[risk=LOW]:before:bg-ok data-[phase=executing]:border-p3/40 data-[phase=executing]:shadow-[0_0_0_1px_rgb(37_99_235/0.15),var(--shadow-md)] data-[phase=rejected]:opacity-60 data-[phase=rejected]:shadow-none data-[phase=rejected]:before:bg-transparent data-[phase=rejected]:hover:shadow-none"
+      className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md data-[phase=executing]:border-p3/40 data-[phase=executing]:shadow-[0_0_0_1px_rgb(37_99_235/0.15),var(--shadow-md)] data-[phase=rejected]:opacity-60 data-[phase=rejected]:shadow-none data-[phase=rejected]:hover:shadow-none"
     >
       <div className="flex items-start justify-between gap-5 p-4 pt-[18px]">
         <div className="min-w-0">

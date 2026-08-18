@@ -22,13 +22,12 @@ export interface KpiTileProps {
 }
 
 // An independent card rather than a cell in a shared strip (see KpiRow) — each tile owns its own
-// border, radius and hover elevation, plus a severity accent along its top edge so urgent/
-// cautionary tiles read as distinct at a glance, not just via a tinted number.
+// border, radius and hover elevation. Severity reads through the value's colour and the label
+// text rather than a decorative top-edge accent, so colour stays concentrated in the number that
+// is actually the data, not doubled onto the card frame around it.
 const TILE_CLASS = [
   "group relative w-full overflow-hidden rounded-xl border border-border bg-card px-4 py-3.5 text-left shadow-xs",
   "transition-all hover:-translate-y-px hover:border-border hover:shadow-md",
-  "before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:content-['']",
-  "before:bg-transparent data-[severity=urgent]:before:bg-bad data-[severity=cautionary]:before:bg-warn",
   "data-[active=true]:border-transparent data-[active=true]:bg-selected-bg data-[active=true]:shadow-sm data-[active=true]:ring-2 data-[active=true]:ring-selected-ring/50",
 ].join(" ");
 
@@ -37,11 +36,12 @@ const VALUE_CLASS = [
   "group-data-[severity=urgent]:text-bad group-data-[severity=cautionary]:text-warn",
 ].join(" ");
 
-const ICON_WRAP_CLASS = [
-  "flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted text-subtle-foreground transition-colors",
-  "group-data-[severity=urgent]:bg-chip-bad-bg group-data-[severity=urgent]:text-bad",
-  "group-data-[severity=cautionary]:bg-chip-warn-bg group-data-[severity=cautionary]:text-warn",
-  "group-data-[active=true]:bg-card group-data-[active=true]:text-primary",
+// A plain icon beside the eyebrow label, not a tinted box around it — one recognition cue is
+// enough; a circle-in-a-card around every metric icon was the redundant part.
+const ICON_CLASS = [
+  "size-3.5 shrink-0 text-subtle-foreground transition-colors",
+  "group-data-[severity=urgent]:text-bad group-data-[severity=cautionary]:text-warn",
+  "group-data-[active=true]:text-primary",
 ].join(" ");
 
 const DELTA_CLASS = [
@@ -71,12 +71,8 @@ export function KpiTile({
       className={`group ${TILE_CLASS}`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="eyebrow inline-flex items-center gap-2">
-          {Icon && (
-            <span aria-hidden className={ICON_WRAP_CLASS}>
-              <Icon className="size-3.5" />
-            </span>
-          )}
+        <span className="eyebrow inline-flex items-center gap-1.5">
+          {Icon && <Icon aria-hidden className={ICON_CLASS} />}
           {label}
         </span>
         {delta && (
