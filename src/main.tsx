@@ -13,6 +13,10 @@ declare global {
 
 async function enableMocking() {
   if (!import.meta.env.DEV) return;
+  // VITE_USE_API=true points the app at the real backend through the Vite proxy.
+  // MSW's worker answers requests itself, so it has to be off for the proxy to
+  // ever see them.
+  if (import.meta.env.VITE_USE_API === "true") return;
   const { worker } = await import("./api/fixtures/browser");
   const { http, HttpResponse } = await import("msw");
   // e2e-test-only hook: Playwright's page.route can't intercept requests MSW's own Service
