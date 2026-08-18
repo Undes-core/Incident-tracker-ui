@@ -28,7 +28,14 @@ const card: PendingApprovalCard = {
   description: "Clear expired refresh-token rows blocking the unique index",
   riskLevel: "LOW",
   confidenceScore: 0.62,
-  topMatches: [{ documentType: "RUNBOOK", title: "Token cleanup runbook", score: 0.8, sourceUrl: "https://runbooks.internal/tokens" }],
+  topMatches: [
+    {
+      documentType: "RUNBOOK",
+      title: "Token cleanup runbook",
+      score: 0.8,
+      sourceUrl: "https://runbooks.internal/tokens",
+    },
+  ],
   proposedAt: "2026-08-17T11:00:00Z",
   proposedByAgent: "Remediation Planner",
 };
@@ -58,21 +65,27 @@ describe("ApprovalCard", () => {
     expect(screen.getByText(/low confidence/i)).toBeInTheDocument();
   });
 
-  it("collapses parameters by default and expands on click (FR-035,AR-3)", async () => {
-    server.use(http.get("/api/actions/:id/parameters", () => HttpResponse.json({ parameters: { statement: "SELECT 1" } })));
+  // FR-035/AR-3/P-4: parameters now live inside the Evidence panel, which is closed on mount —
+  // so nothing is rendered and no request fires until the operator opens it.
+  it("collapses parameters by default and fetches them when Evidence is opened (FR-035,AR-3)", async () => {
+    server.use(
+      http.get("/api/actions/:id/parameters", () =>
+        HttpResponse.json({ parameters: { statement: "SELECT 1" } }),
+      ),
+    );
     renderCard();
 
     expect(screen.queryByText(/select/i)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /^parameters$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /evidence/i }));
 
     expect(await screen.findByText(/select/i)).toBeInTheDocument();
   });
 
-  it('collapses "why this action" by default and expands to show the evidence (FR-036,AR-4)', () => {
+  it("collapses the evidence by default and expands to show the matches (FR-036,AR-4)", () => {
     renderCard();
 
     expect(screen.queryByText("Token cleanup runbook")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /why this action/i }));
+    fireEvent.click(screen.getByRole("button", { name: /evidence/i }));
 
     expect(screen.getByText("Token cleanup runbook")).toBeInTheDocument();
   });
@@ -83,10 +96,18 @@ describe("ApprovalCard", () => {
     server.use(
       http.post("/api/actions/:id/approve", async ({ request }) => {
         captured.body = await request.json();
-        return HttpResponse.json({ executedActionId: "exec-a3", status: "RUNNING" }, { status: 202 });
+        return HttpResponse.json(
+          { executedActionId: "exec-a3", status: "RUNNING" },
+          { status: 202 },
+        );
       }),
       http.get("/api/actions/:id/execution", () =>
-        HttpResponse.json({ status: "RUNNING", errorMessage: null, startedAt: new Date().toISOString(), finishedAt: null }),
+        HttpResponse.json({
+          status: "RUNNING",
+          errorMessage: null,
+          startedAt: new Date().toISOString(),
+          finishedAt: null,
+        }),
       ),
     );
 
@@ -104,15 +125,23 @@ describe("ApprovalCard", () => {
     server.use(
       http.post("/api/actions/:id/reject", async ({ request }) => {
         captured.body = await request.json();
-        return HttpResponse.json({ status: "REJECTED", approvedBy: "a.reyes", approvedAt: new Date().toISOString() });
+        return HttpResponse.json({
+          status: "REJECTED",
+          approvedBy: "a.reyes",
+          approvedAt: new Date().toISOString(),
+        });
       }),
     );
 
     renderCard();
     fireEvent.click(screen.getByRole("button", { name: /^reject$/i }));
-    fireEvent.change(screen.getByRole("textbox", { name: /reason/i }), { target: { value: "No longer needed" } });
+    fireEvent.change(screen.getByRole("textbox", { name: /reason/i }), {
+      target: { value: "No longer needed" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /submit rejection/i }));
 
-    await waitFor(() => expect(captured.body).toEqual({ actor: "a.reyes", reason: "No longer needed" }));
+    await waitFor(() =>
+      expect(captured.body).toEqual({ actor: "a.reyes", reason: "No longer needed" }),
+    );
   });
 });

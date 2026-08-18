@@ -10,8 +10,7 @@ import { toRejectRequest, type RejectFormValues } from "../../domain/rejection";
 import { RiskBadge } from "../shared/RiskBadge";
 import { ConfidenceBar } from "../shared/ConfidenceBar";
 import { OutcomeBadge } from "../shared/OutcomeBadge";
-import { ParametersViewer } from "./ParametersViewer";
-import { WhyThisAction } from "./WhyThisAction";
+import { ActionDetailPanels } from "./ActionDetailPanels";
 import { RejectForm } from "./RejectForm";
 import { useApproveConfirmGate } from "./useApproveConfirmGate";
 import { useOperatorNameGate } from "../shared/useOperatorNameGate";
@@ -131,14 +130,11 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
         </div>
       </div>
 
-      <div className="grid gap-px border-t border-border-soft bg-border-soft sm:grid-cols-2">
-        <div className="bg-card px-4 py-2.5">
-          <ParametersViewer actionId={card.id} actionType={card.actionType} />
-        </div>
-        <div className="bg-card px-4 py-2.5">
-          <WhyThisAction matches={card.topMatches} />
-        </div>
-      </div>
+      <ActionDetailPanels
+        actionId={card.id}
+        actionType={card.actionType}
+        matches={card.topMatches}
+      />
 
       {phase === "proposed" && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft bg-muted/40 px-4 py-3">
