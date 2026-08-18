@@ -1,5 +1,6 @@
 import { usePerformance } from "../../api/dashboard/performance";
 import { PanelBoundary } from "../shared/PanelBoundary";
+import { Panel } from "../shared/Panel";
 import { AutomationFunnel } from "./AutomationFunnel";
 
 // Fetches the same shared /api/dashboard/performance query as KpiStripPerformance and
@@ -10,17 +11,28 @@ export function AutomationFunnelPanel() {
   const { data, isLoading, isError, error, refetch } = usePerformance();
 
   return (
-    <PanelBoundary
-      isLoading={isLoading}
-      isError={isError}
-      errorMessage={(error as Error | undefined)?.message}
-      onRetry={refetch}
-      data={data}
-      isEmpty={() => false}
-      emptyNoDataMessage="Funnel data arrives once incidents are worked in the active range."
-      skeleton={<div>Loading funnel…</div>}
-    >
-      {(perf) => <AutomationFunnel stages={perf.funnel.stages} automationRate={perf.funnel.automationRate} />}
-    </PanelBoundary>
+    <Panel title="Automation funnel">
+      <PanelBoundary
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage={(error as Error | undefined)?.message}
+        onRetry={refetch}
+        data={data}
+        isEmpty={() => false}
+        emptyNoDataMessage="Funnel data arrives once incidents are worked in the active range."
+        skeleton={
+          <div className="h-[240px] animate-pulse rounded-lg border border-border bg-muted/40">
+            <span className="sr-only">Loading funnel…</span>
+          </div>
+        }
+      >
+        {(perf) => (
+          <AutomationFunnel
+            stages={perf.funnel.stages}
+            automationRate={perf.funnel.automationRate}
+          />
+        )}
+      </PanelBoundary>
+    </Panel>
   );
 }

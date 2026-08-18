@@ -4,6 +4,15 @@ import { useSubmitFeedback } from "../../api/feedback";
 import type { FeedbackRecord } from "../../api/feedback";
 import type { FeedbackType, Priority } from "../../api/types";
 import { useOperatorNameGate } from "../shared/useOperatorNameGate";
+import {
+  ALERT_NOTE,
+  BUTTON_PRIMARY,
+  FIELD_CONTROL,
+  FIELD_LABEL,
+  MUTED_NOTE,
+  SECTION,
+  SECTION_TITLE,
+} from "../shared/sectionStyles";
 
 interface FeedbackFormValues {
   feedbackType: FeedbackType | "";
@@ -55,47 +64,71 @@ export function FeedbackForm({ incidentId, existingFeedback }: FeedbackFormProps
   }
 
   return (
-    <section aria-label="Feedback">
-      <h3>Existing feedback</h3>
+    <section aria-label="Feedback" className={SECTION}>
+      <h3 className={SECTION_TITLE}>Existing feedback</h3>
       {feedback.length === 0 ? (
-        <p>No feedback submitted yet.</p>
+        <p className={MUTED_NOTE}>No feedback submitted yet.</p>
       ) : (
-        <ul>
+        <ul className="grid gap-1.5">
           {feedback.map((f) => (
-            <li key={f.id}>
-              <span>{f.feedbackType}</span>
+            <li
+              key={f.id}
+              className="flex flex-wrap items-baseline gap-2 rounded-md border border-border-soft bg-secondary px-2.5 py-1.5 text-[12.5px]"
+            >
+              <span className="rounded bg-muted px-1.5 py-px text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {f.feedbackType}
+              </span>
               <span>{f.comments}</span>
-              <span>{f.createdBy}</span>
+              <span className="ml-auto text-[11.5px] text-subtle-foreground">{f.createdBy}</span>
             </li>
           ))}
         </ul>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 grid gap-2.5">
+        <label className={FIELD_LABEL}>
           Feedback type
-          <select {...register("feedbackType", { validate: (value) => Boolean(value) || "Feedback type is required" })}>
+          <select
+            className={FIELD_CONTROL}
+            {...register("feedbackType", {
+              validate: (value) => Boolean(value) || "Feedback type is required",
+            })}
+          >
             <option value="">Select…</option>
             <option value="APPROVED">Approved</option>
             <option value="REJECTED">Rejected</option>
             <option value="CORRECTED">Corrected</option>
           </select>
         </label>
-        {errors.feedbackType && <p role="alert">{errors.feedbackType.message}</p>}
+        {errors.feedbackType && (
+          <p role="alert" className={ALERT_NOTE}>
+            {errors.feedbackType.message}
+          </p>
+        )}
 
-        <label>
+        <label className={FIELD_LABEL}>
           Comments
-          <textarea {...register("comments", { validate: (value) => value.trim().length > 0 || "Comments are required" })} />
+          <textarea
+            rows={3}
+            className={FIELD_CONTROL}
+            {...register("comments", {
+              validate: (value) => value.trim().length > 0 || "Comments are required",
+            })}
+          />
         </label>
-        {errors.comments && <p role="alert">{errors.comments.message}</p>}
+        {errors.comments && (
+          <p role="alert" className={ALERT_NOTE}>
+            {errors.comments.message}
+          </p>
+        )}
 
-        <label>
+        <label className={FIELD_LABEL}>
           Corrected category (optional)
-          <input type="text" {...register("correctedCategory")} />
+          <input type="text" className={FIELD_CONTROL} {...register("correctedCategory")} />
         </label>
-        <label>
+        <label className={FIELD_LABEL}>
           Corrected priority (optional)
-          <select {...register("correctedPriority")}>
+          <select className={FIELD_CONTROL} {...register("correctedPriority")}>
             <option value="">—</option>
             <option value="P1">P1</option>
             <option value="P2">P2</option>
@@ -103,12 +136,14 @@ export function FeedbackForm({ incidentId, existingFeedback }: FeedbackFormProps
             <option value="P4">P4</option>
           </select>
         </label>
-        <label>
+        <label className={FIELD_LABEL}>
           Corrected resolution (optional)
-          <textarea {...register("correctedResolution")} />
+          <textarea rows={2} className={FIELD_CONTROL} {...register("correctedResolution")} />
         </label>
 
-        <button type="submit">Submit feedback</button>
+        <button type="submit" className={BUTTON_PRIMARY}>
+          Submit feedback
+        </button>
       </form>
       {operatorNamePrompt}
     </section>

@@ -82,17 +82,43 @@ export function BreakdownBars(props: Props) {
   }
 
   return (
-    <section aria-label={VARIANT_LABEL[props.variant]}>
+    <section
+      aria-label={VARIANT_LABEL[props.variant]}
+      className="rounded-lg border border-border bg-card p-4"
+    >
       <ol>
         {rows.map((row) => (
           <li key={row.id}>
-            <button type="button" onClick={() => handleClick(row)}>
-              <span>{props.variant === "priority" ? <PriorityPill priority={row.label as Priority} /> : row.label}</span>
-              <div role="img" aria-label={`${row.label} count ${row.count}`}>
-                <div style={{ width: `${(row.count / maxCount) * 100}%` }} />
+            <button
+              type="button"
+              onClick={() => handleClick(row)}
+              className="-mx-2 grid w-full grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-1.5 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/60 disabled:pointer-events-none disabled:opacity-50"
+            >
+              <span className="text-[13px]">
+                {props.variant === "priority" ? (
+                  <PriorityPill priority={row.label as Priority} />
+                ) : (
+                  row.label
+                )}
+              </span>
+              <span className="meta tabular-nums text-foreground">
+                {row.count}
+                {row.knownRatePercent !== undefined && (
+                  <span className="ml-1.5 text-subtle-foreground">
+                    {row.knownRatePercent}% known
+                  </span>
+                )}
+              </span>
+              <div
+                role="img"
+                aria-label={`${row.label} count ${row.count}`}
+                className="col-span-2 mt-1 h-1 w-full overflow-hidden rounded-full bg-muted"
+              >
+                <div
+                  style={{ width: `${(row.count / maxCount) * 100}%` }}
+                  className="h-full rounded-full bg-primary/60"
+                />
               </div>
-              <span>{row.count}</span>
-              {row.knownRatePercent !== undefined && <span>{row.knownRatePercent}% known</span>}
             </button>
           </li>
         ))}

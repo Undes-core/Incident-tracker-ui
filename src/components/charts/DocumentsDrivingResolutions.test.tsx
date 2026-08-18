@@ -4,7 +4,12 @@ import { DocumentsDrivingResolutions } from "./DocumentsDrivingResolutions";
 import type { DocumentDrivingResolution } from "../../api/dashboard/knowledge";
 
 const documents: DocumentDrivingResolution[] = [
-  { documentId: "doc-2", documentType: "INCIDENT", title: "INC-842 — payments-db pool exhausted", resolutionCount: 19 },
+  {
+    documentId: "doc-2",
+    documentType: "INCIDENT",
+    title: "INC-842 — payments-db pool exhausted",
+    resolutionCount: 19,
+  },
   { documentId: "doc-1", documentType: "RUNBOOK", title: "Runbook #42", resolutionCount: 23 },
   { documentId: "doc-4", documentType: "POSTMORTEM", title: "PM-2026-03", resolutionCount: 9 },
 ];

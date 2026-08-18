@@ -26,28 +26,52 @@ export function AutomationFunnel({ stages, automationRate }: AutomationFunnelPro
   }
 
   return (
-    <section aria-label="Automation funnel">
-      <div>
-        <span>Fully automated: {automationRate.fullyAutomatedPercent}%</span>
-        <span>Human-assisted: {automationRate.humanAssistedPercent}%</span>
+    <section aria-label="Automation funnel" className="rounded-lg border border-border bg-card p-4">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 text-[13px]">
+        <span>
+          Fully automated <b className="font-semibold">{automationRate.fullyAutomatedPercent}%</b>
+        </span>
+        <span>
+          Human-assisted <b className="font-semibold">{automationRate.humanAssistedPercent}%</b>
+        </span>
       </div>
       {drop && (
-        <p>
-          Largest drop: {drop.fromLabel} → {drop.toLabel}, −{drop.magnitude}. See the Knowledge tab for the likely
-          fix.
+        <p className="mt-2 text-[13px] text-muted-foreground">
+          Largest drop: {drop.fromLabel} → {drop.toLabel}, −{drop.magnitude}. See the Knowledge tab
+          for the likely fix.
         </p>
       )}
-      <ol>
+      <ol className="mt-3">
         {stages.map((stage, index) => {
           const selection = dropSetFor(stages, index);
           const percent = percentOfStageAbove(stages, index);
           return (
             <li key={stage.key}>
-              <button type="button" disabled={selection.unavailable} onClick={() => handleStageClick(index)}>
-                <span>{stage.label}</span>
-                <span>{stage.count ?? "Not yet available"}</span>
-                {percent !== null && <span>({percent}%)</span>}
-                {stage.dropCount !== null && index > 0 && <span>−{stage.dropCount}</span>}
+              <button
+                type="button"
+                disabled={selection.unavailable}
+                onClick={() => handleStageClick(index)}
+                className="-mx-2 grid w-full grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-1.5 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/60 disabled:pointer-events-none disabled:opacity-50"
+              >
+                <span className="text-[13px]">{stage.label}</span>
+                <span className="meta tabular-nums text-foreground">
+                  {stage.count ?? "Not yet available"}
+                  {percent !== null && (
+                    <span className="ml-1.5 text-subtle-foreground">({percent}%)</span>
+                  )}
+                  {stage.dropCount !== null && index > 0 && (
+                    <span className="ml-1.5 text-bad">−{stage.dropCount}</span>
+                  )}
+                </span>
+                {/* The bar spans both columns so the label and count keep their own baseline. */}
+                {percent !== null && (
+                  <span className="col-span-2 mt-1 h-1 w-full overflow-hidden rounded-full bg-muted">
+                    <span
+                      style={{ width: `${percent}%` }}
+                      className="block h-full rounded-full bg-primary/60"
+                    />
+                  </span>
+                )}
               </button>
             </li>
           );

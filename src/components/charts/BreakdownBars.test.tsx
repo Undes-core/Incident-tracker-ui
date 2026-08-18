@@ -47,7 +47,14 @@ describe("BreakdownBars", () => {
     render(
       <BreakdownBars
         variant="service"
-        rows={[{ serviceId: "svc-payments-api", serviceName: "payments-api", count: 34, knownRate: 0.71 }]}
+        rows={[
+          {
+            serviceId: "svc-payments-api",
+            serviceName: "payments-api",
+            count: 34,
+            knownRate: 0.71,
+          },
+        ]}
       />,
     );
     const button = screen.getByRole("button", { name: /payments-api/i });
@@ -76,7 +83,9 @@ describe("BreakdownBars", () => {
     fireEvent.click(screen.getByRole("button", { name: /Database/i }));
 
     await waitFor(() =>
-      expect(new URLSearchParams(window.location.search).get("filterKey")).toBe("category:Database"),
+      expect(new URLSearchParams(window.location.search).get("filterKey")).toBe(
+        "category:Database",
+      ),
     );
   });
 
@@ -84,13 +93,22 @@ describe("BreakdownBars", () => {
     render(
       <BreakdownBars
         variant="service"
-        rows={[{ serviceId: "svc-payments-api", serviceName: "payments-api", count: 34, knownRate: 0.71 }]}
+        rows={[
+          {
+            serviceId: "svc-payments-api",
+            serviceName: "payments-api",
+            count: 34,
+            knownRate: 0.71,
+          },
+        ]}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /payments-api/i }));
 
     await waitFor(() =>
-      expect(new URLSearchParams(window.location.search).get("filterKey")).toBe("service:svc-payments-api"),
+      expect(new URLSearchParams(window.location.search).get("filterKey")).toBe(
+        "service:svc-payments-api",
+      ),
     );
   });
 

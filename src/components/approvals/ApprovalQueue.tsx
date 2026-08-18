@@ -4,6 +4,7 @@ import type { PendingApprovalCard, PendingApprovalsData } from "../../api/approv
 import { APPROVAL_QUEUE_FLASH_EVENT } from "../layout/AlertStrip";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { ApprovalCard } from "./ApprovalCard";
+import { SectionHeader } from "../shared/SectionHeader";
 
 const FLASH_DURATION_MS = 1500;
 
@@ -46,7 +47,17 @@ export function ApprovalQueue() {
     cards && data ? { cards, autoExecutedCountInRange: data.autoExecutedCountInRange } : undefined;
 
   return (
-    <div id="approval-queue" ref={containerRef}>
+    // The alert strip's "awaiting approval" button jumps here from any tab (§13: the queue is
+    // never behind a tab of its own), then fires the flash this ring renders.
+    <div
+      id="approval-queue"
+      ref={containerRef}
+      className="mt-6 scroll-mt-[180px] rounded-lg transition-shadow data-[flash=true]:ring-2 data-[flash=true]:ring-ring"
+    >
+      <SectionHeader
+        title="Pending approvals"
+        meta={view ? `${view.cards.length} awaiting review` : undefined}
+      />
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}
@@ -56,13 +67,18 @@ export function ApprovalQueue() {
         isEmpty={(d) => d.cards.length === 0}
         emptyNoDataMessage={
           <p>
-            All clear — {view?.autoExecutedCountInRange ?? 0} actions executed automatically in the last 7 days.
+            All clear — {view?.autoExecutedCountInRange ?? 0} actions executed automatically in the
+            last 7 days.
           </p>
         }
-        skeleton={<div>Loading approvals…</div>}
+        skeleton={
+          <div className="rounded-lg border border-border bg-card px-4 py-8 text-center text-[13px] text-muted-foreground">
+            Loading approvals…
+          </div>
+        }
       >
         {(pending) => (
-          <ul>
+          <ul className="grid gap-3">
             {pending.cards.map((card) => (
               <ApprovalCard
                 key={card.id}

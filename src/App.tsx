@@ -29,33 +29,46 @@ function Dashboard() {
   const { data: alertStrip } = useAlertStrip();
 
   return (
-    <>
-      <DashboardHeader />
-      <AlertStrip />
-      <TabBar pendingApprovalCount={alertStrip?.awaitingApproval ?? 0} />
-      <TabPanel tab="now" activeTab={tab}>
-        <KpiStripNow />
-        <ApprovalQueue />
-        <IncidentTable />
-      </TabPanel>
-      <TabPanel tab="performance" activeTab={tab}>
-        <KpiStripPerformance />
-        <AutomationFunnelPanel />
-        <ExecutionOutcomeDonutPanel />
-        <VolumeChartPanel />
-        <PriorityBreakdownPanel />
-        <CategoryBreakdownPanel />
-        <ServiceBreakdownPanel />
-      </TabPanel>
-      <TabPanel tab="knowledge" activeTab={tab}>
-        <KpiStripKnowledge />
-        <CoverageGapsChartPanel />
-        <DocumentsDrivingResolutionsPanel />
-        <DocumentationCandidates />
-      </TabPanel>
+    <div className="min-h-screen bg-background">
+      {/*
+        Header + alert strip + tab bar form one sticky top block. The strip is deliberately inside
+        it and outside every TabPanel (AS-1/X-2): it must stay visible and keep its own 30s poll no
+        matter which tab is active.
+      */}
+      <div className="sticky top-0 z-40 bg-card">
+        <DashboardHeader />
+        <AlertStrip />
+        <TabBar pendingApprovalCount={alertStrip?.awaitingApproval ?? 0} />
+      </div>
+      <main className="mx-auto w-full max-w-[1360px] px-6 pb-20">
+        <TabPanel tab="now" activeTab={tab}>
+          <KpiStripNow />
+          <ApprovalQueue />
+          <IncidentTable />
+        </TabPanel>
+        <TabPanel tab="performance" activeTab={tab}>
+          <KpiStripPerformance />
+          <AutomationFunnelPanel />
+          <ExecutionOutcomeDonutPanel />
+          <VolumeChartPanel />
+          {/* The three breakdowns are the same shape at the same altitude, so they read as one
+              row of small multiples rather than three full-width charts to scroll past. */}
+          <div className="grid grid-cols-3 gap-4">
+            <PriorityBreakdownPanel />
+            <CategoryBreakdownPanel />
+            <ServiceBreakdownPanel />
+          </div>
+        </TabPanel>
+        <TabPanel tab="knowledge" activeTab={tab}>
+          <KpiStripKnowledge />
+          <CoverageGapsChartPanel />
+          <DocumentsDrivingResolutionsPanel />
+          <DocumentationCandidates />
+        </TabPanel>
+      </main>
       <IncidentDetailDrawer />
       <CrossTabToast />
-    </>
+    </div>
   );
 }
 

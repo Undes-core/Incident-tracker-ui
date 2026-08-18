@@ -31,5 +31,9 @@ export function RelativeTime({ timestamp, clock = systemClock }: RelativeTimePro
     timeZoneName: "short",
   });
 
-  return <time dateTime={timestamp} title={absolute}>{formatRelative(diffMs)}</time>;
+  return (
+    <time dateTime={timestamp} title={absolute}>
+      {formatRelative(diffMs)}
+    </time>
+  );
 }

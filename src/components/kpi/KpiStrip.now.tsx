@@ -4,6 +4,7 @@ import { describeDelta } from "../../domain/kpi";
 import { formatAge } from "../../domain/age";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { KpiTile } from "./KpiTile";
+import { KpiRow } from "./KpiRow";
 
 // FR-027-030: the four Now-tab operational tiles — never P1-active or awaiting-approval, which
 // live exclusively in the alert strip. Renders before any chart (P-2, satisfied by mounting
@@ -21,15 +22,21 @@ export function KpiStripNow() {
       data={data}
       isEmpty={() => false}
       emptyNoDataMessage="Incidents arrive from email, PagerDuty, Slack, and the API."
-      skeleton={<div>Loading tiles…</div>}
+      skeleton={
+        <div className="h-[86px] animate-pulse rounded-lg border border-border bg-muted/50">
+          <span className="sr-only">Loading tiles…</span>
+        </div>
+      }
     >
       {(tiles) => (
-        <div>
+        <KpiRow>
           <KpiTile
             label="Open incidents"
             value={tiles.openIncidents.value}
             delta={describeDelta("openIncidents", tiles.openIncidents.deltaVsPrevious)}
-            onClick={() => setFilter({ kind: "kpiTile", key: "openIncidents", label: "Open incidents" })}
+            onClick={() =>
+              setFilter({ kind: "kpiTile", key: "openIncidents", label: "Open incidents" })
+            }
             isActive={activeFilter?.key === "openIncidents"}
           />
           <KpiTile
@@ -50,12 +57,14 @@ export function KpiStripNow() {
           />
           <KpiTile
             label="Oldest open"
-            value={tiles.oldestOpen.ageMinutes != null ? formatAge(tiles.oldestOpen.ageMinutes) : "—"}
+            value={
+              tiles.oldestOpen.ageMinutes != null ? formatAge(tiles.oldestOpen.ageMinutes) : "—"
+            }
             sub={tiles.oldestOpen.priority ?? undefined}
             onClick={() => setFilter({ kind: "kpiTile", key: "oldestOpen", label: "Oldest open" })}
             isActive={activeFilter?.key === "oldestOpen"}
           />
-        </div>
+        </KpiRow>
       )}
     </PanelBoundary>
   );

@@ -1,6 +1,7 @@
 import { useKnowledge } from "../../api/dashboard/knowledge";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { KpiTile } from "./KpiTile";
+import { KpiRow } from "./KpiRow";
 
 // FR-099/K1: the three Knowledge-tab tiles. Unlike Performance's tiles (FR-082), nothing in the
 // PRD makes these click targets — they're read-only context for the panels below.
@@ -16,10 +17,14 @@ export function KpiStripKnowledge() {
       data={data}
       isEmpty={() => false}
       emptyNoDataMessage="Knowledge data arrives once documents are indexed and incidents are resolved."
-      skeleton={<div>Loading tiles…</div>}
+      skeleton={
+        <div className="h-[86px] animate-pulse rounded-lg border border-border bg-muted/50">
+          <span className="sr-only">Loading tiles…</span>
+        </div>
+      }
     >
       {(knowledge) => (
-        <div>
+        <KpiRow>
           <KpiTile
             label="Knowledge documents"
             value={knowledge.tiles.knowledgeDocumentCount}
@@ -35,7 +40,7 @@ export function KpiStripKnowledge() {
             value={knowledge.tiles.undocumentedResolutionCount}
             severity={knowledge.tiles.undocumentedResolutionCount > 0 ? "cautionary" : "none"}
           />
-        </div>
+        </KpiRow>
       )}
     </PanelBoundary>
   );

@@ -14,8 +14,11 @@ import { WhyThisAction } from "./WhyThisAction";
 import { RejectForm } from "./RejectForm";
 import { useApproveConfirmGate } from "./useApproveConfirmGate";
 import { useOperatorNameGate } from "../shared/useOperatorNameGate";
+import { ageMinutes, formatAge } from "../../domain/age";
+import { systemClock } from "../../domain/clock";
 
-type CardPhase = "proposed" | "executing" | "showing-reject-form" | "submitting-reject" | "rejected";
+type CardPhase =
+  "proposed" | "executing" | "showing-reject-form" | "submitting-reject" | "rejected";
 
 interface ApprovalCardProps {
   card: PendingApprovalCard;
@@ -39,7 +42,10 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
   const { requireOperatorName, operatorNamePrompt } = useOperatorNameGate();
   // Gated on the approve mutation's own success, not just the optimistic phase flip, so this
   // never races the real backend's ExecutedAction record into existence before it's created.
-  const executionQuery = useExecutionStatus(card.id, phase === "executing" && approveMutation.isSuccess);
+  const executionQuery = useExecutionStatus(
+    card.id,
+    phase === "executing" && approveMutation.isSuccess,
+  );
   const execution = executionQuery.data;
 
   // Structurally-identical poll responses (still RUNNING, same startedAt) don't change `execution`
@@ -67,7 +73,9 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
         onError: (error) => {
           hasClickedApprove.current = false;
           setPhase("proposed");
-          setApproveError(error instanceof ApiError ? error.message : "Could not approve this action.");
+          setApproveError(
+            error instanceof ApiError ? error.message : "Could not approve this action.",
+          );
         },
       },
     );
@@ -94,59 +102,129 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
   }
 
   return (
-    <li data-phase={phase} data-action-id={card.id}>
-      <RiskBadge risk={card.riskLevel} />
-      <p>
-        {card.incidentTitle} · {card.serviceName}
-      </p>
-      <p>{card.description}</p>
-      <ConfidenceBar confidence={card.confidenceScore} />
-      <ParametersViewer actionId={card.id} actionType={card.actionType} />
-      <WhyThisAction matches={card.topMatches} />
+    // §11.19: keyed by this card's own action id upstream, and every phase below is local state.
+    // The design forbids a risk-coloured left rail — colour lives only in the chip and the meter —
+    // so the executing/rejected phases are signalled by the border and opacity instead.
+    <li
+      data-phase={phase}
+      data-action-id={card.id}
+      className="overflow-hidden rounded-lg border border-border bg-card transition-colors data-[phase=executing]:border-p3 data-[phase=rejected]:opacity-60"
+    >
+      <div className="flex items-start justify-between gap-6 p-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <RiskBadge risk={card.riskLevel} />
+            <span className="meta">
+              {card.serviceName} · {card.priority} ·{" "}
+              {formatAge(ageMinutes(card.proposedAt, systemClock))}
+            </span>
+          </div>
+          <h3 className="mt-2.5 text-[16px] font-semibold leading-snug tracking-[-0.2px]">
+            {card.description}
+          </h3>
+          <p className="mt-1 text-[13px] text-muted-foreground">{card.incidentTitle}</p>
+        </div>
+        <div className="shrink-0">
+          <ConfidenceBar confidence={card.confidenceScore} />
+        </div>
+      </div>
+
+      <div className="border-t border-border-soft px-4 py-2.5">
+        <ParametersViewer actionId={card.id} actionType={card.actionType} />
+      </div>
+      <div className="border-t border-border-soft px-4 py-2.5">
+        <WhyThisAction matches={card.topMatches} />
+      </div>
 
       {phase === "proposed" && (
-        <div>
-          <button type="button" onClick={handleApproveClick}>
-            Approve
-          </button>
-          <button type="button" onClick={() => setPhase("showing-reject-form")}>
-            Reject
-          </button>
-          {approveError && <p role="alert">{approveError}</p>}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft px-4 py-3">
+          <span className="meta">proposed by {card.proposedByAgent}</span>
+          <div className="flex items-center gap-2">
+            {approveError && (
+              <p role="alert" className="text-[12.5px] font-medium text-bad">
+                {approveError}
+              </p>
+            )}
+            {/* Reject stays the quiet control and Approve the committed one — X-4's confirm gate
+                sits behind Approve, so it should never be the easier button to hit by accident. */}
+            <button
+              type="button"
+              className="rounded-lg border border-border bg-card px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              onClick={() => setPhase("showing-reject-form")}
+            >
+              Reject
+            </button>
+            <button
+              type="button"
+              className="rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground hover:opacity-90"
+              onClick={handleApproveClick}
+            >
+              Approve
+            </button>
+          </div>
         </div>
       )}
 
       {phase === "showing-reject-form" && (
-        <div>
+        <div className="border-t border-border-soft bg-muted/40 p-4">
           <RejectForm
             onSubmit={(values) => requireOperatorName((actor) => performReject(actor, values))}
             onCancel={() => setPhase("proposed")}
           />
-          {rejectError && <p role="alert">{rejectError}</p>}
+          {rejectError && (
+            <p role="alert" className="mt-2 text-[12.5px] font-medium text-bad">
+              {rejectError}
+            </p>
+          )}
         </div>
       )}
 
-      {phase === "submitting-reject" && <p>Submitting rejection…</p>}
-      {phase === "rejected" && <p data-status="REJECTED">Rejected</p>}
+      {phase === "submitting-reject" && (
+        <p className="border-t border-border-soft px-4 py-3 text-[13px] text-muted-foreground">
+          Submitting rejection…
+        </p>
+      )}
+      {phase === "rejected" && (
+        <p
+          data-status="REJECTED"
+          className="border-t border-border-soft px-4 py-3 text-[13px] font-semibold text-muted-foreground"
+        >
+          Rejected
+        </p>
+      )}
 
       {phase === "executing" && (
-        <div>
-          {!execution && <p>Submitting approval…</p>}
+        <div className="grid gap-2 border-t border-border-soft bg-muted/40 p-4">
+          {!execution && (
+            <p className="text-[12.5px] text-muted-foreground">Submitting approval…</p>
+          )}
           {execution && execution.status === "RUNNING" && isStillRunning(execution.startedAt) && (
-            <div>
-              <p>Still running · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}</p>
-              <button type="button" onClick={() => executionQuery.refetch()}>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[12.5px] font-medium text-warn">
+                Still running · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}
+              </p>
+              <button
+                type="button"
+                className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                onClick={() => executionQuery.refetch()}
+              >
                 Check now
               </button>
             </div>
           )}
           {execution && execution.status === "RUNNING" && !isStillRunning(execution.startedAt) && (
-            <p>Executing · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}</p>
+            <p className="text-[12.5px] text-muted-foreground">
+              Executing · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}
+            </p>
           )}
           {execution && execution.status !== "RUNNING" && (
-            <div>
+            <div className="grid gap-1.5">
               <OutcomeBadge status={execution.status} />
-              {execution.errorMessage && <p role="alert">{execution.errorMessage}</p>}
+              {execution.errorMessage && (
+                <p role="alert" className="text-[12.5px] text-bad">
+                  {execution.errorMessage}
+                </p>
+              )}
             </div>
           )}
         </div>

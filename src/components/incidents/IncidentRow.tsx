@@ -31,6 +31,9 @@ export function IncidentRow({ incident }: IncidentRowProps) {
   return (
     <tr
       tabIndex={0}
+      // IT-1: the whole row is the hit target and it opens the drawer — never a navigation — so
+      // it gets pointer affordance without ever becoming a link.
+      className="cursor-pointer border-b border-border-soft last:border-b-0 hover:bg-muted/50 [&>td]:px-3 [&>td]:py-2.5 [&>td]:align-middle"
       onClick={open}
       onKeyDown={(event) => {
         if (event.key === "Enter") open();
@@ -42,28 +45,53 @@ export function IncidentRow({ incident }: IncidentRowProps) {
       <td>
         <StatusPill status={incident.status} />
       </td>
-      <td title={incident.title}>
-        <span>{SOURCE_ABBREVIATION[incident.source]}</span>
+      <td title={incident.title} className="max-w-[380px] truncate">
+        <span className="mr-2 rounded bg-muted px-1 py-px font-mono text-[10px] font-semibold text-subtle-foreground">
+          {SOURCE_ABBREVIATION[incident.source]}
+        </span>
         {incident.title}
       </td>
-      <td>{incident.serviceName}</td>
-      <td data-nonprod={incident.environment !== "Production"}>{incident.environment}</td>
-      <td>{incident.category}</td>
+      <td className="text-muted-foreground">{incident.serviceName}</td>
+      {/* A11Y-1: non-production is de-emphasised, but the environment name is still spelled out. */}
+      <td
+        data-nonprod={incident.environment !== "Production"}
+        className="text-muted-foreground data-[nonprod=true]:text-subtle-foreground data-[nonprod=true]:italic"
+      >
+        {incident.environment}
+      </td>
+      <td className="text-muted-foreground">{incident.category}</td>
       <td>
         {incident.isKnownIncident ? (
-          <span>
-            ✓ <span>{incident.bestMatchScore?.toFixed(2)}</span>
+          <span className="text-ok">
+            ✓{" "}
+            <span className="font-mono text-[12px] tabular-nums">
+              {incident.bestMatchScore?.toFixed(2)}
+            </span>
           </span>
         ) : (
-          "—"
+          <span className="text-subtle-foreground">—</span>
         )}
       </td>
-      <td>{incident.confidenceScore != null ? incident.confidenceScore.toFixed(2) : "—"}</td>
-      <td data-flagged={flagged}>{formatAge(minutes)}</td>
-      <td>
-        {incident.assignedTo ?? <span data-warning="true">Unassigned</span>}
+      <td className="meta tabular-nums">
+        {incident.confidenceScore != null ? incident.confidenceScore.toFixed(2) : "—"}
       </td>
-      <td title={automation.label}>{automation.icon}</td>
+      {/* IT-6: past its per-priority threshold the age turns red *and* bold — never colour alone. */}
+      <td
+        data-flagged={flagged}
+        className="whitespace-nowrap text-muted-foreground data-[flagged=true]:font-bold data-[flagged=true]:text-bad"
+      >
+        {formatAge(minutes)}
+      </td>
+      <td className="text-muted-foreground">
+        {incident.assignedTo ?? (
+          <span data-warning="true" className="font-medium text-warn">
+            Unassigned
+          </span>
+        )}
+      </td>
+      <td title={automation.label} className="text-center">
+        {automation.icon}
+      </td>
     </tr>
   );
 }

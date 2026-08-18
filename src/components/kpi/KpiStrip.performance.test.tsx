@@ -31,8 +31,17 @@ function mockPerformance() {
     http.get("/api/dashboard/performance", () =>
       HttpResponse.json({
         tiles,
-        funnel: { stages: [], automationRate: { fullyAutomatedPercent: 34, humanAssistedPercent: 28 } },
-        outcomes: { counts: { success: 0, failed: 0, rolledBack: 0, running: 0 }, successRatePercent: 0, medianDurationMinutes: null, byActionType: [], recentFailures: [] },
+        funnel: {
+          stages: [],
+          automationRate: { fullyAutomatedPercent: 34, humanAssistedPercent: 28 },
+        },
+        outcomes: {
+          counts: { success: 0, failed: 0, rolledBack: 0, running: 0 },
+          successRatePercent: 0,
+          medianDurationMinutes: null,
+          byActionType: [],
+          recentFailures: [],
+        },
       }),
     ),
   );

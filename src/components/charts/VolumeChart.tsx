@@ -1,4 +1,14 @@
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import type { VolumeBucket } from "../../api/dashboard/breakdowns";
 import type { TimeRange } from "../../domain/filters";
 import { bucketGranularityFor, formatBucketLabel } from "../../domain/volumeBuckets";
@@ -20,18 +30,55 @@ export function VolumeChart({ buckets, timeRange }: VolumeChartProps) {
   }));
 
   return (
-    <section aria-label="Incident volume">
+    <section aria-label="Incident volume" className="rounded-lg border border-border bg-card p-4">
       <ResponsiveContainer width="100%" height={240}>
         <ComposedChart data={rows}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="label" />
-          <YAxis yAxisId="volume" />
-          <YAxis yAxisId="resolution" orientation="right" />
-          <Tooltip />
-          <Legend />
-          <Bar yAxisId="volume" dataKey="known" stackId="volume" name="Known" fill="#2e7d32" />
-          <Bar yAxisId="volume" dataKey="unknown" stackId="volume" name="Unknown" fill="#c62828" />
-          <Line yAxisId="resolution" dataKey="medianResolutionMinutes" name="Median resolve (min)" stroke="#1565c0" />
+          {/* Axes and grid read from the same tokens as the rest of the page so the chart sits
+              inside the design rather than beside it. */}
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-soft)" vertical={false} />
+          <XAxis
+            dataKey="label"
+            tick={{ fill: "var(--subtle-foreground)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={{ stroke: "var(--border)" }}
+          />
+          <YAxis
+            yAxisId="volume"
+            tick={{ fill: "var(--subtle-foreground)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            yAxisId="resolution"
+            orientation="right"
+            tick={{ fill: "var(--subtle-foreground)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            contentStyle={{
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+              fontSize: 12,
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Bar yAxisId="volume" dataKey="known" stackId="volume" name="Known" fill="var(--ok)" />
+          <Bar
+            yAxisId="volume"
+            dataKey="unknown"
+            stackId="volume"
+            name="Unknown"
+            fill="var(--bad)"
+          />
+          <Line
+            yAxisId="resolution"
+            dataKey="medianResolutionMinutes"
+            name="Median resolve (min)"
+            stroke="var(--p3)"
+            strokeWidth={2}
+            dot={false}
+          />
         </ComposedChart>
       </ResponsiveContainer>
       <AccessibleChartTable
@@ -47,7 +94,9 @@ export function VolumeChart({ buckets, timeRange }: VolumeChartProps) {
           known: bucket.known,
           unknown: bucket.unknown,
           medianResolutionMinutes:
-            bucket.medianResolutionMinutes !== null ? formatAge(bucket.medianResolutionMinutes) : "Not yet available",
+            bucket.medianResolutionMinutes !== null
+              ? formatAge(bucket.medianResolutionMinutes)
+              : "Not yet available",
         }))}
       />
     </section>

@@ -18,11 +18,26 @@ export interface PanelBoundaryProps<T> {
   children: (data: T) => ReactNode;
 }
 
+// Principle VIII: an error is rendered inside the panel's own footprint, sized like the content
+// it replaces, so one failed panel visibly degrades itself and nothing around it.
+const EMPTY_CLASS =
+  "rounded-lg border border-dashed border-border bg-card px-4 py-10 text-center text-[13px] text-muted-foreground";
+
 function PanelError({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
-    <div role="alert">
-      <p>{message ?? "Something went wrong loading this panel."}</p>
-      {onRetry && <button onClick={onRetry}>Retry</button>}
+    <div
+      role="alert"
+      className="rounded-lg border border-bad/20 bg-chip-bad-bg px-4 py-8 text-center text-[13px]"
+    >
+      <p className="text-bad">{message ?? "Something went wrong loading this panel."}</p>
+      {onRetry && (
+        <button
+          className="mt-3 rounded-lg border border-bad/20 bg-card px-3 py-1.5 text-[13px] font-medium text-bad hover:bg-muted"
+          onClick={onRetry}
+        >
+          Retry
+        </button>
+      )}
     </div>
   );
 }
@@ -31,7 +46,10 @@ interface BoundaryState {
   caughtError: Error | null;
 }
 
-class RenderErrorBoundary extends Component<{ onRetry?: () => void; children: ReactNode }, BoundaryState> {
+class RenderErrorBoundary extends Component<
+  { onRetry?: () => void; children: ReactNode },
+  BoundaryState
+> {
   state: BoundaryState = { caughtError: null };
 
   static getDerivedStateFromError(error: Error): BoundaryState {
@@ -70,12 +88,19 @@ export function PanelBoundary<T>({
       {isLoading && skeleton}
       {!isLoading && isError && <PanelError message={errorMessage} onRetry={onRetry} />}
       {!isLoading && !isError && data !== undefined && isEmpty(data) && !isFiltered && (
-        <div>{emptyNoDataMessage}</div>
+        <div className={EMPTY_CLASS}>{emptyNoDataMessage}</div>
       )}
       {!isLoading && !isError && data !== undefined && isEmpty(data) && isFiltered && (
-        <div>
+        <div className={EMPTY_CLASS}>
           {emptyFilteredMessage}
-          {onClearFilters && <button onClick={onClearFilters}>Clear filters</button>}
+          {onClearFilters && (
+            <button
+              className="mx-auto mt-3 block rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              onClick={onClearFilters}
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       )}
       {!isLoading && !isError && data !== undefined && !isEmpty(data) && children(data)}

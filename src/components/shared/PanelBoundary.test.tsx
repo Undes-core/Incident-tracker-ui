@@ -27,7 +27,14 @@ describe("PanelBoundary", () => {
 
   it("renders an inline retryable error on fetch failure", () => {
     const onRetry = vi.fn();
-    render(<Harness isError errorMessage="Network error" onRetry={onRetry} data={undefined as unknown as string[]} />);
+    render(
+      <Harness
+        isError
+        errorMessage="Network error"
+        onRetry={onRetry}
+        data={undefined as unknown as string[]}
+      />,
+    );
     expect(screen.getByText(/network error/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /retry/i }));
     expect(onRetry).toHaveBeenCalledOnce();

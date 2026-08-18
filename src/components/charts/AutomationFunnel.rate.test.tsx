@@ -16,7 +16,10 @@ function renderFunnel() {
   const queryClient = new QueryClient();
   render(
     <QueryClientProvider client={queryClient}>
-      <AutomationFunnel stages={stages} automationRate={{ fullyAutomatedPercent: 34, humanAssistedPercent: 28 }} />
+      <AutomationFunnel
+        stages={stages}
+        automationRate={{ fullyAutomatedPercent: 34, humanAssistedPercent: 28 }}
+      />
     </QueryClientProvider>,
   );
 }

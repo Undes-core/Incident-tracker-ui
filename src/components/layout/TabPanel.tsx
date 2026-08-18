@@ -12,7 +12,9 @@ interface TabPanelProps {
 // is never a mount event — nothing here can trigger a refetch or a skeleton (research.md §11).
 export function TabPanel({ tab, activeTab, children }: TabPanelProps) {
   return (
-    <section role="tabpanel" aria-label={tab} hidden={tab !== activeTab}>
+    // No display utility is applied here on purpose: the native `hidden` attribute is what
+    // hides an inactive panel (TB-4), and a Tailwind `block`/`grid` class would out-specify it.
+    <section role="tabpanel" aria-label={tab} hidden={tab !== activeTab} className="pt-[18px]">
       {children}
     </section>
   );

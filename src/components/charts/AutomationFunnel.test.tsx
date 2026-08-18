@@ -22,7 +22,10 @@ function renderFunnel() {
   const queryClient = new QueryClient();
   render(
     <QueryClientProvider client={queryClient}>
-      <AutomationFunnel stages={stages} automationRate={{ fullyAutomatedPercent: 34, humanAssistedPercent: 28 }} />
+      <AutomationFunnel
+        stages={stages}
+        automationRate={{ fullyAutomatedPercent: 34, humanAssistedPercent: 28 }}
+      />
     </QueryClientProvider>,
   );
 }
@@ -44,7 +47,9 @@ describe("AutomationFunnel", () => {
 
   it("annotates the largest stage-to-stage drop, computed from dropCount (FR-084)", () => {
     renderFunnel();
-    expect(screen.getByText(/largest drop/i)).toHaveTextContent(/classified by ai.*rag match found.*44/i);
+    expect(screen.getByText(/largest drop/i)).toHaveTextContent(
+      /classified by ai.*rag match found.*44/i,
+    );
   });
 
   it("clicking a stage triggers the cross-tab jump to its drop-set (FR-085,FR-086)", async () => {
@@ -62,11 +67,17 @@ describe("AutomationFunnel", () => {
     expect(classifiedButton).not.toBeDisabled();
 
     fireEvent.click(classifiedButton);
-    await waitFor(() => expect(new URLSearchParams(window.location.search).get("filterKey")).toBe("classified"));
+    await waitFor(() =>
+      expect(new URLSearchParams(window.location.search).get("filterKey")).toBe("classified"),
+    );
   });
 
   it("the first stage has no drop-set — it jumps to all incidents via funnelStage=received, replacing any prior filter (FR-088)", async () => {
-    window.history.replaceState(null, "", "/?tab=performance&filterKind=kpiTile&filterKey=openIncidents&filterLabel=Open");
+    window.history.replaceState(
+      null,
+      "",
+      "/?tab=performance&filterKind=kpiTile&filterKey=openIncidents&filterLabel=Open",
+    );
     renderFunnel();
 
     fireEvent.click(screen.getByRole("button", { name: /incidents received/i }));

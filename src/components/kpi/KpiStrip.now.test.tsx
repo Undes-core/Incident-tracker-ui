@@ -47,8 +47,14 @@ describe("KpiStripNow", () => {
     mockNow(baseTiles);
     renderStrip();
     await screen.findByText("Escalated");
-    expect(screen.getByText("Escalated").closest("button")).toHaveAttribute("data-severity", "urgent");
-    expect(screen.getByText("Unassigned").closest("button")).toHaveAttribute("data-severity", "cautionary");
+    expect(screen.getByText("Escalated").closest("button")).toHaveAttribute(
+      "data-severity",
+      "urgent",
+    );
+    expect(screen.getByText("Unassigned").closest("button")).toHaveAttribute(
+      "data-severity",
+      "cautionary",
+    );
   });
 
   it("clicking a tile sets it as the active drill-down filter in the URL", async () => {

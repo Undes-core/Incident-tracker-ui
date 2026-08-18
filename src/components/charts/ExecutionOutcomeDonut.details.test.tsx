@@ -16,7 +16,12 @@ const outcomes: PerformanceOutcomes = {
     { actionType: "LAMBDA", success: 25, failed: 1, rolledBack: 1, running: 1 },
   ],
   recentFailures: [
-    { executedActionId: "exec-fail-1", incidentId: "inc-1042", actionType: "LAMBDA", truncatedErrorMessage: "Timed out waiting…" },
+    {
+      executedActionId: "exec-fail-1",
+      incidentId: "inc-1042",
+      actionType: "LAMBDA",
+      truncatedErrorMessage: "Timed out waiting…",
+    },
   ],
 };
 
@@ -31,7 +36,7 @@ describe("ExecutionOutcomeDonut details", () => {
     expect(screen.getByText(/median execution duration/i)).toHaveTextContent(/not yet available/i);
   });
 
-  it('lists the most recent failures with action type, incident, and truncated error (EO-2,FR-092)', () => {
+  it("lists the most recent failures with action type, incident, and truncated error (EO-2,FR-092)", () => {
     render(<ExecutionOutcomeDonut outcomes={outcomes} />);
     expect(screen.getByText("LAMBDA")).toBeInTheDocument();
     expect(screen.getByText(/timed out waiting/i)).toBeInTheDocument();

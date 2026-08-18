@@ -5,6 +5,7 @@ import { INCIDENT_TABLE_FLASH_EVENT } from "../../state/useCrossTabJump";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { CrossTabFilterChip } from "../shared/CrossTabFilterChip";
 import { IncidentRow } from "./IncidentRow";
+import { SectionHeader } from "../shared/SectionHeader";
 
 type SortKey = "priority" | "age" | "confidence";
 const FLASH_DURATION_MS = 1500;
@@ -12,8 +13,16 @@ const FLASH_DURATION_MS = 1500;
 // FR-048-057, P-3: server-side filter/sort/page. Also the destination every cross-tab jump
 // flashes and scrolls into view (id="incident-table" is that target).
 export function IncidentTable() {
-  const { environment, service, search, includeResolved, activeFilter, setSearch, setIncludeResolved, clearFilter } =
-    useUrlState();
+  const {
+    environment,
+    service,
+    search,
+    includeResolved,
+    activeFilter,
+    setSearch,
+    setIncludeResolved,
+    clearFilter,
+  } = useUrlState();
   const [sortKey, setSortKey] = useState<SortKey>("priority");
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,73 +53,107 @@ export function IncidentTable() {
   const isFiltered = Boolean(search) || Boolean(activeFilter);
 
   return (
-    <div id="incident-table" ref={containerRef}>
-      <input
-        placeholder="Search title, service, or external ID…"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-      />
-      <label>
-        <input
-          type="checkbox"
-          checked={includeResolved}
-          onChange={(event) => setIncludeResolved(event.target.checked)}
-        />
-        Include resolved
-      </label>
-      {activeFilter && <CrossTabFilterChip filter={activeFilter} onClear={clearFilter} />}
-      <PanelBoundary
-        isLoading={isLoading}
-        isError={isError}
-        errorMessage={(error as Error | undefined)?.message}
-        onRetry={refetch}
-        data={data}
-        isEmpty={(d) => d.rows.length === 0}
-        isFiltered={isFiltered}
-        emptyNoDataMessage="Incidents arrive from email, PagerDuty, Slack, and the API."
-        emptyFilteredMessage="No incidents match these filters."
-        onClearFilters={() => {
-          setSearch("");
-          clearFilter();
-        }}
-        skeleton={<div>Loading incidents…</div>}
-      >
-        {(list) => (
-          <>
-            <table>
-              <thead>
-                <tr>
-                  <th aria-sort={sortKey === "priority" ? "ascending" : "none"} onClick={() => setSortKey("priority")}>
-                    Pri
-                  </th>
-                  <th>Status</th>
-                  <th>Title</th>
-                  <th>Service</th>
-                  <th>Env</th>
-                  <th>Category</th>
-                  <th>Known</th>
-                  <th aria-sort={sortKey === "confidence" ? "ascending" : "none"} onClick={() => setSortKey("confidence")}>
-                    AI conf.
-                  </th>
-                  <th aria-sort={sortKey === "age" ? "ascending" : "none"} onClick={() => setSortKey("age")}>
-                    Age
-                  </th>
-                  <th>Assignee</th>
-                  <th>Auto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.rows.map((row) => (
-                  <IncidentRow key={row.id} incident={row} />
-                ))}
-              </tbody>
-            </table>
-            <div>
-              Showing {list.rows.length} of {list.totalCount} · page {list.page}
-            </div>
-          </>
-        )}
-      </PanelBoundary>
+    // XT-2: `data-flash` is toggled imperatively by the cross-tab jump handler above; the ring
+    // below is the whole visual payload of that flash.
+    <div id="incident-table" ref={containerRef} className="group mt-8 scroll-mt-[180px]">
+      <SectionHeader title="Incidents" meta={data ? `${data.totalCount} in scope` : undefined} />
+      <div className="overflow-hidden rounded-lg border border-border bg-card transition-shadow group-data-[flash=true]:ring-2 group-data-[flash=true]:ring-ring">
+        <div className="flex flex-wrap items-center gap-4 border-b border-border px-4 py-3">
+          <input
+            placeholder="Search title, service, or external ID…"
+            className="w-72 rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] placeholder:text-subtle-foreground"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={includeResolved}
+              onChange={(event) => setIncludeResolved(event.target.checked)}
+            />
+            Include resolved
+          </label>
+          {activeFilter && <CrossTabFilterChip filter={activeFilter} onClear={clearFilter} />}
+        </div>
+        {/*
+        PanelBoundary renders its state directly here, so inset everything it can emit — skeleton,
+        error, both empty states — off the card edge. The row-count footer opts out: it draws its
+        own full-bleed top rule.
+      */}
+        <div className="[&>div:not([data-slot=row-count])]:m-4">
+          <PanelBoundary
+            isLoading={isLoading}
+            isError={isError}
+            errorMessage={(error as Error | undefined)?.message}
+            onRetry={refetch}
+            data={data}
+            isEmpty={(d) => d.rows.length === 0}
+            isFiltered={isFiltered}
+            emptyNoDataMessage="Incidents arrive from email, PagerDuty, Slack, and the API."
+            emptyFilteredMessage="No incidents match these filters."
+            onClearFilters={() => {
+              setSearch("");
+              clearFilter();
+            }}
+            skeleton={
+              <div className="px-3.5 py-8 text-center text-[13px] text-muted-foreground">
+                Loading incidents…
+              </div>
+            }
+          >
+            {(list) => (
+              <>
+                <table className="w-full border-collapse text-[13px]">
+                  <thead>
+                    <tr className="[&>th]:border-b [&>th]:border-border [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:text-[11px] [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-subtle-foreground">
+                      <th
+                        aria-sort={sortKey === "priority" ? "ascending" : "none"}
+                        onClick={() => setSortKey("priority")}
+                        className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
+                      >
+                        Pri
+                      </th>
+                      <th>Status</th>
+                      <th>Title</th>
+                      <th>Service</th>
+                      <th>Env</th>
+                      <th>Category</th>
+                      <th>Known</th>
+                      <th
+                        aria-sort={sortKey === "confidence" ? "ascending" : "none"}
+                        onClick={() => setSortKey("confidence")}
+                        className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
+                      >
+                        AI conf.
+                      </th>
+                      <th
+                        aria-sort={sortKey === "age" ? "ascending" : "none"}
+                        onClick={() => setSortKey("age")}
+                        className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
+                      >
+                        Age
+                      </th>
+                      <th>Assignee</th>
+                      <th>Auto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {list.rows.map((row) => (
+                      <IncidentRow key={row.id} incident={row} />
+                    ))}
+                  </tbody>
+                </table>
+                <div
+                  data-slot="row-count"
+                  className="border-t border-border-soft px-3.5 py-2.5 text-[11.5px] text-subtle-foreground"
+                >
+                  Showing {list.rows.length} of {list.totalCount} · page {list.page}
+                </div>
+              </>
+            )}
+          </PanelBoundary>
+        </div>
+      </div>
     </div>
   );
 }

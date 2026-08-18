@@ -4,10 +4,13 @@ import { RiskBadge } from "./RiskBadge";
 import { OutcomeBadge } from "./OutcomeBadge";
 
 describe("RiskBadge", () => {
-  it.each(["LOW", "MEDIUM", "HIGH"] as const)("renders a text label for %s risk, not colour alone", (risk) => {
-    render(<RiskBadge risk={risk} />);
-    expect(screen.getByText(`${risk} RISK`)).toBeInTheDocument();
-  });
+  it.each(["LOW", "MEDIUM", "HIGH"] as const)(
+    "renders a text label for %s risk, not colour alone",
+    (risk) => {
+      render(<RiskBadge risk={risk} />);
+      expect(screen.getByText(`${risk} RISK`)).toBeInTheDocument();
+    },
+  );
 });
 
 describe("OutcomeBadge", () => {

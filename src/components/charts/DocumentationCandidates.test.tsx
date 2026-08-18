@@ -90,7 +90,9 @@ describe("DocumentationCandidates", () => {
     const row = await screen.findByText("Payment webhook signature failures");
     fireEvent.click(row.closest("li")!);
 
-    await waitFor(() => expect(new URLSearchParams(window.location.search).get("incident")).toBe("inc-1033"));
+    await waitFor(() =>
+      expect(new URLSearchParams(window.location.search).get("incident")).toBe("inc-1033"),
+    );
   });
 
   it("opens on Enter for keyboard users (A11Y-3)", async () => {
@@ -100,7 +102,9 @@ describe("DocumentationCandidates", () => {
     const row = await screen.findByText("Payment webhook signature failures");
     fireEvent.keyDown(row.closest("li")!, { key: "Enter" });
 
-    await waitFor(() => expect(new URLSearchParams(window.location.search).get("incident")).toBe("inc-1033"));
+    await waitFor(() =>
+      expect(new URLSearchParams(window.location.search).get("incident")).toBe("inc-1033"),
+    );
   });
 
   it("shows a positive empty state when there are no candidates", async () => {

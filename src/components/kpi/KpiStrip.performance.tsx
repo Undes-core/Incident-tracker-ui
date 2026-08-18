@@ -4,6 +4,7 @@ import { describePerformanceDelta, formatMedianResolveMinutes } from "../../doma
 import { formatAge } from "../../domain/age";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { KpiTile } from "./KpiTile";
+import { KpiRow } from "./KpiRow";
 
 // FR-080-082/N1b: the three Performance-tab automation tiles, one query, every click routed
 // through the cross-tab jump (clicking a Performance tile always lands on Now, per FR-082).
@@ -20,14 +21,23 @@ export function KpiStripPerformance() {
       data={data}
       isEmpty={() => false}
       emptyNoDataMessage="Performance data arrives once incidents are worked in the active range."
-      skeleton={<div>Loading tiles…</div>}
+      skeleton={
+        <div className="h-[86px] animate-pulse rounded-lg border border-border bg-muted/50">
+          <span className="sr-only">Loading tiles…</span>
+        </div>
+      }
     >
       {(perf) => (
-        <div>
+        <KpiRow>
           <KpiTile
             label="Automation rate"
             value={`${perf.tiles.automationRatePercent.value}%`}
-            delta={describePerformanceDelta("automationRatePercent", perf.tiles.automationRatePercent.deltaVsPrevious) ?? undefined}
+            delta={
+              describePerformanceDelta(
+                "automationRatePercent",
+                perf.tiles.automationRatePercent.deltaVsPrevious,
+              ) ?? undefined
+            }
             onClick={() =>
               jump({
                 kind: "kpiTile",
@@ -59,17 +69,23 @@ export function KpiStripPerformance() {
           <KpiTile
             label="Known-incident hit rate"
             value={`${perf.tiles.knownIncidentHitRate.value}%`}
-            delta={describePerformanceDelta("knownIncidentHitRate", perf.tiles.knownIncidentHitRate.deltaVsPrevious) ?? undefined}
+            delta={
+              describePerformanceDelta(
+                "knownIncidentHitRate",
+                perf.tiles.knownIncidentHitRate.deltaVsPrevious,
+              ) ?? undefined
+            }
             onClick={() =>
               jump({
                 kind: "kpiTile",
                 key: "knownHitRate",
                 label: "Known incidents",
-                toastMessage: "Jumped to Now — incidents matched to a known runbook or prior incident.",
+                toastMessage:
+                  "Jumped to Now — incidents matched to a known runbook or prior incident.",
               })
             }
           />
-        </div>
+        </KpiRow>
       )}
     </PanelBoundary>
   );

@@ -9,7 +9,11 @@ interface ParametersViewerProps {
 }
 
 function isSqlStatement(value: unknown): value is { statement: string } {
-  return typeof value === "object" && value !== null && typeof (value as { statement?: unknown }).statement === "string";
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as { statement?: unknown }).statement === "string"
+  );
 }
 
 // FR-035/P-4: collapsed by default, parameters fetched only on first expand, then rendered
@@ -46,14 +50,30 @@ export function ParametersViewer({ actionId, actionType }: ParametersViewerProps
 
   return (
     <div>
-      <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded}>
+      <button
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        aria-expanded={expanded}
+        className="flex w-fit items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground hover:text-foreground aria-expanded:text-foreground"
+      >
+        <span aria-hidden="true" className="text-[10px]">
+          ▸
+        </span>
         Parameters
       </button>
       {expanded && (
-        <div>
-          {isLoading && <p>Loading parameters…</p>}
-          {isError && <p role="alert">Could not load parameters.</p>}
-          {rendered && <pre>{rendered}</pre>}
+        <div className="mt-2">
+          {isLoading && <p className="text-[12.5px] text-muted-foreground">Loading parameters…</p>}
+          {isError && (
+            <p role="alert" className="text-[12.5px] text-bad">
+              Could not load parameters.
+            </p>
+          )}
+          {rendered && (
+            <pre className="overflow-x-auto rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] leading-relaxed">
+              {rendered}
+            </pre>
+          )}
         </div>
       )}
     </div>

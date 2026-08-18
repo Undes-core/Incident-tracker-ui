@@ -2,6 +2,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAgentRunIO } from "../../api/incidents/detail";
 import type { IncidentDetail } from "../../api/incidents/detail";
+import {
+  ALERT_NOTE,
+  CODE_BLOCK,
+  DISCLOSURE,
+  MUTED_NOTE,
+  SECTION,
+  SECTION_TITLE,
+} from "../shared/sectionStyles";
 
 interface AgentRunTraceProps {
   incidentId: string;
@@ -13,7 +21,13 @@ function formatDuration(ms: number | null): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
 }
 
-function AgentRunEntry({ incidentId, run }: { incidentId: string; run: IncidentDetail["agentRuns"][number] }) {
+function AgentRunEntry({
+  incidentId,
+  run,
+}: {
+  incidentId: string;
+  run: IncidentDetail["agentRuns"][number];
+}) {
   // FR-065: failed runs start expanded with the error visible; every other run starts collapsed.
   const [expanded, setExpanded] = useState(run.hasError);
   // P-4: input/output are JSONB and only fetched once this run is expanded, never eagerly.
@@ -24,22 +38,51 @@ function AgentRunEntry({ incidentId, run }: { incidentId: string; run: IncidentD
   });
 
   return (
-    <li data-error={run.hasError}>
-      <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded}>
-        {run.agentName} v{run.agentVersion}
-      </button>
-      <span>{run.status}</span>
-      <span>{formatDuration(run.latencyMs)}</span>
-      <span>{run.confidenceScore != null ? run.confidenceScore.toFixed(2) : "—"}</span>
-      {run.hasError && <span data-error="true">Error</span>}
+    // FR-065: a failed run is tinted *and* carries the "Error" text label (A11Y-1).
+    <li
+      data-error={run.hasError}
+      className="rounded-md border border-border-soft bg-secondary p-2.5 data-[error=true]:border-bad/20 data-[error=true]:bg-chip-bad-bg"
+    >
+      <div className="flex flex-wrap items-center gap-2 text-[12.5px]">
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+          className={`${DISCLOSURE} font-semibold text-foreground`}
+        >
+          <span aria-hidden="true" className="text-[10px]">
+            ▸
+          </span>
+          {run.agentName} v{run.agentVersion}
+        </button>
+        <span className="text-muted-foreground">{run.status}</span>
+        <span className="font-mono text-[11.5px] text-subtle-foreground">
+          {formatDuration(run.latencyMs)}
+        </span>
+        <span className="font-mono text-[11.5px] text-subtle-foreground">
+          {run.confidenceScore != null ? run.confidenceScore.toFixed(2) : "—"}
+        </span>
+        {run.hasError && (
+          <span
+            data-error="true"
+            className="rounded bg-bad px-1.5 py-px text-[10.5px] font-bold uppercase text-white"
+          >
+            Error
+          </span>
+        )}
+      </div>
       {expanded && (
-        <div>
-          {isLoading && <p>Loading input/output…</p>}
-          {isError && <p role="alert">Could not load input/output.</p>}
+        <div className="mt-2 grid gap-2">
+          {isLoading && <p className={MUTED_NOTE}>Loading input/output…</p>}
+          {isError && (
+            <p role="alert" className={ALERT_NOTE}>
+              Could not load input/output.
+            </p>
+          )}
           {data && (
             <>
-              <pre>{JSON.stringify(data.input, null, 2)}</pre>
-              <pre>{JSON.stringify(data.output, null, 2)}</pre>
+              <pre className={CODE_BLOCK}>{JSON.stringify(data.input, null, 2)}</pre>
+              <pre className={CODE_BLOCK}>{JSON.stringify(data.output, null, 2)}</pre>
             </>
           )}
         </div>
@@ -52,12 +95,13 @@ function AgentRunEntry({ incidentId, run }: { incidentId: string; run: IncidentD
 // input/output collapsible per-run (fetched lazily on expand, per P-4).
 export function AgentRunTrace({ incidentId, runs }: AgentRunTraceProps) {
   if (runs.length === 0) {
-    return <p>No agent runs recorded for this incident.</p>;
+    return <p className={`${SECTION} ${MUTED_NOTE}`}>No agent runs recorded for this incident.</p>;
   }
 
   return (
-    <section aria-label="Agent run trace">
-      <ol>
+    <section aria-label="Agent run trace" className={SECTION}>
+      <h3 className={SECTION_TITLE}>Agent run trace</h3>
+      <ol className="grid gap-1.5">
         {runs.map((run) => (
           <AgentRunEntry key={run.id} incidentId={incidentId} run={run} />
         ))}

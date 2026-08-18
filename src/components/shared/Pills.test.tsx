@@ -4,10 +4,13 @@ import { PriorityPill } from "./PriorityPill";
 import { StatusPill } from "./StatusPill";
 
 describe("PriorityPill", () => {
-  it.each(["P1", "P2", "P3", "P4"] as const)("renders a text label for %s, not colour alone", (priority) => {
-    render(<PriorityPill priority={priority} />);
-    expect(screen.getByText(priority)).toBeInTheDocument();
-  });
+  it.each(["P1", "P2", "P3", "P4"] as const)(
+    "renders a text label for %s, not colour alone",
+    (priority) => {
+      render(<PriorityPill priority={priority} />);
+      expect(screen.getByText(priority)).toBeInTheDocument();
+    },
+  );
 });
 
 describe("StatusPill", () => {

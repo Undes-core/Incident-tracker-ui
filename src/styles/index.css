@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for the "Incident Orchestrator" canvas design (Claude Design, shared 2026-08-18),
+ * which supersedes the v2.0 wireframe as the visual reference. Its rules, in the designer's own
+ * words: colour lives only in the risk chip and the meter; everything structural is a hairline on
+ * white; every metadatum and number is set in mono.
+ *
+ * The PRD-bound hues (priority P1..P4, execution outcome incl. ROLLED_BACK) are unchanged — those
+ * carry requirements, not taste.
+ *
+ * Light theme only: research.md pins the target to desktop browsers at a fixed ~1360px operator
+ * layout. No dark mode and no breakpoints are specified anywhere in the PRD, so none are invented.
+ */
+
+:root {
+  /* --- surfaces & text: warm neutral, near-white, hairline borders --- */
+  --background: #ffffff;
+  --foreground: #1c1b19;
+  --card: #ffffff;
+  --card-foreground: #1c1b19;
+  --popover: #1c1b19;
+  --popover-foreground: #ffffff;
+  --muted: #f4f3f1;
+  --muted-foreground: #6b6963;
+  --subtle-foreground: #9b9892;
+  --border: #e6e4e0;
+  --border-soft: #f0eeea;
+  --input: #e6e4e0;
+
+  /* --- brand / interaction: the near-black used by Approve, the active tab rule, the badge --- */
+  --primary: #1c1b19;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f3f1;
+  --secondary-foreground: #6b6963;
+  --accent: #f0eeea;
+  --accent-foreground: #1c1b19;
+  --ring: #2563eb;
+
+  /* --- incident priority (PRD-bound) --- */
+  --p1: #c8322b;
+  --p2: #d97706;
+  --p3: #2563eb;
+  --p4: #6b7280;
+
+  /*
+   * Execution outcome. `--roll` is deliberately its own hue: EO-1 requires ROLLED_BACK to read as
+   * its own bucket everywhere — never folded into success (--ok) or failure (--bad).
+   */
+  --ok: #15803d;
+  --warn: #b45309;
+  --bad: #c8322b;
+  --roll: #7c3aed;
+  --destructive: #c8322b;
+  --destructive-foreground: #ffffff;
+
+  /*
+   * Chip fills. The design puts risk/severity colour *only* here and on the meter, so these are
+   * the one place a tint is allowed to fill an area rather than just a glyph.
+   */
+  --chip-bad-bg: #fdecec;
+  --chip-warn-bg: #fdf4e3;
+  --chip-ok-bg: #ecf6ef;
+  --chip-info-bg: #eef3fd;
+
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-input: var(--input);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+
+  --color-p1: var(--p1);
+  --color-p2: var(--p2);
+  --color-p3: var(--p3);
+  --color-p4: var(--p4);
+
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-roll: var(--roll);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-chip-bad-bg: var(--chip-bad-bg);
+  --color-chip-warn-bg: var(--chip-warn-bg);
+  --color-chip-ok-bg: var(--chip-ok-bg);
+  --color-chip-info-bg: var(--chip-info-bg);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    /* 14px base — every `text-*` utility below is sized against it. */
+    font-size: 14px;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * A11Y-2: a single, always-visible focus ring. Applied globally rather than per-component so no
+   * interactive element can ship without one.
+   */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* X-6/A11Y-6: honour reduced-motion for every transition and the strip's live pulse. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---- design-system utilities ---------------------------------------------------------- */
+
+@utility eyebrow {
+  /* The design's small uppercase label: KPI names, "CONFIDENCE", section eyebrows. */
+  font-size: 0.786rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--subtle-foreground);
+}
+
+@utility meta {
+  /* Every metadatum and number in the design is mono and muted. */
+  font-family: var(--font-mono);
+  font-size: 0.857rem;
+  color: var(--subtle-foreground);
+}

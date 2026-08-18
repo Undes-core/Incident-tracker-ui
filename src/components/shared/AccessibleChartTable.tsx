@@ -21,25 +21,36 @@ export function AccessibleChartTable<T extends Record<string, unknown>>({
   const [visible, setVisible] = useState(false);
 
   return (
-    <div>
-      <button aria-expanded={visible} onClick={() => setVisible((v) => !v)}>
+    <div className="mt-3 border-t border-border-soft pt-3">
+      <button
+        aria-expanded={visible}
+        onClick={() => setVisible((v) => !v)}
+        className="text-[12px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+      >
         {visible ? "Hide table view" : "View as table"}
       </button>
       {visible && (
-        <table>
-          <caption>{caption}</caption>
+        <table className="mt-3 w-full border-collapse text-[12.5px]">
+          <caption className="eyebrow mb-2 text-left">{caption}</caption>
           <thead>
             <tr>
               {columns.map((column) => (
-                <th key={String(column.key)}>{column.label}</th>
+                <th
+                  key={String(column.key)}
+                  className="border-b border-border px-2 py-1.5 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-subtle-foreground"
+                >
+                  {column.label}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => (
-              <tr key={index}>
+              <tr key={index} className="border-b border-border-soft last:border-b-0">
                 {columns.map((column) => (
-                  <td key={String(column.key)}>{String(row[column.key])}</td>
+                  <td key={String(column.key)} className="px-2 py-1.5">
+                    {String(row[column.key])}
+                  </td>
                 ))}
               </tr>
             ))}
