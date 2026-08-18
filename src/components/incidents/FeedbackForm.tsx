@@ -64,7 +64,7 @@ export function FeedbackForm({ incidentId, existingFeedback }: FeedbackFormProps
   }
 
   return (
-    <section aria-label="Feedback" className={SECTION}>
+    <section aria-label="Feedback" className={`${SECTION} shadow-xs`}>
       <h3 className={SECTION_TITLE}>Existing feedback</h3>
       {feedback.length === 0 ? (
         <p className={MUTED_NOTE}>No feedback submitted yet.</p>

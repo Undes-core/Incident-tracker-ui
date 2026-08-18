@@ -80,7 +80,7 @@ export function AlertStrip() {
       role="status"
       aria-live="polite"
       data-severity={severity}
-      className="border-b border-border bg-card"
+      className="border-b border-border bg-card data-[severity=hot]:bg-chip-bad-bg/50 data-[severity=warm]:bg-chip-warn-bg/40"
     >
       <div className={STRIP_CLASS}>
         {data.p1Active > 0 && (
@@ -91,8 +91,11 @@ export function AlertStrip() {
               setFilter({ kind: "kpiTile", key: "p1Active", label: "P1 active" });
             }}
           >
-            <Dot className="bg-p1" />
-            <b className="font-semibold">{data.p1Active}</b> P1 active
+            <span className="relative flex size-[7px] shrink-0">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-p1 opacity-75" />
+              <Dot className="relative bg-p1" />
+            </span>
+            <b className="font-semibold text-p1">{data.p1Active}</b> P1 active
           </button>
         )}
         {data.awaitingApproval > 0 && (
@@ -104,7 +107,7 @@ export function AlertStrip() {
             }}
           >
             <Dot className="bg-p2" />
-            <b className="font-semibold">{data.awaitingApproval}</b> awaiting approval
+            <b className="font-semibold text-p2">{data.awaitingApproval}</b> awaiting approval
           </button>
         )}
         <span className="meta ml-auto">

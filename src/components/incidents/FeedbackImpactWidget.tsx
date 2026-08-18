@@ -20,7 +20,7 @@ export function FeedbackImpactWidget() {
     // FI-5/§13: encouraging, never competitive — no rank, no streak, no badge.
     <div
       aria-label="Feedback impact"
-      className="grid gap-2 rounded-lg border border-ok/20 bg-chip-ok-bg p-3.5"
+      className="grid gap-2 rounded-lg border border-ok/20 bg-chip-ok-bg p-3.5 shadow-xs"
     >
       <p className="text-[12.5px] font-semibold text-ok">
         Your corrections are training the classifier

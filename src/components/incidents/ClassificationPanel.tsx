@@ -11,7 +11,7 @@ export function ClassificationPanel({ detail }: ClassificationPanelProps) {
   const { aiClassification, correction } = detail;
 
   return (
-    <section aria-label="AI classification" className={SECTION}>
+    <section aria-label="AI classification" className={`${SECTION} shadow-xs`}>
       <h3 className={SECTION_TITLE}>AI classification</h3>
       <dl className="grid grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-2 text-[13px]">
         <div className="contents">

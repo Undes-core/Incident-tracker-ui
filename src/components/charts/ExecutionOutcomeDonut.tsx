@@ -34,7 +34,7 @@ export function ExecutionOutcomeDonut({ outcomes }: ExecutionOutcomeDonutProps) 
   return (
     <section
       aria-label="Execution outcomes"
-      className="rounded-lg border border-border bg-card p-4"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       <div className="flex flex-wrap items-center gap-6">
         <div className="size-[200px] shrink-0">

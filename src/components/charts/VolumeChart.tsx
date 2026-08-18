@@ -30,7 +30,10 @@ export function VolumeChart({ buckets, timeRange }: VolumeChartProps) {
   }));
 
   return (
-    <section aria-label="Incident volume" className="rounded-lg border border-border bg-card p-4">
+    <section
+      aria-label="Incident volume"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
+    >
       <ResponsiveContainer width="100%" height={240}>
         <ComposedChart data={rows}>
           {/* Axes and grid read from the same tokens as the rest of the page so the chart sits

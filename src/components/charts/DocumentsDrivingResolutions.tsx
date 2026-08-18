@@ -13,7 +13,7 @@ export function DocumentsDrivingResolutions({ documents }: DocumentsDrivingResol
   return (
     <section
       aria-label="Documents driving resolutions"
-      className="rounded-lg border border-border bg-card p-4"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       <ol>
         {sorted.map((doc) => (

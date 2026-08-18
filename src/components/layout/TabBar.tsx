@@ -1,11 +1,12 @@
 import { useRef, type KeyboardEvent } from "react";
+import { Activity, BarChart3, BookOpen } from "lucide-react";
 import { useUrlState } from "../../state/useUrlState";
 import type { Tab } from "../../domain/filters";
 
-const TABS: ReadonlyArray<{ key: Tab; label: string }> = [
-  { key: "now", label: "Now" },
-  { key: "performance", label: "Performance" },
-  { key: "knowledge", label: "Knowledge" },
+const TABS: ReadonlyArray<{ key: Tab; label: string; icon: typeof Activity }> = [
+  { key: "now", label: "Now", icon: Activity },
+  { key: "performance", label: "Performance", icon: BarChart3 },
+  { key: "knowledge", label: "Knowledge", icon: BookOpen },
 ];
 
 interface TabBarProps {
@@ -40,10 +41,11 @@ export function TabBar({ pendingApprovalCount }: TabBarProps) {
       <div
         role="tablist"
         aria-label="Dashboard sections"
-        className="mx-auto flex w-full max-w-[1360px] gap-6 px-6"
+        className="mx-auto flex w-full max-w-[1360px] gap-1 px-6"
       >
         {TABS.map((entry, index) => {
           const isSelected = tab === entry.key;
+          const Icon = entry.icon;
           return (
             <button
               key={entry.key}
@@ -55,13 +57,17 @@ export function TabBar({ pendingApprovalCount }: TabBarProps) {
               tabIndex={isSelected ? 0 : -1}
               // The selected underline hangs off aria-selected, so the visual state can never
               // drift from the state assistive tech is told about.
-              className="-mb-px flex items-center gap-2 border-b-2 border-transparent py-3 text-[14px] text-muted-foreground transition-colors hover:text-foreground aria-selected:border-primary aria-selected:font-semibold aria-selected:text-foreground"
+              className="group -mb-px flex items-center gap-2 rounded-t-md border-b-2 border-transparent px-3 py-3 text-[14px] text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground aria-selected:border-primary aria-selected:font-semibold aria-selected:text-foreground aria-selected:hover:bg-transparent"
               onClick={() => setTab(entry.key)}
               onKeyDown={(event) => handleKeyDown(event, index)}
             >
+              <Icon
+                aria-hidden="true"
+                className="size-[15px] text-subtle-foreground transition-colors group-aria-selected:text-primary"
+              />
               {entry.label}
               {entry.key === "now" && pendingApprovalCount > 0 && (
-                <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground shadow-2xs">
                   {pendingApprovalCount}
                 </span>
               )}

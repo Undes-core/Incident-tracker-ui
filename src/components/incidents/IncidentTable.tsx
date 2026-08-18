@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ArrowUpDown, Search } from "lucide-react";
 import { useIncidentList } from "../../api/incidents/list";
 import { useUrlState } from "../../state/useUrlState";
 import { INCIDENT_TABLE_FLASH_EVENT } from "../../state/useCrossTabJump";
@@ -57,14 +58,20 @@ export function IncidentTable() {
     // below is the whole visual payload of that flash.
     <div id="incident-table" ref={containerRef} className="group mt-8 scroll-mt-[180px]">
       <SectionHeader title="Incidents" meta={data ? `${data.totalCount} in scope` : undefined} />
-      <div className="overflow-hidden rounded-lg border border-border bg-card transition-shadow group-data-[flash=true]:ring-2 group-data-[flash=true]:ring-ring">
-        <div className="flex flex-wrap items-center gap-4 border-b border-border px-4 py-3">
-          <input
-            placeholder="Search title, service, or external ID…"
-            className="w-72 rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] placeholder:text-subtle-foreground"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow group-data-[flash=true]:ring-2 group-data-[flash=true]:ring-ring">
+        <div className="flex flex-wrap items-center gap-4 border-b border-border bg-muted/20 px-4 py-3">
+          <div className="relative">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-subtle-foreground"
+            />
+            <input
+              placeholder="Search title, service, or external ID…"
+              className="w-72 rounded-lg border border-border bg-card py-1.5 pl-8 pr-3 text-[13px] shadow-2xs transition-shadow placeholder:text-subtle-foreground focus-visible:shadow-sm"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
             <input
               type="checkbox"
@@ -105,13 +112,16 @@ export function IncidentTable() {
               <>
                 <table className="w-full border-collapse text-[13px]">
                   <thead>
-                    <tr className="[&>th]:border-b [&>th]:border-border [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:text-[11px] [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-subtle-foreground">
+                    <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/30 [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:text-[11px] [&>th]:font-medium [&>th]:uppercase [&>th]:tracking-[0.08em] [&>th]:text-subtle-foreground">
                       <th
                         aria-sort={sortKey === "priority" ? "ascending" : "none"}
                         onClick={() => setSortKey("priority")}
                         className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
                       >
-                        Pri
+                        <span className="inline-flex items-center gap-1">
+                          Pri
+                          <ArrowUpDown aria-hidden="true" className="size-3 opacity-50" />
+                        </span>
                       </th>
                       <th>Status</th>
                       <th>Title</th>
@@ -124,14 +134,20 @@ export function IncidentTable() {
                         onClick={() => setSortKey("confidence")}
                         className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
                       >
-                        AI conf.
+                        <span className="inline-flex items-center gap-1">
+                          AI conf.
+                          <ArrowUpDown aria-hidden="true" className="size-3 opacity-50" />
+                        </span>
                       </th>
                       <th
                         aria-sort={sortKey === "age" ? "ascending" : "none"}
                         onClick={() => setSortKey("age")}
                         className="cursor-pointer select-none hover:text-foreground aria-[sort=ascending]:text-foreground"
                       >
-                        Age
+                        <span className="inline-flex items-center gap-1">
+                          Age
+                          <ArrowUpDown aria-hidden="true" className="size-3 opacity-50" />
+                        </span>
                       </th>
                       <th>Assignee</th>
                       <th>Auto</th>

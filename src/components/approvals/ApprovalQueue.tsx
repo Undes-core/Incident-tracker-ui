@@ -72,13 +72,13 @@ export function ApprovalQueue() {
           </p>
         }
         skeleton={
-          <div className="rounded-lg border border-border bg-card px-4 py-8 text-center text-[13px] text-muted-foreground">
+          <div className="animate-pulse rounded-lg border border-border bg-card px-4 py-8 text-center text-[13px] text-muted-foreground shadow-xs">
             Loading approvals…
           </div>
         }
       >
         {(pending) => (
-          <ul className="grid gap-3">
+          <ul className="grid gap-3.5">
             {pending.cards.map((card) => (
               <ApprovalCard
                 key={card.id}

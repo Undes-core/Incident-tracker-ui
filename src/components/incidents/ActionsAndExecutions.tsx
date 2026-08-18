@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ChevronRight } from "lucide-react";
 import { fetchActionParameters, fetchExecutionDetail } from "../../api/incidents/detail";
 import type { IncidentDetail } from "../../api/incidents/detail";
 import type { PendingApprovalCard } from "../../api/approvals/pending";
@@ -77,7 +78,7 @@ function ExecutionEntry({
   });
 
   return (
-    <div className="mt-2 grid gap-2 rounded-md border border-border-soft bg-secondary p-2.5">
+    <div className="mt-2 grid gap-2 rounded-md border border-border-soft bg-secondary p-2.5 shadow-2xs">
       <div className="flex flex-wrap items-center gap-2">
         <OutcomeBadge status={execution.status} />
         <span className="font-mono text-[11.5px] text-subtle-foreground">
@@ -95,9 +96,7 @@ function ExecutionEntry({
         aria-expanded={expanded}
         className={DISCLOSURE}
       >
-        <span aria-hidden="true" className="text-[10px]">
-          ▸
-        </span>
+        <ChevronRight aria-hidden="true" className="size-3 shrink-0 text-subtle-foreground" />
         Execution details
       </button>
       {expanded && (
@@ -129,7 +128,7 @@ function ActionEntry({ action }: { action: IncidentDetail["actions"][number] }) 
   });
 
   return (
-    <li className="grid gap-2 rounded-lg border border-border bg-card p-3">
+    <li className="grid gap-2 rounded-lg border border-border bg-card p-3 shadow-2xs transition-shadow hover:shadow-xs">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded bg-muted px-1.5 py-px font-mono text-[10.5px] font-semibold uppercase text-muted-foreground">
           {action.actionType}
@@ -156,9 +155,7 @@ function ActionEntry({ action }: { action: IncidentDetail["actions"][number] }) 
         aria-expanded={showParams}
         className={DISCLOSURE}
       >
-        <span aria-hidden="true" className="text-[10px]">
-          ▸
-        </span>
+        <ChevronRight aria-hidden="true" className="size-3 shrink-0 text-subtle-foreground" />
         Parameters
       </button>
       {showParams && (
@@ -186,11 +183,13 @@ export function ActionsAndExecutions({
   similarityMatches,
 }: ActionsAndExecutionsProps) {
   if (actions.length === 0) {
-    return <p className={`${SECTION} ${MUTED_NOTE}`}>No recommended actions for this incident.</p>;
+    return (
+      <p className={`${SECTION} ${MUTED_NOTE} shadow-xs`}>No recommended actions for this incident.</p>
+    );
   }
 
   return (
-    <section aria-label="Recommended actions" className={SECTION}>
+    <section aria-label="Recommended actions" className={`${SECTION} shadow-xs`}>
       <h3 className={SECTION_TITLE}>Recommended actions</h3>
       <ul className="grid gap-2">
         {actions.map((action) =>

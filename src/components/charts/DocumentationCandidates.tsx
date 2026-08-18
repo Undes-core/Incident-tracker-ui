@@ -29,7 +29,7 @@ export function DocumentationCandidates() {
         {(list) => (
           <section
             aria-label="Documentation candidates"
-            className="rounded-lg border border-border bg-card p-4"
+            className="rounded-lg border border-border bg-card p-4 shadow-sm"
           >
             <ul>
               {list.rows.map((row) => {

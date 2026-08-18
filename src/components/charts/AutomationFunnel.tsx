@@ -26,7 +26,10 @@ export function AutomationFunnel({ stages, automationRate }: AutomationFunnelPro
   }
 
   return (
-    <section aria-label="Automation funnel" className="rounded-lg border border-border bg-card p-4">
+    <section
+      aria-label="Automation funnel"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
+    >
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-[13px]">
         <span>
           Fully automated <b className="font-semibold">{automationRate.fullyAutomatedPercent}%</b>

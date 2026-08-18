@@ -35,7 +35,7 @@ function Dashboard() {
         it and outside every TabPanel (AS-1/X-2): it must stay visible and keep its own 30s poll no
         matter which tab is active.
       */}
-      <div className="sticky top-0 z-40 bg-card">
+      <div className="sticky top-0 z-40 bg-card shadow-sm">
         <DashboardHeader />
         <AlertStrip />
         <TabBar pendingApprovalCount={alertStrip?.awaitingApproval ?? 0} />
@@ -53,7 +53,7 @@ function Dashboard() {
           <VolumeChartPanel />
           {/* The three breakdowns are the same shape at the same altitude, so they read as one
               row of small multiples rather than three full-width charts to scroll past. */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <PriorityBreakdownPanel />
             <CategoryBreakdownPanel />
             <ServiceBreakdownPanel />

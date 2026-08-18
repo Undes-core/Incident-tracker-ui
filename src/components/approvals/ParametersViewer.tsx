@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ChevronRight } from "lucide-react";
 import { fetchActionParameters } from "../../api/incidents/detail";
 import type { ActionType } from "../../api/types";
 
@@ -54,23 +55,26 @@ export function ParametersViewer({ actionId, actionType }: ParametersViewerProps
         type="button"
         onClick={() => setExpanded((value) => !value)}
         aria-expanded={expanded}
-        className="flex w-fit items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground hover:text-foreground aria-expanded:text-foreground"
+        className="group flex w-fit items-center gap-1 rounded-md py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground"
       >
-        <span aria-hidden="true" className="text-[10px]">
-          ▸
-        </span>
+        <ChevronRight
+          aria-hidden="true"
+          className="size-3 shrink-0 text-subtle-foreground transition-transform duration-150 group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
+        />
         Parameters
       </button>
       {expanded && (
         <div className="mt-2">
-          {isLoading && <p className="text-[12.5px] text-muted-foreground">Loading parameters…</p>}
+          {isLoading && (
+            <p className="text-[12.5px] text-muted-foreground">Loading parameters…</p>
+          )}
           {isError && (
             <p role="alert" className="text-[12.5px] text-bad">
               Could not load parameters.
             </p>
           )}
           {rendered && (
-            <pre className="overflow-x-auto rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] leading-relaxed">
+            <pre className="overflow-x-auto rounded-md border border-border bg-secondary p-3 font-mono text-[11.5px] leading-relaxed shadow-inner">
               {rendered}
             </pre>
           )}

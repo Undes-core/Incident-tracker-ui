@@ -1,3 +1,4 @@
+import { AlertTriangle, Clock, Inbox, UserX } from "lucide-react";
 import { useNowTiles } from "../../api/dashboard/now";
 import { useUrlState } from "../../state/useUrlState";
 import { describeDelta } from "../../domain/kpi";
@@ -31,6 +32,7 @@ export function KpiStripNow() {
       {(tiles) => (
         <KpiRow>
           <KpiTile
+            icon={Inbox}
             label="Open incidents"
             value={tiles.openIncidents.value}
             delta={describeDelta("openIncidents", tiles.openIncidents.deltaVsPrevious)}
@@ -40,6 +42,7 @@ export function KpiStripNow() {
             isActive={activeFilter?.key === "openIncidents"}
           />
           <KpiTile
+            icon={AlertTriangle}
             label="Escalated"
             value={tiles.escalated.value}
             severity={tiles.escalated.value > 0 ? "urgent" : "none"}
@@ -48,6 +51,7 @@ export function KpiStripNow() {
             isActive={activeFilter?.key === "escalated"}
           />
           <KpiTile
+            icon={UserX}
             label="Unassigned"
             value={tiles.unassigned.value}
             severity={tiles.unassigned.value > 0 ? "cautionary" : "none"}
@@ -56,6 +60,7 @@ export function KpiStripNow() {
             isActive={activeFilter?.key === "unassigned"}
           />
           <KpiTile
+            icon={Clock}
             label="Oldest open"
             value={
               tiles.oldestOpen.ageMinutes != null ? formatAge(tiles.oldestOpen.ageMinutes) : "—"

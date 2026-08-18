@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { CROSS_TAB_TOAST_EVENT } from "../../state/useCrossTabJump";
 
 const TOAST_DURATION_MS = 4000;
@@ -29,8 +30,9 @@ export function CrossTabToast() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-primary px-4 py-2.5 text-[13px] text-primary-foreground shadow-lg"
+      className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-[13px] text-primary-foreground shadow-xl"
     >
+      <ArrowRight aria-hidden="true" className="size-3.5 shrink-0" />
       {message}
     </div>
   );

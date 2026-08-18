@@ -30,14 +30,16 @@ export function SimilarityMatchList({ incidentId, matches }: SimilarityMatchList
   });
 
   if (matches.length === 0) {
-    return <p className={`${SECTION} ${MUTED_NOTE}`}>No similar incidents or runbooks found.</p>;
+    return (
+      <p className={`${SECTION} ${MUTED_NOTE} shadow-xs`}>No similar incidents or runbooks found.</p>
+    );
   }
 
   const source = showAll && data ? data.matches : matches;
   const visible = [...source].sort((a, b) => b.score - a.score);
 
   return (
-    <section aria-label="Similarity matches" className={SECTION}>
+    <section aria-label="Similarity matches" className={`${SECTION} shadow-xs`}>
       {/*
         Not a heading: each match title is the h3 in this section (asserted by its tests, and the
         right hierarchy — the section's own name comes from its aria-label above).

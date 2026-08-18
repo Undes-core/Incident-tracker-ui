@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import type { PendingApprovalCard } from "../../api/approvals/pending";
 
 interface WhyThisActionProps {
@@ -16,11 +17,12 @@ export function WhyThisAction({ matches }: WhyThisActionProps) {
         type="button"
         onClick={() => setExpanded((value) => !value)}
         aria-expanded={expanded}
-        className="flex w-fit items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground hover:text-foreground aria-expanded:text-foreground"
+        className="group flex w-fit items-center gap-1 rounded-md py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground"
       >
-        <span aria-hidden="true" className="text-[10px]">
-          ▸
-        </span>
+        <ChevronRight
+          aria-hidden="true"
+          className="size-3 shrink-0 text-subtle-foreground transition-transform duration-150 group-aria-expanded:rotate-90 group-aria-expanded:text-foreground"
+        />
         Why this action
       </button>
       {expanded &&
@@ -33,7 +35,7 @@ export function WhyThisAction({ matches }: WhyThisActionProps) {
             {matches.map((match, index) => (
               <li
                 key={`${match.sourceUrl}-${index}`}
-                className="flex flex-wrap items-center gap-2 rounded-md border border-border-soft bg-secondary px-2.5 py-1.5 text-[12.5px]"
+                className="flex flex-wrap items-center gap-2 rounded-md border border-border-soft bg-secondary px-2.5 py-1.5 text-[12.5px] shadow-2xs transition-shadow hover:shadow-xs"
               >
                 <span className="rounded bg-muted px-1.5 py-px text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {match.documentType}
@@ -46,9 +48,10 @@ export function WhyThisAction({ matches }: WhyThisActionProps) {
                   href={match.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto text-[12px] text-p3 underline underline-offset-2"
+                  className="ml-auto inline-flex items-center gap-1 text-[12px] font-medium text-p3 underline-offset-2 hover:underline"
                 >
                   View source
+                  <ExternalLink aria-hidden="true" className="size-3" />
                 </a>
               </li>
             ))}

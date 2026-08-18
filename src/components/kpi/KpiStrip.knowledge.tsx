@@ -1,3 +1,4 @@
+import { BookOpen, FileQuestion, ShieldCheck } from "lucide-react";
 import { useKnowledge } from "../../api/dashboard/knowledge";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { KpiTile } from "./KpiTile";
@@ -26,16 +27,19 @@ export function KpiStripKnowledge() {
       {(knowledge) => (
         <KpiRow>
           <KpiTile
+            icon={BookOpen}
             label="Knowledge documents"
             value={knowledge.tiles.knowledgeDocumentCount}
             sub={`${knowledge.tiles.distinctDocumentTypeCount} document types`}
           />
           <KpiTile
+            icon={ShieldCheck}
             label="Services with a runbook"
             value={knowledge.tiles.servicesWithRunbookCount}
             sub={`of ${knowledge.tiles.totalServiceCount}`}
           />
           <KpiTile
+            icon={FileQuestion}
             label="Undocumented resolutions"
             value={knowledge.tiles.undocumentedResolutionCount}
             severity={knowledge.tiles.undocumentedResolutionCount > 0 ? "cautionary" : "none"}

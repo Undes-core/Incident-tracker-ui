@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ChevronRight } from "lucide-react";
 import { fetchAgentRunIO } from "../../api/incidents/detail";
 import type { IncidentDetail } from "../../api/incidents/detail";
 import {
@@ -41,7 +42,7 @@ function AgentRunEntry({
     // FR-065: a failed run is tinted *and* carries the "Error" text label (A11Y-1).
     <li
       data-error={run.hasError}
-      className="rounded-md border border-border-soft bg-secondary p-2.5 data-[error=true]:border-bad/20 data-[error=true]:bg-chip-bad-bg"
+      className="rounded-md border border-border-soft bg-secondary p-2.5 transition-colors hover:bg-muted/60 data-[error=true]:border-bad/20 data-[error=true]:bg-chip-bad-bg data-[error=true]:hover:bg-chip-bad-bg"
     >
       <div className="flex flex-wrap items-center gap-2 text-[12.5px]">
         <button
@@ -50,9 +51,7 @@ function AgentRunEntry({
           aria-expanded={expanded}
           className={`${DISCLOSURE} font-semibold text-foreground`}
         >
-          <span aria-hidden="true" className="text-[10px]">
-            ▸
-          </span>
+          <ChevronRight aria-hidden="true" className="size-3 shrink-0 text-subtle-foreground" />
           {run.agentName} v{run.agentVersion}
         </button>
         <span className="text-muted-foreground">{run.status}</span>
@@ -95,11 +94,13 @@ function AgentRunEntry({
 // input/output collapsible per-run (fetched lazily on expand, per P-4).
 export function AgentRunTrace({ incidentId, runs }: AgentRunTraceProps) {
   if (runs.length === 0) {
-    return <p className={`${SECTION} ${MUTED_NOTE}`}>No agent runs recorded for this incident.</p>;
+    return (
+      <p className={`${SECTION} ${MUTED_NOTE} shadow-xs`}>No agent runs recorded for this incident.</p>
+    );
   }
 
   return (
-    <section aria-label="Agent run trace" className={SECTION}>
+    <section aria-label="Agent run trace" className={`${SECTION} shadow-xs`}>
       <h3 className={SECTION_TITLE}>Agent run trace</h3>
       <ol className="grid gap-1.5">
         {runs.map((run) => (

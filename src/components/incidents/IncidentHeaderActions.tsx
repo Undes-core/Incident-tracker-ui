@@ -13,7 +13,7 @@ const DISABLED_REASON = "Incident updates are not available yet.";
 // stated reason (never hidden, never silently succeeding) until the incident-update API exists.
 export function IncidentHeaderActions({ incident }: IncidentHeaderActionsProps) {
   return (
-    <header className={`${SECTION} grid gap-2.5`}>
+    <header className={`${SECTION} grid gap-2.5 shadow-xs`}>
       <p className="font-mono text-[11.5px] text-subtle-foreground">{incident.externalId}</p>
       <h2 className="text-[17px] font-semibold leading-snug tracking-[-0.3px]">{incident.title}</h2>
       <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted-foreground">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Check, Loader2, X } from "lucide-react";
 import type { PendingApprovalCard } from "../../api/approvals/pending";
 import { useApproveAction } from "../../api/approvals/approve";
 import { useRejectAction } from "../../api/approvals/reject";
@@ -108,7 +109,7 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
     <li
       data-phase={phase}
       data-action-id={card.id}
-      className="overflow-hidden rounded-lg border border-border bg-card transition-colors data-[phase=executing]:border-p3 data-[phase=rejected]:opacity-60"
+      className="overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md data-[phase=executing]:border-p3 data-[phase=executing]:shadow-[0_0_0_1px_rgb(37_99_235/0.15),var(--shadow-sm)] data-[phase=rejected]:opacity-60 data-[phase=rejected]:shadow-none data-[phase=rejected]:hover:shadow-none"
     >
       <div className="flex items-start justify-between gap-6 p-4">
         <div className="min-w-0">
@@ -119,12 +120,12 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
               {formatAge(ageMinutes(card.proposedAt, systemClock))}
             </span>
           </div>
-          <h3 className="mt-2.5 text-[16px] font-semibold leading-snug tracking-[-0.2px]">
+          <h3 className="mt-2.5 text-[16px] font-semibold leading-snug tracking-[-0.2px] text-balance">
             {card.description}
           </h3>
-          <p className="mt-1 text-[13px] text-muted-foreground">{card.incidentTitle}</p>
+          <p className="mt-1 truncate text-[13px] text-muted-foreground">{card.incidentTitle}</p>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 border-l border-border-soft pl-5">
           <ConfidenceBar confidence={card.confidenceScore} />
         </div>
       </div>
@@ -137,7 +138,7 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
       </div>
 
       {phase === "proposed" && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft bg-muted/25 px-4 py-3">
           <span className="meta">proposed by {card.proposedByAgent}</span>
           <div className="flex items-center gap-2">
             {approveError && (
@@ -149,16 +150,18 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
                 sits behind Approve, so it should never be the easier button to hit by accident. */}
             <button
               type="button"
-              className="rounded-lg border border-border bg-card px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground shadow-2xs transition-all hover:border-bad/30 hover:bg-chip-bad-bg hover:text-bad active:scale-[0.98]"
               onClick={() => setPhase("showing-reject-form")}
             >
+              <X aria-hidden="true" className="size-3.5" />
               Reject
             </button>
             <button
               type="button"
-              className="rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground hover:opacity-90"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary-hover hover:shadow-sm active:scale-[0.98]"
               onClick={handleApproveClick}
             >
+              <Check aria-hidden="true" className="size-3.5" />
               Approve
             </button>
           </div>
@@ -180,32 +183,38 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
       )}
 
       {phase === "submitting-reject" && (
-        <p className="border-t border-border-soft px-4 py-3 text-[13px] text-muted-foreground">
+        <p className="flex items-center gap-2 border-t border-border-soft px-4 py-3 text-[13px] text-muted-foreground">
+          <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
           Submitting rejection…
         </p>
       )}
       {phase === "rejected" && (
         <p
           data-status="REJECTED"
-          className="border-t border-border-soft px-4 py-3 text-[13px] font-semibold text-muted-foreground"
+          className="flex items-center gap-1.5 border-t border-border-soft px-4 py-3 text-[13px] font-semibold text-muted-foreground"
         >
+          <X aria-hidden="true" className="size-3.5" />
           Rejected
         </p>
       )}
 
       {phase === "executing" && (
-        <div className="grid gap-2 border-t border-border-soft bg-muted/40 p-4">
+        <div className="grid gap-2 border-t border-border-soft bg-chip-info-bg/40 p-4">
           {!execution && (
-            <p className="text-[12.5px] text-muted-foreground">Submitting approval…</p>
+            <p className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
+              <Loader2 aria-hidden="true" className="size-3.5 animate-spin text-p3" />
+              Submitting approval…
+            </p>
           )}
           {execution && execution.status === "RUNNING" && isStillRunning(execution.startedAt) && (
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-[12.5px] font-medium text-warn">
+              <p className="flex items-center gap-2 text-[12.5px] font-medium text-warn">
+                <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
                 Still running · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}
               </p>
               <button
                 type="button"
-                className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-2xs transition-colors hover:text-foreground"
                 onClick={() => executionQuery.refetch()}
               >
                 Check now
@@ -213,7 +222,8 @@ export function ApprovalCard({ card, onRejected }: ApprovalCardProps) {
             </div>
           )}
           {execution && execution.status === "RUNNING" && !isStillRunning(execution.startedAt) && (
-            <p className="text-[12.5px] text-muted-foreground">
+            <p className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
+              <Loader2 aria-hidden="true" className="size-3.5 animate-spin text-p3" />
               Executing · {formatElapsedMs(elapsedExecutionMs(execution.startedAt))}
             </p>
           )}

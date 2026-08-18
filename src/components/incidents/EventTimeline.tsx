@@ -40,7 +40,7 @@ export function EventTimeline({ incidentId, incidentCreatedAt, events }: EventTi
   });
 
   return (
-    <section aria-label="Event timeline" className={SECTION}>
+    <section aria-label="Event timeline" className={`${SECTION} shadow-xs`}>
       <div className="mb-2.5 flex items-center justify-between gap-3">
         <h3 className={`${SECTION_TITLE} mb-0`}>Event timeline</h3>
         {/* TL-1: this refetches server-side; it is not a client-side filter of a loaded list. */}

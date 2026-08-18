@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFocusTrap } from "../../state/useFocusTrap";
+import { BUTTON_PRIMARY, BUTTON_SECONDARY, FIELD_CONTROL, SECTION } from "./sectionStyles";
 
 interface OperatorNamePromptProps {
   isOpen: boolean;
@@ -26,23 +27,42 @@ export function OperatorNamePrompt({ isOpen, onSubmit, onCancel }: OperatorNameP
   if (!isOpen) return null;
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Your name" ref={containerRef}>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          const trimmed = name.trim();
-          if (trimmed) onSubmit(trimmed);
-        }}
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div aria-hidden="true" className="absolute inset-0 bg-black/25" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Your name"
+        ref={containerRef}
+        className={`${SECTION} relative w-full max-w-sm shadow-xl`}
       >
-        <label>
-          What's your name?
-          <input value={name} onChange={(event) => setName(event.target.value)} required />
-        </label>
-        <button type="submit">Continue</button>
-        <button type="button" onClick={onCancel}>
-          Cancel
-        </button>
-      </form>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const trimmed = name.trim();
+            if (trimmed) onSubmit(trimmed);
+          }}
+          className="grid gap-4"
+        >
+          <label className="grid gap-1.5">
+            <span className="text-[15px] font-semibold tracking-[-0.2px]">What's your name?</span>
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+              className={FIELD_CONTROL}
+            />
+          </label>
+          <div className="flex items-center justify-end gap-2">
+            <button type="submit" className={BUTTON_PRIMARY}>
+              Continue
+            </button>
+            <button type="button" className={BUTTON_SECONDARY} onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

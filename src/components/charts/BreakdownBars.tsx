@@ -84,7 +84,7 @@ export function BreakdownBars(props: Props) {
   return (
     <section
       aria-label={VARIANT_LABEL[props.variant]}
-      className="rounded-lg border border-border bg-card p-4"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       <ol>
         {rows.map((row) => (

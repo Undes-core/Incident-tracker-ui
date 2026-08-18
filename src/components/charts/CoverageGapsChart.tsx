@@ -24,7 +24,7 @@ export function CoverageGapsChart({ services }: CoverageGapsChartProps) {
   return (
     <section
       aria-label="Runbook coverage gaps"
-      className="rounded-lg border border-border bg-card p-4"
+      className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       {caption && <p className="mb-3 text-[13px] text-muted-foreground">{caption}</p>}
       <ol>

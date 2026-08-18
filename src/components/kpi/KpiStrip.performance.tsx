@@ -1,3 +1,4 @@
+import { BookMarked, Timer, Zap } from "lucide-react";
 import { usePerformance } from "../../api/dashboard/performance";
 import { useCrossTabJump } from "../../state/useCrossTabJump";
 import { describePerformanceDelta, formatMedianResolveMinutes } from "../../domain/kpi";
@@ -30,6 +31,7 @@ export function KpiStripPerformance() {
       {(perf) => (
         <KpiRow>
           <KpiTile
+            icon={Zap}
             label="Automation rate"
             value={`${perf.tiles.automationRatePercent.value}%`}
             delta={
@@ -48,6 +50,7 @@ export function KpiStripPerformance() {
             }
           />
           <KpiTile
+            icon={Timer}
             label="Median time to resolve"
             value={formatMedianResolveMinutes(perf.tiles.medianTimeToResolveMinutes.value)}
             title={`Average: ${formatAge(perf.tiles.medianTimeToResolveMinutes.averageMinutes)}`}
@@ -67,6 +70,7 @@ export function KpiStripPerformance() {
             }
           />
           <KpiTile
+            icon={BookMarked}
             label="Known-incident hit rate"
             value={`${perf.tiles.knownIncidentHitRate.value}%`}
             delta={

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { RotateCw, ShieldHalf } from "lucide-react";
 import { useUrlState } from "../../state/useUrlState";
 import { useOperator } from "../../state/OperatorContext";
 import { SERVICES } from "../../api/fixtures/seededDataset";
@@ -20,7 +21,7 @@ const TIME_RANGE_TOOLTIP =
 // The design's one control shape: a white box on a hairline border, generous horizontal padding,
 // 10px radius. Every dropdown and button in the header is a variation on it.
 const BOX =
-  "h-9 rounded-[10px] border border-border bg-card px-3.5 text-[13px] text-foreground transition-colors hover:bg-muted/40";
+  "h-9 rounded-[10px] border border-border bg-card px-3.5 text-[13px] text-foreground shadow-2xs transition-all hover:border-border hover:bg-muted/40 hover:shadow-xs";
 
 // Native <select> keeps the browser's own keyboard and form semantics (and is what the header's
 // tests drive), so the design's chevron is drawn alongside it rather than by a JS listbox.
@@ -66,18 +67,22 @@ function LiveIndicator() {
   return (
     <div className="flex items-center gap-2.5">
       <span className="flex items-center gap-1.5">
-        <span aria-hidden="true" className="size-[6px] shrink-0 rounded-full bg-ok" />
+        <span aria-hidden="true" className="relative flex size-[6px] shrink-0">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-60" />
+          <span className="relative inline-flex size-full rounded-full bg-ok" />
+        </span>
         <span className="meta">Updated {label}</span>
       </span>
       <Button
         aria-label="Refresh"
         variant="outline"
-        className={BUTTON_GEOMETRY}
+        className={`${BUTTON_GEOMETRY} shadow-2xs`}
         onClick={() => {
           queryClient.invalidateQueries();
           setSecondsAgo(0);
         }}
       >
+        <RotateCw aria-hidden="true" className="size-3.5" />
         Refresh
       </Button>
     </div>
@@ -152,11 +157,21 @@ export function DashboardHeader() {
 
   return (
     <header className="mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-x-4 gap-y-3 px-6 py-3.5">
-      <div className="flex min-w-0 items-baseline gap-2.5">
-        <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px]">
-          Incident Response Orchestrator
-        </h1>
-        <span className="meta shrink-0 text-[11px] uppercase tracking-[0.12em]">Autonomous</span>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span
+          aria-hidden="true"
+          className="flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-primary text-primary-foreground shadow-sm"
+        >
+          <ShieldHalf className="size-4" />
+        </span>
+        <div className="flex min-w-0 items-baseline gap-2.5">
+          <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px]">
+            Incident Response Orchestrator
+          </h1>
+          <span className="eyebrow shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10.5px]">
+            Autonomous
+          </span>
+        </div>
       </div>
 
       {/* The whole control cluster wraps as one unit, so a narrow window drops it to its own row
@@ -167,13 +182,13 @@ export function DashboardHeader() {
         <div
           role="group"
           aria-label="Time range"
-          className="flex items-center rounded-[10px] bg-muted p-1"
+          className="flex items-center rounded-[10px] bg-muted p-1 shadow-inner"
         >
           {TIME_RANGES.map((range) => (
             <button
               key={range}
               aria-pressed={timeRange === range}
-              className="rounded-[7px] px-3.5 py-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-sm"
+              className="rounded-[7px] px-3.5 py-1 text-[13px] font-medium text-muted-foreground transition-all hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-sm"
               onClick={() => setTimeRange(range)}
             >
               {range}
@@ -185,7 +200,7 @@ export function DashboardHeader() {
           aria-label="About the time range"
           title={TIME_RANGE_TOOLTIP}
           data-tip={TIME_RANGE_TOOLTIP}
-          className="size-[18px] shrink-0 rounded-full text-[11px] leading-none text-subtle-foreground hover:bg-muted hover:text-foreground"
+          className="flex size-[18px] shrink-0 items-center justify-center rounded-full text-[11px] leading-none text-subtle-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           ?
         </button>

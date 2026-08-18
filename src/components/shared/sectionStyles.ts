@@ -6,6 +6,10 @@
 // These encode the canvas design's rules: hairline borders on white, no tinted panels, uppercase
 // letter-spaced eyebrows for labels, mono for every metadatum and number.
 
+// No shadow baked in here on purpose: a couple of callers (the two confirmation modals) need a
+// stronger elevation than the rest, and stacking two `shadow-*` utilities on one element has
+// undefined winner ordering in Tailwind's generated stylesheet. Everyone else appends their own
+// `shadow-xs` (or nothing) at the call site instead.
 export const SECTION = "rounded-lg border border-border bg-card p-4";
 
 export const SECTION_TITLE = "mb-3 text-[15px] font-semibold tracking-[-0.2px]";
@@ -15,7 +19,7 @@ export const EYEBROW = "eyebrow";
 export const META = "meta";
 
 export const DISCLOSURE =
-  "flex w-fit items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground";
+  "flex w-fit items-center gap-1.5 rounded-md py-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground aria-expanded:text-foreground [&_svg]:transition-transform [&_svg]:duration-150 aria-expanded:[&_svg]:rotate-90";
 
 export const CODE_BLOCK =
   "overflow-x-auto rounded-lg border border-border bg-muted/60 p-3 font-mono text-[12px] leading-relaxed";
@@ -27,17 +31,17 @@ export const ALERT_NOTE = "text-[13px] font-medium text-bad";
 export const FIELD_LABEL = "grid gap-1.5 text-[13px] font-medium text-muted-foreground";
 
 export const FIELD_CONTROL =
-  "rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-normal text-foreground";
+  "rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-normal text-foreground shadow-2xs transition-shadow focus-visible:shadow-sm";
 
 export const BUTTON_PRIMARY =
-  "w-fit rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50";
+  "w-fit rounded-lg bg-primary px-3.5 py-1.5 text-[13px] font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary-hover hover:shadow-sm active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
 
 export const BUTTON_SECONDARY =
-  "w-fit rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50";
+  "w-fit rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground shadow-2xs transition-all hover:border-border hover:bg-muted hover:text-foreground active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
 
 // A hairline meter track + its fill, used by the similarity and feedback-impact bars alike.
-export const METER_TRACK = "h-[3px] w-full overflow-hidden rounded-full bg-muted";
-export const METER_FILL = "h-full rounded-full bg-primary";
+export const METER_TRACK = "h-[5px] w-full overflow-hidden rounded-full bg-muted";
+export const METER_FILL = "h-full rounded-full bg-primary transition-[width] duration-300";
 
 // An inset row inside a panel: the design separates list items with hairlines rather than
 // wrapping each one in its own tinted box.
