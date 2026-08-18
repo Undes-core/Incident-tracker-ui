@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it } from "vitest";
 import { DashboardHeader } from "./DashboardHeader";
@@ -40,10 +41,27 @@ describe("DashboardHeader", () => {
     expect(help.title || help.getAttribute("data-tip")).toMatch(/now/i);
   });
 
-  it("defaults the environment select to Production", () => {
+  // FR-002 is a multi-select requirement, so it is asserted through the checkbox menu the header
+  // actually renders rather than through a native <select>'s selectedOptions.
+  it("defaults the environment filter to Production only", async () => {
     renderHeader();
-    const select = screen.getByLabelText<HTMLSelectElement>(/environment/i);
-    expect(Array.from(select.selectedOptions).map((o) => o.value)).toEqual(["Production"]);
+    expect(screen.getByRole("button", { name: /environment/i })).toHaveTextContent("Production");
+
+    await userEvent.click(screen.getByRole("button", { name: /environment/i }));
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByRole("menuitemcheckbox", { name: "Production" })).toBeChecked();
+    expect(within(menu).getByRole("menuitemcheckbox", { name: "Staging" })).not.toBeChecked();
+  });
+
+  it("lets more than one environment be selected at once (FR-002)", async () => {
+    renderHeader();
+    await userEvent.click(screen.getByRole("button", { name: /environment/i }));
+    await userEvent.click(await screen.findByRole("menuitemcheckbox", { name: "Staging" }));
+
+    expect(new URLSearchParams(window.location.search).get("env")).toBe("Production,Staging");
+    expect(screen.getByRole("button", { name: /environment/i })).toHaveTextContent(
+      "2 environments",
+    );
   });
 
   it("offers a service dropdown defaulting to all services (FR-003)", () => {
@@ -70,7 +88,9 @@ describe("DashboardHeader", () => {
     it("can set a name, which then displays and persists", () => {
       renderHeader();
       fireEvent.click(screen.getByRole("button", { name: /set name/i }));
-      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), { target: { value: "a.reyes" } });
+      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), {
+        target: { value: "a.reyes" },
+      });
       fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
       expect(screen.getByText("a.reyes")).toBeInTheDocument();
@@ -83,7 +103,9 @@ describe("DashboardHeader", () => {
 
       expect(screen.getByText("a.reyes")).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: /change name/i }));
-      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), { target: { value: "j.chen" } });
+      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), {
+        target: { value: "j.chen" },
+      });
       fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
       expect(screen.getByText("j.chen")).toBeInTheDocument();

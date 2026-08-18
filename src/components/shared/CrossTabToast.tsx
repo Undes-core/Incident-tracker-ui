@@ -29,7 +29,7 @@ export function CrossTabToast() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-popover px-4 py-2.5 text-[13px] text-popover-foreground shadow-lg"
+      className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-primary px-4 py-2.5 text-[13px] text-primary-foreground shadow-lg"
     >
       {message}
     </div>

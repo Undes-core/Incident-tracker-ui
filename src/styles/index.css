@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 /*
+ * shadcn's primitives ship `dark:` classes. Tailwind v4's built-in `dark` variant is
+ * prefers-color-scheme, so without this declaration those classes activate for anyone whose OS is
+ * in dark mode — silently painting dark surfaces into a light-only app. Binding the variant to a
+ * `.dark` ancestor that is never rendered keeps the app light for everyone, per the design.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
  * Design tokens for the "Incident Orchestrator" canvas design (Claude Design, shared 2026-08-18),
  * which supersedes the v2.0 wireframe as the visual reference. Its rules, in the designer's own
  * words: colour lives only in the risk chip and the meter; everything structural is a hairline on
@@ -19,8 +27,10 @@
   --foreground: #1c1b19;
   --card: #ffffff;
   --card-foreground: #1c1b19;
-  --popover: #1c1b19;
-  --popover-foreground: #ffffff;
+  /* Popovers and menus are light surfaces like every other panel. The one inverted surface in
+     the app is the cross-tab toast, which asks for it explicitly rather than borrowing these. */
+  --popover: #ffffff;
+  --popover-foreground: #1c1b19;
   --muted: #f4f3f1;
   --muted-foreground: #6b6963;
   --subtle-foreground: #9b9892;
