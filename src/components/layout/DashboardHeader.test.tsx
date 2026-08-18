@@ -37,8 +37,9 @@ describe("DashboardHeader", () => {
 
   it("explains via a tooltip that the range does not apply to Now or the alert strip (FR-004)", () => {
     renderHeader();
-    const help = screen.getByRole("button", { name: /about the time range/i });
-    expect(help.title || help.getAttribute("data-tip")).toMatch(/now/i);
+    // The explanation hangs off the time-range control itself rather than a separate "?" button.
+    const group = screen.getByRole("group", { name: /time range/i });
+    expect(group.title || group.getAttribute("data-tip")).toMatch(/now/i);
   });
 
   // FR-002 is a multi-select requirement, so it is asserted through the checkbox menu the header
@@ -78,37 +79,42 @@ describe("DashboardHeader", () => {
     expect(screen.getByRole("button", { name: /refresh/i })).toBeInTheDocument();
   });
 
+  // FR-121 is asserted through the avatar chip the header now renders: initials in the header,
+  // full name and the change affordance inside its menu.
   describe("operator name (FR-121)", () => {
-    it("shows that no name is set and offers to set one when none exists", () => {
+    it("shows that no name is set and offers to set one when none exists", async () => {
       renderHeader();
-      expect(screen.getByText(/name not set/i)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /set name/i })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /operator/i }));
+
+      expect(await screen.findByText(/no name set/i)).toBeInTheDocument();
+      expect(screen.getByRole("menuitem", { name: /set name/i })).toBeInTheDocument();
     });
 
-    it("can set a name, which then displays and persists", () => {
+    it("can set a name, which then displays and persists", async () => {
       renderHeader();
-      fireEvent.click(screen.getByRole("button", { name: /set name/i }));
-      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), {
-        target: { value: "a.reyes" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+      await userEvent.click(screen.getByRole("button", { name: /operator/i }));
+      await userEvent.click(await screen.findByRole("menuitem", { name: /set name/i }));
+      await userEvent.type(screen.getByRole("textbox", { name: /your name/i }), "a.reyes");
+      await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
 
-      expect(screen.getByText("a.reyes")).toBeInTheDocument();
+      // The chip carries the initials; the full name stays reachable through its label.
+      expect(screen.getByRole("button", { name: /operator: a\.reyes/i })).toHaveTextContent("AR");
       expect(window.localStorage.getItem("incident-tracker:operator-name")).toBe("a.reyes");
     });
 
-    it("shows the existing name and offers to change it", () => {
+    it("shows the existing name and offers to change it", async () => {
       window.localStorage.setItem("incident-tracker:operator-name", "a.reyes");
       renderHeader();
 
-      expect(screen.getByText("a.reyes")).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: /change name/i }));
-      fireEvent.change(screen.getByRole("textbox", { name: /your name/i }), {
-        target: { value: "j.chen" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+      await userEvent.click(screen.getByRole("button", { name: /operator: a\.reyes/i }));
+      expect(await screen.findByText("a.reyes")).toBeInTheDocument();
 
-      expect(screen.getByText("j.chen")).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("menuitem", { name: /change name/i }));
+      await userEvent.clear(screen.getByRole("textbox", { name: /your name/i }));
+      await userEvent.type(screen.getByRole("textbox", { name: /your name/i }), "j.chen");
+      await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+      expect(screen.getByRole("button", { name: /operator: j\.chen/i })).toHaveTextContent("JC");
     });
   });
 });

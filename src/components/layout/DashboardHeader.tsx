@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { RotateCw, ShieldHalf } from "lucide-react";
 import { useUrlState } from "../../state/useUrlState";
 import { useOperator } from "../../state/OperatorContext";
 import { SERVICES } from "../../api/fixtures/seededDataset";
 import type { TimeRange } from "../../domain/filters";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -24,7 +27,7 @@ const BOX =
   "h-9 rounded-[10px] border border-border bg-card px-3.5 text-[13px] text-foreground shadow-2xs transition-all hover:border-border hover:bg-muted/40 hover:shadow-xs";
 
 // Native <select> keeps the browser's own keyboard and form semantics (and is what the header's
-// tests drive), so the design's chevron is drawn alongside it rather than by a JS listbox.
+// tests drive); its own arrow is suppressed because the design's boxes carry no chevron.
 // Geometry only — the surface comes from the Button variant.
 const BUTTON_GEOMETRY = "h-9 rounded-[10px] px-3.5 text-[13px] font-medium";
 
@@ -32,25 +35,6 @@ function environmentLabel(environment: readonly string[]): string {
   if (environment.length === 0) return "All environments";
   if (environment.length === 1) return environment[0];
   return `${environment.length} environments`;
-}
-
-function SelectChevron() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 16 16"
-      className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-subtle-foreground"
-    >
-      <path
-        d="M4 6.5 8 10.5 12 6.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 function LiveIndicator() {
@@ -71,7 +55,7 @@ function LiveIndicator() {
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-60" />
           <span className="relative inline-flex size-full rounded-full bg-ok" />
         </span>
-        <span className="meta">Updated {label}</span>
+        <span className="meta">updated {label}</span>
       </span>
       <Button
         aria-label="Refresh"
@@ -82,7 +66,6 @@ function LiveIndicator() {
           setSecondsAgo(0);
         }}
       >
-        <RotateCw aria-hidden="true" className="size-3.5" />
         Refresh
       </Button>
     </div>
@@ -90,6 +73,17 @@ function LiveIndicator() {
 }
 
 // FR-121: the operator can see and change the name attached to every action they take.
+// The design leaves no room for a name plus a button, so identity collapses to one avatar-sized
+// chip: initials at a glance, the full name and the change affordance one click away.
+function initialsOf(name: string): string {
+  return name
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]!.toUpperCase())
+    .join("");
+}
+
 function OperatorNameControl() {
   const { operatorName, setOperatorName } = useOperator();
   const [editing, setEditing] = useState(false);
@@ -111,6 +105,7 @@ function OperatorNameControl() {
         <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
           Your name
           <input
+            autoFocus
             className={`${BOX} w-32`}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
@@ -132,20 +127,31 @@ function OperatorNameControl() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="meta">{operatorName ?? "Name not set"}</span>
-      <Button
-        type="button"
-        variant="outline"
-        className={`${BUTTON_GEOMETRY} text-muted-foreground`}
-        onClick={() => {
-          setDraft(operatorName ?? "");
-          setEditing(true);
-        }}
-      >
-        {operatorName ? "Change name" : "Set name"}
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={`Operator: ${operatorName ?? "no name set"}`}
+          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-[12px] font-semibold text-muted-foreground transition-colors hover:bg-muted/40"
+        >
+          {operatorName ? initialsOf(operatorName) : <User aria-hidden="true" className="size-4" />}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel className="text-muted-foreground">
+          {operatorName ?? "No name set"}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => {
+            setDraft(operatorName ?? "");
+            setEditing(true);
+          }}
+        >
+          {operatorName ? "Change name" : "Set name"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -156,22 +162,12 @@ export function DashboardHeader() {
     useUrlState();
 
   return (
-    <header className="mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-x-4 gap-y-3 px-6 py-3.5">
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span
-          aria-hidden="true"
-          className="brand-mark flex size-8 shrink-0 items-center justify-center rounded-[9px] text-primary-foreground shadow-sm ring-1 ring-black/5"
-        >
-          <ShieldHalf className="size-4" />
-        </span>
-        <div className="flex min-w-0 items-baseline gap-2.5">
-          <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px] text-foreground">
-            Incident Response Orchestrator
-          </h1>
-          <span className="eyebrow shrink-0 rounded-full bg-accent px-2 py-0.5 text-[10.5px] text-accent-foreground">
-            Autonomous
-          </span>
-        </div>
+    <header className="mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-x-4 gap-y-3 border-b border-border px-6 py-3.5">
+      <div className="flex min-w-0 items-baseline gap-2.5">
+        <h1 className="truncate text-[17px] font-semibold tracking-[-0.3px] text-foreground">
+          Incident Response Orchestrator
+        </h1>
+        <span className="meta shrink-0 text-[11px] uppercase tracking-[0.12em]">Autonomous</span>
       </div>
 
       {/* The whole control cluster wraps as one unit, so a narrow window drops it to its own row
@@ -182,28 +178,23 @@ export function DashboardHeader() {
         <div
           role="group"
           aria-label="Time range"
+          // FR-004: the scope note lives on the control it describes rather than on a separate
+          // "?" affordance the design has no room for.
+          title={TIME_RANGE_TOOLTIP}
+          data-tip={TIME_RANGE_TOOLTIP}
           className="flex items-center rounded-[10px] bg-muted p-1 shadow-inner"
         >
           {TIME_RANGES.map((range) => (
             <button
               key={range}
               aria-pressed={timeRange === range}
-              className="rounded-[7px] px-3.5 py-1 text-[13px] font-medium text-muted-foreground transition-all hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-primary aria-pressed:shadow-sm"
+              className="rounded-[7px] px-4 py-1.5 text-[13px] font-medium text-muted-foreground transition-all hover:text-foreground aria-pressed:bg-card aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-sm"
               onClick={() => setTimeRange(range)}
             >
               {range}
             </button>
           ))}
         </div>
-
-        <button
-          aria-label="About the time range"
-          title={TIME_RANGE_TOOLTIP}
-          data-tip={TIME_RANGE_TOOLTIP}
-          className="flex size-[18px] shrink-0 items-center justify-center rounded-full text-[11px] leading-none text-subtle-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          ?
-        </button>
 
         <span aria-hidden="true" className="h-5 w-px bg-border" />
 
@@ -214,13 +205,8 @@ export function DashboardHeader() {
         */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              aria-label="Environment"
-              className={`${BOX} relative w-[168px] pr-8 text-left`}
-            >
+            <button type="button" aria-label="Environment" className={`${BOX} w-[168px] text-left`}>
               {environmentLabel(environment)}
-              <SelectChevron />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-[168px]">
@@ -240,10 +226,10 @@ export function DashboardHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="relative">
+        <div>
           <select
             aria-label="Service"
-            className={`${BOX} w-[168px] appearance-none pr-8`}
+            className={`${BOX} w-[168px] appearance-none`}
             value={service ?? "all"}
             onChange={(event) =>
               setService(event.target.value === "all" ? null : event.target.value)
@@ -256,7 +242,6 @@ export function DashboardHeader() {
               </option>
             ))}
           </select>
-          <SelectChevron />
         </div>
 
         <LiveIndicator />
