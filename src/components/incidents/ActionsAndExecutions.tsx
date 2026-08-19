@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { fetchActionParameters, fetchExecutionDetail } from "../../api/incidents/detail";
@@ -24,6 +25,13 @@ interface ActionsAndExecutionsProps {
 }
 
 const TOP_MATCHES_CAP = 3;
+
+/** The compare URL an execution reports, when it reported one. */
+function compareUrlOf(payload: unknown): string | null {
+  if (typeof payload !== "object" || payload === null) return null;
+  const url = (payload as { compareUrl?: unknown }).compareUrl;
+  return typeof url === "string" && url.startsWith("https://") ? url : null;
+}
 
 // FR-068: a still-PROPOSED action found here gets the exact same approve/reject behaviour as the
 // queue (component-inventory.md) — built from data already loaded for this drawer, no new fetch.
@@ -109,6 +117,20 @@ function ExecutionEntry({
           )}
           {data && (
             <>
+              {/* The delivery agent pushes a branch and returns the page that
+                  opens a PR pre-filled. Buried in the JSON it is not "one
+                  click", so it gets lifted out. */}
+              {compareUrlOf(data.responsePayload) && (
+                <a
+                  href={compareUrlOf(data.responsePayload)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-[12.5px] font-medium text-p3 hover:bg-muted"
+                >
+                  Open pull request
+                  <ArrowUpRight aria-hidden="true" className="size-3" />
+                </a>
+              )}
               <pre className={CODE_BLOCK}>{JSON.stringify(data.responsePayload, null, 2)}</pre>
               <pre className={CODE_BLOCK}>{data.executionLogs}</pre>
             </>
@@ -184,7 +206,9 @@ export function ActionsAndExecutions({
 }: ActionsAndExecutionsProps) {
   if (actions.length === 0) {
     return (
-      <p className={`${SECTION} ${MUTED_NOTE} shadow-xs`}>No recommended actions for this incident.</p>
+      <p className={`${SECTION} ${MUTED_NOTE} shadow-xs`}>
+        No recommended actions for this incident.
+      </p>
     );
   }
 
