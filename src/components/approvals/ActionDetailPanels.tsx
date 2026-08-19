@@ -3,6 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import type { PendingApprovalCard } from "../../api/approvals/pending";
 import type { ActionType } from "../../api/types";
 import { ParametersBlock } from "./ParametersBlock";
+import { ProposedChange } from "./ProposedChange";
+import { useProposedChange } from "./useProposedChange";
 
 type PanelKey = "change" | "evidence" | "preflight";
 
@@ -36,6 +38,7 @@ function NotYetAvailable({ children }: { children: string }) {
 
 export function ActionDetailPanels({ actionId, actionType, matches }: ActionDetailPanelsProps) {
   const [open, setOpen] = useState<PanelKey | null>(null);
+  const { change, isLoading: changeLoading } = useProposedChange(actionId, open === "change");
 
   function toggle(key: PanelKey) {
     setOpen((current) => (current === key ? null : key));
@@ -48,7 +51,9 @@ export function ActionDetailPanels({ actionId, actionType, matches }: ActionDeta
   ];
 
   const context: Record<PanelKey, string> = {
-    change: "no diff on this action yet",
+    change: change
+      ? `${change.files.length} ${change.files.length === 1 ? "file" : "files"} · not yet merged`
+      : "no diff on this action yet",
     evidence: `${matches.length} sources · highest match first`,
     preflight: "no orchestrator review on this action yet",
   };
@@ -78,9 +83,15 @@ export function ActionDetailPanels({ actionId, actionType, matches }: ActionDeta
 
       {open === "change" && (
         <div id={`${actionId}-change`} className="mt-3.5">
-          <NotYetAvailable>
-            The approvals API does not carry a proposed diff for an action.
-          </NotYetAvailable>
+          {changeLoading && (
+            <p className="text-[12.5px] text-muted-foreground">Loading the proposed change…</p>
+          )}
+          {!changeLoading && change && <ProposedChange change={change} />}
+          {!changeLoading && !change && (
+            <NotYetAvailable>
+              This action changes no code — only actions the planner expressed as a patch carry one.
+            </NotYetAvailable>
+          )}
         </div>
       )}
 
