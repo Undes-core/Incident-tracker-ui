@@ -1,9 +1,29 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { beforeEach, describe, expect, it } from "vitest";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { DashboardHeader } from "./DashboardHeader";
 import { OperatorProvider } from "../../state/OperatorContext";
+
+// Real-shaped ids: the header's own contract is that whatever it puts in the URL
+// is a `services.id`, because every endpoint behind the filter binds it as a UUID.
+const PAYMENTS_ID = "11111111-1111-1111-1111-111111111111";
+
+const server = setupServer(
+  http.get("/api/services", () =>
+    HttpResponse.json({
+      services: [
+        { id: PAYMENTS_ID, name: "payments-api" },
+        { id: "22222222-2222-2222-2222-222222222222", name: "checkout-web" },
+      ],
+    }),
+  ),
+);
+beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
@@ -11,7 +31,7 @@ beforeEach(() => {
 });
 
 function renderHeader() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
       <OperatorProvider>
@@ -65,12 +85,18 @@ describe("DashboardHeader", () => {
     );
   });
 
-  it("offers a service dropdown defaulting to all services (FR-003)", () => {
+  it("offers a service dropdown defaulting to all services (FR-003)", async () => {
     renderHeader();
     const select = screen.getByLabelText<HTMLSelectElement>(/^service$/i);
     expect(select.value).toBe("all");
-    fireEvent.change(select, { target: { value: "svc-payments-api" } });
-    expect(new URLSearchParams(window.location.search).get("service")).toBe("svc-payments-api");
+
+    // The options arrive from GET /api/services, so "all" is the only one on the
+    // first render. They used to come from the MSW fixture module, which put
+    // slugs like "svc-payments-api" into a filter every endpoint reads as a UUID.
+    await screen.findByRole("option", { name: "payments-api" });
+
+    fireEvent.change(select, { target: { value: PAYMENTS_ID } });
+    expect(new URLSearchParams(window.location.search).get("service")).toBe(PAYMENTS_ID);
   });
 
   it("shows a live indicator and a manual refresh control", () => {

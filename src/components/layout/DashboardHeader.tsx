@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUrlState } from "../../state/useUrlState";
 import { useOperator } from "../../state/OperatorContext";
-import { SERVICES } from "../../api/fixtures/seededDataset";
+import { useServices } from "../../api/services";
 import type { TimeRange } from "../../domain/filters";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -160,6 +160,9 @@ function OperatorNameControl() {
 export function DashboardHeader() {
   const { timeRange, setTimeRange, environment, setEnvironment, service, setService } =
     useUrlState();
+  // Real `services.id` values: anything else is a 400 from every endpoint the
+  // service filter feeds.
+  const { data: serviceCatalogue } = useServices();
 
   return (
     <header className="mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-x-4 gap-y-3 border-b border-border px-6 py-3.5">
@@ -236,7 +239,7 @@ export function DashboardHeader() {
             }
           >
             <option value="all">All services</option>
-            {SERVICES.map((svc) => (
+            {(serviceCatalogue?.services ?? []).map((svc) => (
               <option key={svc.id} value={svc.id}>
                 {svc.name}
               </option>

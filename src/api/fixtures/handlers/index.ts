@@ -11,6 +11,7 @@ import { dashboardKnowledgeHandlers } from "./dashboardKnowledge";
 import { dashboardBreakdownsHandlers } from "./dashboardBreakdowns";
 import { feedbackImpactHandlers } from "./feedbackImpact";
 import { feedbackHandlers } from "./feedback";
+import { servicesHandlers } from "./services";
 
 // Foundational (T010) creates this barrel empty; each phase appends its own handler module.
 export const handlers: RequestHandler[] = [
@@ -26,4 +27,5 @@ export const handlers: RequestHandler[] = [
   ...dashboardBreakdownsHandlers,
   ...feedbackImpactHandlers,
   ...feedbackHandlers,
+  ...servicesHandlers,
 ];
