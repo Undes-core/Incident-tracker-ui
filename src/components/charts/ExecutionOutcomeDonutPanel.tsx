@@ -9,7 +9,7 @@ export function ExecutionOutcomeDonutPanel() {
   const { data, isLoading, isError, error, refetch } = usePerformance();
 
   return (
-    <Panel title="Execution outcomes">
+    <Panel title="Execution outcomes" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}

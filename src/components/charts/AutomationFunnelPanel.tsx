@@ -1,4 +1,5 @@
 import { usePerformance } from "../../api/dashboard/performance";
+import { useUrlState } from "../../state/useUrlState";
 import { PanelBoundary } from "../shared/PanelBoundary";
 import { Panel } from "../shared/Panel";
 import { AutomationFunnel } from "./AutomationFunnel";
@@ -9,9 +10,12 @@ import { AutomationFunnel } from "./AutomationFunnel";
 // boundary, so a render failure here never blanks the other two sections (Principle VIII).
 export function AutomationFunnelPanel() {
   const { data, isLoading, isError, error, refetch } = usePerformance();
+  // The card states its own scope: "16 incidents · 7d" answers "the whole of what?", which is
+  // the first question a funnel raises and the one no row can answer.
+  const { timeRange } = useUrlState();
 
   return (
-    <Panel title="Automation funnel">
+    <Panel title="Automation funnel" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}
@@ -30,6 +34,7 @@ export function AutomationFunnelPanel() {
           <AutomationFunnel
             stages={perf.funnel.stages}
             automationRate={perf.funnel.automationRate}
+            rangeLabel={timeRange}
           />
         )}
       </PanelBoundary>

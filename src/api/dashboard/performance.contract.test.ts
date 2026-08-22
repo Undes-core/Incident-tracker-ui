@@ -32,8 +32,8 @@ const body: PerformanceData = {
     successRatePercent: 89,
     medianDurationMinutes: 4,
     byActionType: [
-      { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0 },
-      { actionType: "LAMBDA", success: 30, failed: 1, rolledBack: 1, running: 1 },
+      { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0, medianDurationMinutes: 3 },
+      { actionType: "LAMBDA", success: 30, failed: 1, rolledBack: 1, running: 1, medianDurationMinutes: 4 },
     ],
     recentFailures: [
       { executedActionId: "exec-9", incidentId: "inc-1030", actionType: "SQL", truncatedErrorMessage: "deadlock detected" },

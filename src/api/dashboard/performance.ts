@@ -25,7 +25,11 @@ export interface PerformanceOutcomes {
   counts: OutcomeCounts;
   successRatePercent: number;
   medianDurationMinutes: number | null;
-  byActionType: Array<{ actionType: ActionType } & OutcomeCounts>;
+  // medianDurationMinutes is null while every run of this type is still in flight — there is no
+  // settled duration to take a median of, and a zero would read as "instant".
+  byActionType: Array<
+    { actionType: ActionType; medianDurationMinutes: number | null } & OutcomeCounts
+  >;
   recentFailures: Array<{
     executedActionId: string;
     incidentId: string;

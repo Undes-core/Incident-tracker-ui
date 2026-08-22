@@ -7,7 +7,7 @@ export function ServiceBreakdownPanel() {
   const { data, isLoading, isError, error, refetch } = useBreakdowns();
 
   return (
-    <Panel title="By service">
+    <Panel title="By service" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}

@@ -12,8 +12,8 @@ const outcomes: PerformanceOutcomes = {
   successRatePercent: 87,
   medianDurationMinutes: 4,
   byActionType: [
-    { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0 },
-    { actionType: "LAMBDA", success: 25, failed: 1, rolledBack: 1, running: 1 },
+    { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0, medianDurationMinutes: 3 },
+    { actionType: "LAMBDA", success: 25, failed: 1, rolledBack: 1, running: 1, medianDurationMinutes: 4 },
   ],
   recentFailures: [
     {
@@ -26,14 +26,18 @@ const outcomes: PerformanceOutcomes = {
 };
 
 describe("ExecutionOutcomeDonut details", () => {
+  // Label and value are separate elements in a justified row now, so the assertion is on the row
+  // rather than on the words.
   it("shows the median execution duration as a caption (EO-4,FR-094)", () => {
     render(<ExecutionOutcomeDonut outcomes={outcomes} />);
-    expect(screen.getByText(/median execution duration/i)).toHaveTextContent("4m");
+    expect(screen.getByText(/median execution duration/i).parentElement).toHaveTextContent("4m");
   });
 
   it("shows an unavailable caption rather than 0m when there is no data yet", () => {
     render(<ExecutionOutcomeDonut outcomes={{ ...outcomes, medianDurationMinutes: null }} />);
-    expect(screen.getByText(/median execution duration/i)).toHaveTextContent(/not yet available/i);
+    expect(screen.getByText(/median execution duration/i).parentElement).toHaveTextContent(
+      /not yet available/i,
+    );
   });
 
   it("lists the most recent failures with action type, incident, and truncated error (EO-2,FR-092)", () => {
@@ -49,13 +53,7 @@ describe("ExecutionOutcomeDonut details", () => {
     expect(new URLSearchParams(window.location.search).get("incident")).toBe("inc-1042");
   });
 
-  it("toggles a breakdown by action type on demand (EO-3,FR-093)", () => {
-    render(<ExecutionOutcomeDonut outcomes={outcomes} />);
-    expect(screen.queryByRole("cell", { name: "SQL" })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: /breakdown by action type/i }));
-
-    expect(screen.getByRole("cell", { name: "SQL" })).toBeInTheDocument();
-    expect(screen.getByRole("cell", { name: "LAMBDA" })).toBeInTheDocument();
-  });
+  // EO-3/FR-093's breakdown by action type is no longer a disclosure inside this card — it is its
+  // own always-visible table with runs, success rate and median duration. Asserted there; see
+  // ActionTypePerformance.test.tsx.
 });

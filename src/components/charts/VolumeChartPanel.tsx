@@ -12,7 +12,7 @@ export function VolumeChartPanel() {
   const { data, isLoading, isError, error, refetch } = useBreakdowns();
 
   return (
-    <Panel title="Incident volume">
+    <Panel title="Incident volume" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}

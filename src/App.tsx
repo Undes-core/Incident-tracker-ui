@@ -17,6 +17,7 @@ import { AutomationFunnelPanel } from "./components/charts/AutomationFunnelPanel
 import { ExecutionOutcomeDonutPanel } from "./components/charts/ExecutionOutcomeDonutPanel";
 import { VolumeChartPanel } from "./components/charts/VolumeChartPanel";
 import { PriorityBreakdownPanel } from "./components/charts/PriorityBreakdownPanel";
+import { ActionTypePerformancePanel } from "./components/charts/ActionTypePerformancePanel";
 import { CategoryBreakdownPanel } from "./components/charts/CategoryBreakdownPanel";
 import { ServiceBreakdownPanel } from "./components/charts/ServiceBreakdownPanel";
 import { KpiStripKnowledge } from "./components/kpi/KpiStrip.knowledge";
@@ -48,8 +49,14 @@ function Dashboard() {
         </TabPanel>
         <TabPanel tab="performance" activeTab={tab}>
           <KpiStripPerformance />
-          <AutomationFunnelPanel />
-          <ExecutionOutcomeDonutPanel />
+          {/* The funnel and the outcome donut answer one question between them — where work is
+              lost, and whether what survives actually worked — so they sit side by side at the
+              top rather than as two full-width cards to scroll between. Both are dense enough to
+              hold a half-width column and short enough to end at roughly the same place. */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <AutomationFunnelPanel />
+            <ExecutionOutcomeDonutPanel />
+          </div>
           <VolumeChartPanel />
           {/* The three breakdowns are the same shape at the same altitude, so they read as one
               row of small multiples rather than three full-width charts to scroll past. */}
@@ -58,6 +65,7 @@ function Dashboard() {
             <CategoryBreakdownPanel />
             <ServiceBreakdownPanel />
           </div>
+          <ActionTypePerformancePanel />
         </TabPanel>
         <TabPanel tab="knowledge" activeTab={tab}>
           <KpiStripKnowledge />

@@ -7,7 +7,7 @@ export function CategoryBreakdownPanel() {
   const { data, isLoading, isError, error, refetch } = useBreakdowns();
 
   return (
-    <Panel title="By category">
+    <Panel title="By category" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}

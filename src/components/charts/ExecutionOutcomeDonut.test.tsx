@@ -28,11 +28,11 @@ describe("ExecutionOutcomeDonut", () => {
 
   it("counts and displays rolled-back separately from both success and failed everywhere (FR-091,EO-1)", () => {
     render(<ExecutionOutcomeDonut outcomes={outcomes} />);
-    expect(screen.getByText("ROLLED BACK")).toBeInTheDocument();
-    const rolledBackRow = screen.getByText("ROLLED BACK").closest("li");
+    expect(screen.getByText("Rolled back")).toBeInTheDocument();
+    const rolledBackRow = screen.getByText("Rolled back").closest("li");
     expect(rolledBackRow).toHaveTextContent("3");
 
-    const failedRow = screen.getByText("FAILED").closest("li");
+    const failedRow = screen.getByText("Failed").closest("li");
     expect(failedRow).toHaveTextContent("6");
     expect(failedRow).not.toHaveTextContent("9"); // never 6+3 folded together
   });
@@ -40,7 +40,7 @@ describe("ExecutionOutcomeDonut", () => {
   it("never folds rolled-back into the failed count", () => {
     render(<ExecutionOutcomeDonut outcomes={outcomes} />);
     const counts = screen.getAllByRole("listitem").map((li) => li.textContent);
-    expect(counts.some((text) => text?.includes("FAILED") && text.includes("6"))).toBe(true);
-    expect(counts.some((text) => text?.includes("ROLLED BACK") && text.includes("3"))).toBe(true);
+    expect(counts.some((text) => text?.includes("Failed") && text.includes("6"))).toBe(true);
+    expect(counts.some((text) => text?.includes("Rolled back") && text.includes("3"))).toBe(true);
   });
 });

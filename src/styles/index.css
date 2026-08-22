@@ -97,6 +97,12 @@
    */
   --chart-1: #4f46e5;
   --chart-2: #ea580c;
+
+  /* Magnitude is drawn in ink. Not quite --foreground: a solid bar at full text contrast is
+   * heavier than the label above it, and the bar is the subordinate half of that pair. */
+  --chart-ink: #1f2433;
+  /* The same bar for a row that represents an absence — uncategorised, unknown, not yet run. */
+  --chart-ink-muted: #b9bfcd;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
@@ -152,6 +158,8 @@
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
+  --color-chart-ink: var(--chart-ink);
+  --color-chart-ink-muted: var(--chart-ink-muted);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 

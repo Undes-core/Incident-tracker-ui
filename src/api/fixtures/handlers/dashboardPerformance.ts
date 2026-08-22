@@ -23,11 +23,11 @@ const PERFORMANCE_DATA: PerformanceData = {
     successRatePercent: 87,
     medianDurationMinutes: 4,
     byActionType: [
-      { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0 },
-      { actionType: "LAMBDA", success: 25, failed: 1, rolledBack: 1, running: 1 },
-      { actionType: "API", success: 15, failed: 2, rolledBack: 1, running: 1 },
-      { actionType: "GITHUB_PR", success: 6, failed: 1, rolledBack: 0, running: 0 },
-      { actionType: "KUBERNETES", success: 5, failed: 0, rolledBack: 0, running: 0 },
+      { actionType: "SQL", success: 20, failed: 2, rolledBack: 1, running: 0, medianDurationMinutes: 3 },
+      { actionType: "LAMBDA", success: 25, failed: 1, rolledBack: 1, running: 1, medianDurationMinutes: 4 },
+      { actionType: "API", success: 15, failed: 2, rolledBack: 1, running: 1, medianDurationMinutes: 5 },
+      { actionType: "GITHUB_PR", success: 6, failed: 1, rolledBack: 0, running: 0, medianDurationMinutes: 6 },
+      { actionType: "KUBERNETES", success: 5, failed: 0, rolledBack: 0, running: 0, medianDurationMinutes: 7 },
     ],
     recentFailures: [
       {

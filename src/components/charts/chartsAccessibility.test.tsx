@@ -51,7 +51,7 @@ describe("AccessibleChartTable integration", () => {
     fireEvent.click(screen.getByRole("button", { name: /view as table/i }));
 
     const tables = screen.getAllByRole("table");
-    const accessibleTable = tables.find((t) => t.textContent?.includes("SUCCESS"));
+    const accessibleTable = tables.find((t) => /success/i.test(t.textContent ?? ""));
     expect(accessibleTable).toBeDefined();
     expect(accessibleTable).toHaveTextContent("71");
   });

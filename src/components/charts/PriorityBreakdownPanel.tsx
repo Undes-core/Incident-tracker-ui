@@ -7,7 +7,7 @@ export function PriorityBreakdownPanel() {
   const { data, isLoading, isError, error, refetch } = useBreakdowns();
 
   return (
-    <Panel title="By priority">
+    <Panel title="By priority" titleInCard>
       <PanelBoundary
         isLoading={isLoading}
         isError={isError}
