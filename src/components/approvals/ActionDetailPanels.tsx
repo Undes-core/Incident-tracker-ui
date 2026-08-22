@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { PendingApprovalCard } from "../../api/approvals/pending";
 import type { ActionType } from "../../api/types";
 import { ParametersBlock } from "./ParametersBlock";
+import { PreflightPanel } from "./PreflightPanel";
 import { ProposedChange } from "./ProposedChange";
 import { useProposedChange } from "./useProposedChange";
 
@@ -24,9 +25,9 @@ const TAB_IDLE = "text-muted-foreground hover:text-foreground";
 // fill alone reads as hover.
 const TAB_OPEN = "aria-expanded:ring-1 aria-expanded:ring-p2";
 
-// Panels the API cannot feed yet. The contract carries no diff and no pre-flight review
-// (contracts/approvals-endpoints.md), and the constitution forbids inventing response fields, so
-// these state that plainly instead of rendering invented content.
+// A panel the API cannot feed. Kept for the proposed-change case, where an action written by
+// something other than the Decision Agent may carry no diff at all — the constitution forbids
+// inventing response fields, so it states that plainly rather than rendering invented content.
 function NotYetAvailable({ children }: { children: string }) {
   return (
     <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center">
@@ -55,7 +56,7 @@ export function ActionDetailPanels({ actionId, actionType, matches }: ActionDeta
       ? `${change.files.length} ${change.files.length === 1 ? "file" : "files"} · not yet merged`
       : "no diff on this action yet",
     evidence: `${matches.length} sources · highest match first`,
-    preflight: "no orchestrator review on this action yet",
+    preflight: "what would happen if you approved this",
   };
 
   return (
@@ -131,9 +132,7 @@ export function ActionDetailPanels({ actionId, actionType, matches }: ActionDeta
 
       {open === "preflight" && (
         <div id={`${actionId}-preflight`} className="mt-3.5">
-          <NotYetAvailable>
-            The approvals API does not carry pre-flight checks for an action.
-          </NotYetAvailable>
+          <PreflightPanel actionId={actionId} />
         </div>
       )}
     </div>
