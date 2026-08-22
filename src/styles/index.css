@@ -58,8 +58,15 @@
   --selected-bg: #eceeff;
   --selected-ring: var(--ring);
 
-  /* --- incident priority (PRD-bound) --- */
-  --p1: #dc2626;
+  /* --- incident priority (PRD-bound) ---
+   * P1 is red-700 rather than red-600: against --p2's amber the lighter red sat at ΔE 14.4 for
+   * normal vision, under the 15 floor where a pair stops being reliably separable. Darkening it
+   * also reads as more severe, which is the direction P1 wants anyway.
+   *
+   * --p4 stays a low-chroma grey on purpose, and is the one slot that fails a categorical chroma
+   * floor. That is correct here: "lowest priority" is the absence of alarm, and every place it
+   * appears is a pill carrying the literal text "P4", so identity is never colour-alone. */
+  --p1: #b91c1c;
   --p2: #d97706;
   --p3: #2563eb;
   --p4: #64748b;
@@ -67,11 +74,29 @@
   /*
    * Execution outcome. `--roll` is deliberately its own hue: EO-1 requires ROLLED_BACK to read as
    * its own bucket everywhere — never folded into success (--ok) or failure (--bad).
+   *
+   * --run exists because RUNNING used to borrow --p3. That put two of the four outcome colours at
+   * ΔE 0.4 under deuteranopia — indistinguishable — so the rule protecting ROLLED_BACK from --ok
+   * and --bad was guarding the wrong collision. Cyan clears every pair.
+   *
+   * --ok and --bad are red/green, which no hue choice can separate under deuteranopia: both
+   * collapse toward yellow. Lightness is the only channel left, which is why --bad is the darker
+   * red-700 — that alone takes the pair from ΔE 5.0 to 11.0. The badges carry text regardless.
    */
   --ok: #16a34a;
   --warn: #b45309;
-  --bad: #dc2626;
+  --bad: #b91c1c;
   --roll: #7c3aed;
+  --run: #0891b2;
+
+  /*
+   * Chart series, assigned in fixed order and never cycled. Separate from the status tokens above
+   * because a series carries identity, not judgement: known vs unknown incidents were painted
+   * --ok green and --bad red, which said "unknown is bad" when it only means "not classified yet"
+   * — and did it with the single worst pair for colour vision deficiency.
+   */
+  --chart-1: #4f46e5;
+  --chart-2: #ea580c;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
@@ -123,6 +148,10 @@
   --color-warn: var(--warn);
   --color-bad: var(--bad);
   --color-roll: var(--roll);
+  --color-run: var(--run);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 

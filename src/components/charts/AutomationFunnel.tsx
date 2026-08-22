@@ -1,5 +1,10 @@
 import type { FunnelStage } from "../../domain/funnel";
-import { percentOfStageAbove, largestDrop, dropSetFor } from "../../domain/funnel";
+import {
+  percentOfStageAbove,
+  shareOfFirstStage,
+  largestDrop,
+  dropSetFor,
+} from "../../domain/funnel";
 import { useCrossTabJump } from "../../state/useCrossTabJump";
 import { AccessibleChartTable } from "../shared/AccessibleChartTable";
 
@@ -48,6 +53,9 @@ export function AutomationFunnel({ stages, automationRate }: AutomationFunnelPro
         {stages.map((stage, index) => {
           const selection = dropSetFor(stages, index);
           const percent = percentOfStageAbove(stages, index);
+          // Length is the share of the first stage, so the shape narrows the way the funnel
+          // actually does. The conversion rate stays a number beside the count.
+          const width = shareOfFirstStage(stages, index);
           return (
             <li key={stage.key}>
               <button
@@ -67,11 +75,11 @@ export function AutomationFunnel({ stages, automationRate }: AutomationFunnelPro
                   )}
                 </span>
                 {/* The bar spans both columns so the label and count keep their own baseline. */}
-                {percent !== null && (
-                  <span className="col-span-2 mt-1 h-1 w-full overflow-hidden rounded-full bg-muted">
+                {width !== null && (
+                  <span className="col-span-2 mt-1 h-2 w-full overflow-hidden rounded-sm bg-muted">
                     <span
-                      style={{ width: `${percent}%` }}
-                      className="block h-full rounded-full bg-primary/60"
+                      style={{ width: `${width}%` }}
+                      className="block h-full rounded-sm bg-primary"
                     />
                   </span>
                 )}

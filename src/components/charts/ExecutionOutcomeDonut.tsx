@@ -12,14 +12,19 @@ interface ExecutionOutcomeDonutProps {
   outcomes: PerformanceOutcomes;
 }
 
-// Same hues as OutcomeBadge (--ok/--bad/--roll/--p3) — the donut and the legend/badges below it
-// must agree, and ROLLED_BACK in particular must stay its own violet, never read as a shade of
-// warning-amber or failure-red (EO-1).
+// Same hues as OutcomeBadge — the donut and the badges beside it must agree, and ROLLED_BACK in
+// particular must stay its own violet, never read as a shade of warning-amber or failure-red
+// (EO-1).
+//
+// RUNNING used to borrow --p3, the priority-3 blue. That satisfied EO-1's letter while breaking
+// its intent: violet and that blue sit at ΔE 0.4 under deuteranopia, so ROLLED_BACK was protected
+// from --ok and --bad and then made indistinguishable from RUNNING. --run is cyan, which clears
+// every pair in the set.
 const OUTCOME_COLORS: Record<ExecutedActionStatus, string> = {
   SUCCESS: "var(--ok)",
   FAILED: "var(--bad)",
   ROLLED_BACK: "var(--roll)",
-  RUNNING: "var(--p3)",
+  RUNNING: "var(--run)",
 };
 
 // FR-090-094/EO-1..EO-4: distribution over success/failed/rolled-back/running with the success
@@ -40,17 +45,27 @@ export function ExecutionOutcomeDonut({ outcomes }: ExecutionOutcomeDonutProps) 
       aria-label="Execution outcomes"
       className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
-      <div className="flex flex-wrap items-center gap-6">
-        <div className="size-[200px] shrink-0">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+        {/* The success rate belongs in the hole. Beside the donut it left the centre empty and a
+            wide dead strip to its right, so the one number the chart exists to deliver read as a
+            caption. A thinner ring (18px, not 30) both makes room for it and keeps a saturated
+            fill off a large block. */}
+        <div className="relative size-[200px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={rows}
                 dataKey="value"
                 nameKey="status"
-                innerRadius={50}
+                innerRadius={62}
                 outerRadius={80}
+                stroke="var(--card)"
+                strokeWidth={2}
                 paddingAngle={rows.filter((row) => row.value > 0).length > 1 ? 2 : 0}
+                // Off, not shortened: the panel polls, so every refetch replayed the sweep-in.
+                // Recharts' 1.5s default is also long enough that the ring reads as missing on
+                // load, with the centred success rate already painted inside an empty circle.
+                isAnimationActive={false}
               >
                 {rows.map((row) => (
                   <Cell key={row.status} fill={OUTCOME_COLORS[row.status]} />
@@ -71,23 +86,25 @@ export function ExecutionOutcomeDonut({ outcomes }: ExecutionOutcomeDonutProps) 
               />
             </PieChart>
           </ResponsiveContainer>
+          {/* Proportional figures, not tabular-nums: equal-width digits make a display-size
+              number look loose. Nothing here is aligned in a column. */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-[28px] font-semibold leading-none tracking-[-0.8px] text-foreground">
+              {outcomes.successRatePercent}%
+            </span>
+            <span className="eyebrow mt-1.5">Success rate</span>
+          </div>
         </div>
-        <p className="text-[13px]">
-          Success rate{" "}
-          <b className="text-[20px] font-semibold tracking-[-0.5px]">
-            {outcomes.successRatePercent}%
-          </b>
-        </p>
-      </div>
 
-      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-        {rows.map((row) => (
-          <li key={row.status} className="flex items-center gap-2">
-            <OutcomeBadge status={row.status} />
-            <span className="meta tabular-nums text-foreground">{row.value}</span>
-          </li>
-        ))}
-      </ul>
+        <ul className="flex min-w-[9rem] flex-col gap-2">
+          {rows.map((row) => (
+            <li key={row.status} className="flex items-center justify-between gap-3">
+              <OutcomeBadge status={row.status} />
+              <span className="meta tabular-nums text-foreground">{row.value}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <p className="mt-3 text-[13px] text-muted-foreground">
         Median execution duration:{" "}

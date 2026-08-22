@@ -50,12 +50,12 @@ export function CoverageGapsChart({ services }: CoverageGapsChartProps) {
               <div
                 role="img"
                 aria-label={`${service.serviceName} known-incident rate ${percent}%`}
-                className="col-span-2 mt-1 h-1 w-full overflow-hidden rounded-full bg-muted"
+                className="col-span-2 mt-1 h-2 w-full overflow-hidden rounded-sm bg-muted"
               >
                 <div
                   data-threshold={threshold}
                   style={{ width: `${percent}%` }}
-                  className="h-full rounded-full data-[threshold=RED]:bg-bad data-[threshold=AMBER]:bg-warn data-[threshold=GREEN]:bg-ok"
+                  className="h-full rounded-sm data-[threshold=RED]:bg-bad data-[threshold=AMBER]:bg-warn data-[threshold=GREEN]:bg-ok"
                 />
               </div>
             </li>

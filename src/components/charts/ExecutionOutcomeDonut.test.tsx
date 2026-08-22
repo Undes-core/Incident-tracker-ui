@@ -12,9 +12,18 @@ const outcomes: PerformanceOutcomes = {
 };
 
 describe("ExecutionOutcomeDonut", () => {
+  // FR-090 asks for a centre label, so the figure and its caption are now separate elements
+  // stacked in the donut's hole — they used to be one line of text sitting beside it, which is
+  // why asserting the number and the words on a single node passed while the centre stayed empty.
   it("shows the success rate as the centre label (FR-090)", () => {
     render(<ExecutionOutcomeDonut outcomes={outcomes} />);
-    expect(screen.getByText(/success rate/i)).toHaveTextContent("87%");
+
+    const caption = screen.getByText(/^success rate$/i);
+    const centre = caption.parentElement;
+
+    expect(centre).toHaveTextContent("87%");
+    // Overlaid on the donut, so it must not eat the segments' hover targets.
+    expect(centre?.className).toContain("pointer-events-none");
   });
 
   it("counts and displays rolled-back separately from both success and failed everywhere (FR-091,EO-1)", () => {

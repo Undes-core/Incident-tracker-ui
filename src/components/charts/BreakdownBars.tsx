@@ -30,6 +30,19 @@ interface NormalizedRow {
   knownRatePercent?: number;
 }
 
+// Priority is an ordered category with colours the rest of the app already teaches, so its bars
+// carry them: the bar then reinforces the pill on its own row instead of contradicting it.
+//
+// Category and service are nominal — no inherent order — so they get one colour for every bar.
+// Shading those by size would double-encode the length as hue and spend the only free channel on
+// something the bar already says.
+const PRIORITY_BAR: Record<Priority, string> = {
+  P1: "bg-p1",
+  P2: "bg-p2",
+  P3: "bg-p3",
+  P4: "bg-p4",
+};
+
 const VARIANT_LABEL: Record<BreakdownVariant, string> = {
   priority: "Breakdown by priority",
   category: "Breakdown by category",
@@ -112,11 +125,15 @@ export function BreakdownBars(props: Props) {
               <div
                 role="img"
                 aria-label={`${row.label} count ${row.count}`}
-                className="col-span-2 mt-1 h-1 w-full overflow-hidden rounded-full bg-muted"
+                className="col-span-2 mt-1 h-2 w-full overflow-hidden rounded-sm bg-muted"
               >
                 <div
                   style={{ width: `${(row.count / maxCount) * 100}%` }}
-                  className="h-full rounded-full bg-primary/60"
+                  className={`h-full rounded-sm ${
+                    props.variant === "priority"
+                      ? PRIORITY_BAR[row.label as Priority]
+                      : "bg-primary"
+                  }`}
                 />
               </div>
             </button>

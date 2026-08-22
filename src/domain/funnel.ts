@@ -24,6 +24,20 @@ export function percentOfStageAbove(stages: FunnelStage[], index: number): numbe
   return Math.round((current / above) * 100);
 }
 
+// What the bar LENGTH encodes: this stage as a share of the first one.
+//
+// percentOfStageAbove is the stage-to-stage conversion rate and belongs in the label, not in a
+// length. Drawn as width it produced a funnel that widened: "Action recommended" kept all 8
+// incidents from "RAG match found", so its 100% drew a full-width bar below that stage's 62% —
+// same count, longer bar, and the one shape a funnel must never make.
+export function shareOfFirstStage(stages: FunnelStage[], index: number): number | null {
+  const current = stages[index].count;
+  const first = stages[0]?.count;
+  if (current === null || current === undefined) return null;
+  if (first === null || first === undefined || first === 0) return null;
+  return Math.round((current / first) * 100);
+}
+
 export interface LargestDrop {
   fromLabel: string;
   toLabel: string;
