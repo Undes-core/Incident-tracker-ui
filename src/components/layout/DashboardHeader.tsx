@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ENVIRONMENTS } from "../../api/types";
 import { useUrlState } from "../../state/useUrlState";
 import { useOperator } from "../../state/OperatorContext";
 import { useServices } from "../../api/services";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const TIME_RANGES: readonly TimeRange[] = ["24h", "7d", "30d", "all"];
-const ENVIRONMENTS = ["Production", "Staging", "Development"];
+
 const TIME_RANGE_TOOLTIP =
   "Time range applies to Performance and Knowledge. The alert strip and the Now tab always show current state, whatever range is selected.";
 

@@ -84,7 +84,11 @@
    * red-700 — that alone takes the pair from ΔE 5.0 to 11.0. The badges carry text regardless.
    */
   --ok: #16a34a;
-  --warn: #b45309;
+  /* amber-800 rather than amber-700. On --chip-warn-bg the lighter value gave
+   * 4.44:1, six hundredths under the 4.5 AA threshold for body text — and that
+   * pair is what every MEDIUM RISK badge in the app is made of, so it failed
+   * everywhere and not only here. 4.92:1 now, at a darkening nobody can see. */
+  --warn: #a94e08;
   --bad: #b91c1c;
   --roll: #7c3aed;
   --run: #0891b2;

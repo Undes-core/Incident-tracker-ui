@@ -6,13 +6,17 @@ import type {
   Disposition,
 } from "../../api/agents/roster";
 import { useUpdateAgent, useUpdateRiskPolicy, useUpdateSkill } from "../../api/agents/mutations";
+import { useCreateSkill, useDeleteSkill, useUpdateSkillFields } from "../../api/agents/skills";
+import type { SkillPayload } from "../../api/agents/skills";
 import { ApiError } from "../../api/client";
 import type { RiskLevel } from "../../api/types";
 import { CardHeader } from "../shared/CardHeader";
 import { RiskBadge } from "../shared/RiskBadge";
 import { SegmentedControl } from "../shared/SegmentedControl";
-import { SECTION } from "../shared/sectionStyles";
+import { BUTTON_SECONDARY, SECTION } from "../shared/sectionStyles";
 import { ToggleSwitch } from "../shared/ToggleSwitch";
+import { DeleteSkillModal } from "./DeleteSkillModal";
+import { SkillForm } from "./SkillForm";
 
 interface AgentDetailProps {
   agent: AgentDetailData;
@@ -67,10 +71,14 @@ function SkillCard({
   skill,
   agentId,
   onChanged,
+  editing,
+  onToggleEditing,
 }: {
   skill: AgentSkill;
   agentId: string;
   onChanged: (agent: AgentDetailData) => void;
+  editing: boolean;
+  onToggleEditing: (editing: boolean) => void;
 }) {
   // The optimistic value only has to exist while a change is in flight, so it is
   // held as "pending" and the prop is the truth the rest of the time. Mirroring
@@ -79,8 +87,42 @@ function SkillCard({
   // with the server.
   const [pending, setPending] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const mutation = useUpdateSkill(agentId);
+  const fieldsMutation = useUpdateSkillFields(agentId);
+  const deleteMutation = useDeleteSkill(agentId);
   const enabled = pending ?? skill.enabled;
+
+  function save(payload: SkillPayload) {
+    setFormError(null);
+    fieldsMutation.mutate(
+      { skillId: skill.id, body: payload },
+      {
+        onSuccess: (updated) => {
+          onToggleEditing(false);
+          onChanged(updated);
+        },
+        onError: (err) =>
+          setFormError(err instanceof ApiError ? err.message : "Could not save this skill."),
+      },
+    );
+  }
+
+  function remove() {
+    setFormError(null);
+    deleteMutation.mutate(skill.id, {
+      onSuccess: (updated) => {
+        setConfirmingDelete(false);
+        onToggleEditing(false);
+        onChanged(updated);
+      },
+      onError: (err) => {
+        setConfirmingDelete(false);
+        setFormError(err instanceof ApiError ? err.message : "Could not remove this skill.");
+      },
+    });
+  }
 
   function toggle(next: boolean) {
     setError(null);
@@ -125,7 +167,15 @@ function SkillCard({
             <p className="mt-2 text-[13px] text-muted-foreground">{skill.description}</p>
           )}
         </div>
-        <span className="shrink-0">
+        <span className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            aria-expanded={editing}
+            onClick={() => onToggleEditing(!editing)}
+            className={BUTTON_SECONDARY}
+          >
+            {editing ? "Close" : "Configure"}
+          </button>
           <ToggleSwitch
             label={`${skill.name} enabled`}
             checked={enabled}
@@ -139,6 +189,30 @@ function SkillCard({
           {error}
         </p>
       )}
+      {/* Inline, not a modal — the convention ApprovalCard set for a form reached
+          from a card. Modals in this app are gates, and one of them is below. */}
+      {editing && (
+        <div className="mt-3 border-t border-border-soft pt-3">
+          <SkillForm
+            key={skill.id}
+            skill={skill}
+            onSubmit={save}
+            onCancel={() => {
+              setFormError(null);
+              onToggleEditing(false);
+            }}
+            onDelete={() => setConfirmingDelete(true)}
+            pending={fieldsMutation.isPending}
+            error={formError}
+          />
+        </div>
+      )}
+      <DeleteSkillModal
+        isOpen={confirmingDelete}
+        skillName={skill.name}
+        onConfirm={remove}
+        onCancel={() => setConfirmingDelete(false)}
+      />
     </li>
   );
 }
@@ -163,6 +237,27 @@ export function AgentDetail({ agent, onChanged }: AgentDetailProps) {
   );
 
   const enabledSkills = agent.skills.filter((s) => s.enabled).length;
+  // One open editor at a time, by skill id, plus a sentinel for the create form.
+  // Two forms open at once on the same list is how you save the wrong one.
+  const [openEditor, setOpenEditor] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const createMutation = useCreateSkill(agent.id);
+  // Only the agent that proposes actions consults its skills, so only it can have
+  // any — the policy gate has exactly one caller and it passes the Decision
+  // Agent's name. Checked here from the same string the roster renders.
+  const proposes = agent.detail.toLowerCase().includes("propose");
+
+  function addSkill(payload: SkillPayload) {
+    setCreateError(null);
+    createMutation.mutate(payload, {
+      onSuccess: (updated) => {
+        setOpenEditor(null);
+        onChanged(updated);
+      },
+      onError: (err) =>
+        setCreateError(err instanceof ApiError ? err.message : "Could not add this skill."),
+    });
+  }
   const context = agent.context.map((c) => `${c.count} ${c.documentType.toLowerCase()}`);
 
   return (
@@ -279,28 +374,84 @@ export function AgentDetail({ agent, onChanged }: AgentDetailProps) {
         )}
       </section>
 
-      {agent.skills.length > 0 && (
-        <section aria-label="Skills" className={`${SECTION} shadow-xs`}>
-          <CardHeader
-            title="Skills"
-            meta={`${enabledSkills} of ${agent.skills.length} enabled`}
-          />
-          <ul className="flex flex-col gap-3">
-            {agent.skills.map((skill) => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                agentId={agent.id}
-                onChanged={onChanged}
-              />
-            ))}
-          </ul>
-          <p className="mt-3 text-[12.5px] text-muted-foreground">
-            A switched-off skill is not proposed. Runs and success are counted per
-            action type, so skills sharing one share these numbers.
+      {/* The section renders at zero skills now. Gating the whole thing on
+          `skills.length > 0` meant an agent with none had nowhere to add one. */}
+      <section aria-label="Skills" className={`${SECTION} shadow-xs`}>
+        {/* CardHeader's children replace its meta, so the count is re-rendered
+            here rather than passed. */}
+        <CardHeader title="Skills">
+          <span className="flex items-center gap-3">
+            <span className="meta">
+              {agent.skills.length === 0
+                ? "none yet"
+                : `${enabledSkills} of ${agent.skills.length} enabled`}
+            </span>
+            {proposes && (
+              <button
+                type="button"
+                aria-expanded={openEditor === "new"}
+                onClick={() => {
+                  setCreateError(null);
+                  setOpenEditor(openEditor === "new" ? null : "new");
+                }}
+                className={BUTTON_SECONDARY}
+              >
+                {openEditor === "new" ? "Cancel" : "Add skill"}
+              </button>
+            )}
+          </span>
+        </CardHeader>
+
+        {!proposes ? (
+          // Said, rather than left as an absent panel. An operator looking for
+          // the skills of an agent that has none deserves the reason.
+          <p className="text-[13px] text-muted-foreground">
+            {agent.name} does not propose actions, so it has no skills. Only the
+            Decision Agent's catalogue is consulted when an action is proposed.
           </p>
-        </section>
-      )}
+        ) : (
+          <>
+            {openEditor === "new" && (
+              <div className="mb-4 rounded-lg border border-border-soft bg-muted/40 p-3.5">
+                <SkillForm
+                  onSubmit={addSkill}
+                  onCancel={() => {
+                    setCreateError(null);
+                    setOpenEditor(null);
+                  }}
+                  pending={createMutation.isPending}
+                  error={createError}
+                />
+              </div>
+            )}
+
+            {agent.skills.length === 0 ? (
+              <p className="text-[13px] text-muted-foreground">
+                No skill is registered yet, so the policy has nothing to consult
+                and every proposal is decided by its risk level alone.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {agent.skills.map((skill) => (
+                  <SkillCard
+                    key={skill.id}
+                    skill={skill}
+                    agentId={agent.id}
+                    onChanged={onChanged}
+                    editing={openEditor === skill.id}
+                    onToggleEditing={(editing) => setOpenEditor(editing ? skill.id : null)}
+                  />
+                ))}
+              </ul>
+            )}
+
+            <p className="mt-3 text-[12.5px] text-muted-foreground">
+              A switched-off skill is not proposed. Runs and success are counted per
+              action type, so skills sharing one share these numbers.
+            </p>
+          </>
+        )}
+      </section>
     </div>
   );
 }

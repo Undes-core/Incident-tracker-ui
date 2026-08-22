@@ -49,6 +49,10 @@ export interface AgentSkill {
   description: string | null;
   actionType: string;
   riskLevel: RiskLevel;
+  // The id is what the form pre-selects; the name is what a card renders. A
+  // dropdown matched on the display name would be selecting a row by something
+  // that is not its key.
+  serviceId: string | null;
   serviceName: string | null;
   environments: string[];
   enabled: boolean;

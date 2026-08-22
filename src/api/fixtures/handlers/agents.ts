@@ -1,4 +1,5 @@
 import { http, HttpResponse } from "msw";
+import { SERVICES } from "../seededDataset";
 import type { AgentDetailData, AgentSummary, RosterData } from "../../agents/roster";
 import type { GuardrailsData } from "../../agents/guardrails";
 import type { ConnectionsData } from "../../agents/connections";
@@ -142,6 +143,13 @@ interface Skill {
   successPercent: number | null;
 }
 
+// The form pre-selects by id, so the fixture has to agree with the service list
+// the same fixture layer serves.
+function serviceIdFor(name: string | null): string | null {
+  if (!name) return null;
+  return SERVICES.find((s) => s.name === name)?.id ?? null;
+}
+
 const SKILLS: Skill[] = [
   {
     id: "skill-pool",
@@ -231,6 +239,7 @@ function detailFor(agentId: string): AgentDetailData | null {
             description: s.description,
             actionType: s.actionType,
             riskLevel: s.riskLevel,
+            serviceId: serviceIdFor(s.serviceName),
             serviceName: s.serviceName,
             environments: s.environments,
             enabled: s.enabled,
@@ -298,8 +307,84 @@ export const agentsHandlers = [
   http.patch("/api/skills/:id", async ({ params, request }) => {
     const skill = SKILLS.find((s) => s.id === params.id);
     if (!skill) return new HttpResponse("Skill not found", { status: 404 });
-    const body = (await request.json()) as { enabled: boolean };
-    skill.enabled = body.enabled;
+    const body = (await request.json()) as Record<string, unknown>;
+
+    if (body.name !== undefined) {
+      const name = String(body.name).trim();
+      if (SKILLS.some((s) => s.id !== skill.id && s.name === name)) {
+        return new HttpResponse(`a skill called '${name}' already exists on this agent`, {
+          status: 400,
+        });
+      }
+      skill.name = name;
+    }
+    if (body.description !== undefined) skill.description = String(body.description ?? "");
+    if (body.actionType !== undefined) skill.actionType = String(body.actionType).toUpperCase();
+    if (body.riskLevel !== undefined)
+      skill.riskLevel = String(body.riskLevel).toUpperCase() as Skill["riskLevel"];
+    if (body.environments !== undefined) skill.environments = body.environments as string[];
+    if (body.enabled !== undefined) skill.enabled = Boolean(body.enabled);
+    // Present-and-null clears it; absent leaves it alone. Same distinction the
+    // server makes, so the form's behaviour in dev matches production.
+    if ("serviceId" in body) {
+      const id = body.serviceId ? String(body.serviceId) : null;
+      skill.serviceName = SERVICES.find((s) => s.id === id)?.name ?? "";
+    }
+    return HttpResponse.json(detailFor("agent-decision"));
+  }),
+
+  // Mirrors app/api/agents.py: the vocabulary the Decision Agent's prompt offers
+  // the planner, with the three types nothing can carry out marked as such.
+  http.get("/api/action-types", () =>
+    HttpResponse.json({
+      actionTypes: [
+        { actionType: "API", hasExecutor: true, executor: "http tool" },
+        { actionType: "WEBHOOK", hasExecutor: true, executor: "http tool" },
+        { actionType: "GITHUB_PR", hasExecutor: true, executor: "Change Delivery Agent" },
+        { actionType: "SQL", hasExecutor: false, executor: null },
+        { actionType: "LAMBDA", hasExecutor: false, executor: null },
+        { actionType: "KUBERNETES", hasExecutor: false, executor: null },
+      ],
+      riskLevels: ["LOW", "MEDIUM", "HIGH"],
+      environments: ["Development", "Production", "Staging"],
+    }),
+  ),
+
+  http.post("/api/agents/:id/skills", async ({ params, request }) => {
+    if (params.id !== "agent-decision") {
+      return new HttpResponse(
+        "That agent does not propose actions, so a skill on it would never be consulted. " +
+          "Only the Decision Agent has skills.",
+        { status: 400 },
+      );
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const name = String(body.name ?? "").trim();
+    if (SKILLS.some((s) => s.name === name)) {
+      return new HttpResponse(`Decision Agent already has a skill called '${name}'`, {
+        status: 400,
+      });
+    }
+    const serviceId = body.serviceId ? String(body.serviceId) : null;
+    SKILLS.push({
+      id: `skill-${Date.now()}`,
+      name,
+      description: String(body.description ?? ""),
+      actionType: String(body.actionType ?? "API").toUpperCase(),
+      riskLevel: (String(body.riskLevel ?? "MEDIUM").toUpperCase() as Skill["riskLevel"]),
+      serviceName: SERVICES.find((s) => s.id === serviceId)?.name ?? "",
+      environments: (body.environments as string[]) ?? [],
+      enabled: body.enabled === undefined ? true : Boolean(body.enabled),
+      runs: 0,
+      successPercent: null,
+    });
+    return HttpResponse.json(detailFor("agent-decision"), { status: 201 });
+  }),
+
+  http.delete("/api/skills/:id", ({ params }) => {
+    const index = SKILLS.findIndex((s) => s.id === params.id);
+    if (index === -1) return new HttpResponse("Skill not found", { status: 404 });
+    SKILLS.splice(index, 1);
     return HttpResponse.json(detailFor("agent-decision"));
   }),
 

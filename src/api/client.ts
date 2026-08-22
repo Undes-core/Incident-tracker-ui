@@ -13,7 +13,10 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "PATCH";
+  // DELETE arrived with agent skills — the one resource in this app that can be
+  // removed rather than only switched off. The 204 branch below predates it and
+  // was dead until now.
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
 }
 

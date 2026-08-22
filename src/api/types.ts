@@ -3,6 +3,14 @@
 
 export type Priority = "P1" | "P2" | "P3" | "P4";
 export type Environment = "Production" | "Staging" | "Development";
+
+// The union's members as a value, so a form can render them and a filter can
+// list them without a second hand-maintained copy. It was written out three
+// times before this: here as a type, in DashboardHeader as a local array, and as
+// the default in useUrlState. The backend's own list comes from the map that
+// normalises an inbound incident, so these are the only three an incident can
+// ever carry.
+export const ENVIRONMENTS: readonly Environment[] = ["Production", "Staging", "Development"];
 export type Source = "Email" | "Slack" | "PagerDuty" | "API" | "Manual";
 
 // [INFERRED beyond these six — data-model.md's Incident.status note]
