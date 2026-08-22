@@ -58,7 +58,7 @@ export const approvalsPendingHandlers = [
           // createdAt is the closest available proxy, consistent with how AgentRun duration falls
           // back to timestamps elsewhere in this dataset.
           proposedAt: incident.createdAt,
-          proposedByAgent: "Remediation Planner",
+          proposedByAgent: "Decision Agent",
         };
       }),
       autoExecutedCountInRange: AUTO_EXECUTED_COUNT_IN_RANGE,

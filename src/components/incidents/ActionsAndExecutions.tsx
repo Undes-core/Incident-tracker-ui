@@ -62,7 +62,10 @@ function toPendingApprovalCard(
         sourceUrl: m.sourceUrl,
       })),
     proposedAt: incident.createdAt,
-    proposedByAgent: "Remediation Planner",
+    // The detail response carries no link from an action back to the run that proposed it, so
+    // this is a literal. It has to stay identical to what the queue renders — that one comes
+    // from agents.name — or the same action reads as two different agents.
+    proposedByAgent: "Decision Agent",
   };
 }
 
