@@ -17,6 +17,7 @@ import { AutomationFunnelPanel } from "./components/charts/AutomationFunnelPanel
 import { ExecutionOutcomeDonutPanel } from "./components/charts/ExecutionOutcomeDonutPanel";
 import { VolumeChartPanel } from "./components/charts/VolumeChartPanel";
 import { PriorityBreakdownPanel } from "./components/charts/PriorityBreakdownPanel";
+import { AgentTabPanel } from "./components/agent/AgentTabPanel";
 import { ActionTypePerformancePanel } from "./components/charts/ActionTypePerformancePanel";
 import { CategoryBreakdownPanel } from "./components/charts/CategoryBreakdownPanel";
 import { ServiceBreakdownPanel } from "./components/charts/ServiceBreakdownPanel";
@@ -66,6 +67,9 @@ function Dashboard() {
             <ServiceBreakdownPanel />
           </div>
           <ActionTypePerformancePanel />
+        </TabPanel>
+        <TabPanel tab="agent" activeTab={tab}>
+          <AgentTabPanel />
         </TabPanel>
         <TabPanel tab="knowledge" activeTab={tab}>
           <KpiStripKnowledge />

@@ -23,6 +23,11 @@ test("switching between tabs after initial load triggers no additional network r
   await expect(page.getByRole("region", { name: /incident volume/i })).toBeVisible();
   await expect(page.getByText(/loading/i)).toHaveCount(0);
 
+  await page.getByRole("tab", { name: /^agent$/i }).click();
+  await expect(page.getByRole("region", { name: /^agents$/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /autonomy level/i })).toBeVisible();
+  await expect(page.getByText(/loading/i)).toHaveCount(0);
+
   await page.getByRole("tab", { name: /knowledge/i }).click();
   await expect(page.getByRole("region", { name: /runbook coverage gaps/i })).toBeVisible();
   await expect(page.getByText(/loading/i)).toHaveCount(0);
@@ -35,6 +40,10 @@ test("switching between tabs after initial load triggers no additional network r
 
   await page.getByRole("tab", { name: /performance/i }).click();
   await expect(page.getByRole("region", { name: /automation funnel/i })).toBeVisible();
+  await expect(page.getByText(/loading/i)).toHaveCount(0);
+
+  await page.getByRole("tab", { name: /^agent$/i }).click();
+  await expect(page.getByRole("region", { name: /^agents$/i })).toBeVisible();
   await expect(page.getByText(/loading/i)).toHaveCount(0);
 
   await page.getByRole("tab", { name: /knowledge/i }).click();

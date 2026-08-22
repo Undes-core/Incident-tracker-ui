@@ -1,11 +1,12 @@
 import { useRef, type KeyboardEvent } from "react";
-import { Activity, BarChart3, BookOpen } from "lucide-react";
+import { Activity, BarChart3, BookOpen, Bot } from "lucide-react";
 import { useUrlState } from "../../state/useUrlState";
 import type { Tab } from "../../domain/filters";
 
 const TABS: ReadonlyArray<{ key: Tab; label: string; icon: typeof Activity }> = [
   { key: "now", label: "Now", icon: Activity },
   { key: "performance", label: "Performance", icon: BarChart3 },
+  { key: "agent", label: "Agent", icon: Bot },
   { key: "knowledge", label: "Knowledge", icon: BookOpen },
 ];
 

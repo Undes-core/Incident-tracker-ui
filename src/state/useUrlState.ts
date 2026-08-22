@@ -16,7 +16,7 @@ export interface UrlState extends DashboardViewState {
   incidentId: string | null;
 }
 
-const VALID_TABS: readonly Tab[] = ["now", "performance", "knowledge"];
+const VALID_TABS: readonly Tab[] = ["now", "performance", "agent", "knowledge"];
 const VALID_RANGES: readonly TimeRange[] = ["24h", "7d", "30d", "all"];
 
 const listeners = new Set<() => void>();

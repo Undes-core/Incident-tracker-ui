@@ -2,7 +2,7 @@
 // the previous one rather than accumulating. FR-020/TB-5: switching tabs never clears it.
 // Extended by US3 (T131) with the cross-tab jump transition.
 
-export type Tab = "now" | "performance" | "knowledge";
+export type Tab = "now" | "performance" | "agent" | "knowledge";
 export type TimeRange = "24h" | "7d" | "30d" | "all";
 export type FilterKind = "kpiTile" | "funnelDropAt" | "funnelStage" | "breakdown" | "candidate";
 

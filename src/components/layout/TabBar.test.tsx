@@ -11,7 +11,7 @@ describe("TabBar", () => {
     render(<TabBar pendingApprovalCount={0} />);
     expect(screen.getByRole("tablist")).toBeInTheDocument();
     const tabs = screen.getAllByRole("tab");
-    expect(tabs).toHaveLength(3);
+    expect(tabs).toHaveLength(4);
     expect(screen.getByRole("tab", { name: /^now$/i })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: /performance/i })).toHaveAttribute("aria-selected", "false");
   });

@@ -22,6 +22,17 @@ test("Performance tab has no WCAG AA violations", async ({ page }) => {
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
 });
 
+test("Agent tab has no WCAG AA violations", async ({ page }) => {
+  await page.goto("/?tab=agent");
+  // The roster and the selected agent's own cards — the segmented controls and
+  // switches are what this audit is here for.
+  await expect(page.getByRole("region", { name: /^agents$/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /autonomy level/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /guardrails/i })).toBeVisible();
+  const results = await auditPage(page);
+  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+});
+
 test("Knowledge tab has no WCAG AA violations", async ({ page }) => {
   await page.goto("/?tab=knowledge");
   await expect(page.getByRole("region", { name: /runbook coverage gaps/i })).toBeVisible();
