@@ -29,9 +29,14 @@ approved it.
 
 Pre-flight is worth calling out. It runs the same guards the executor runs — is there an executor
 registered for this action type at all, does the target clear the allowlist, would delivery push for
-real or stop at a dry run — and answers *before* the decision instead of after it. On the seeded
-data it immediately says something useful: the P1, HIGH-risk, confidence-0.91 pool restart is a
-`LAMBDA` action, and nothing in the registry can carry it out.
+real or stop at a dry run — and answers *before* the decision instead of after it.
+
+![Pre-flight open on a HIGH-risk proposal: one check would stop this before anything happened, because no executor is registered for LAMBDA](docs/screenshots/08-preflight.jpg)
+
+That is the live deployment, not a fixture. The highest-confidence proposal in the queue — HIGH
+risk, 0.91 — is a `LAMBDA` action, and nothing in the registry can carry it out. Approving it would
+have failed instantly having attempted nothing, and the panel says so while the decision is still
+yours to make.
 
 Clicking any row opens the detail drawer:
 
@@ -84,10 +89,15 @@ Ask first | Never` is an operator's decision that the backend enforces on the ne
 it enabled: that level removes the human from the loop, and it should not be reachable by anyone who
 can merely reach the dashboard.
 
-**Skills** is the catalogue the policy consults. Its action-type field is where the system tells you
-what it cannot do: `SQL`, `LAMBDA` and `KUBERNETES` are in the planner's vocabulary with nothing
-registered to execute them, so the option reads `SQL — no executor` and choosing one raises a
-sentence before the skill exists.
+**Skills** is the catalogue the policy consults, and **Add skill** / **Configure** are where it is
+edited. Its action-type field is where the system tells you what it cannot do:
+
+![The skill form with SQL selected: the option reads "SQL — no executor" and a warning explains that approving such an action would fail immediately](docs/screenshots/09-skill-form.jpg)
+
+`SQL`, `LAMBDA` and `KUBERNETES` are in the planner's vocabulary with nothing registered to execute
+them. The option says so, and choosing one raises the sentence above *before the skill exists* —
+the same fact Pre-flight reports on an approval card, moved to the earliest point it can be known.
+It warns rather than blocks: the skill may be registered deliberately just ahead of its executor.
 
 The right rail holds what bounds every agent — the concurrency ceiling, the change blackout window,
 the never-touch service list — and the knowledge sources, read-only. A source's credentials are held
